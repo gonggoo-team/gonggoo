@@ -1,7 +1,7 @@
 ---
 name: "\U0001F340 OTHER"
 about: Feature, Bug 외의 작업 시 작성해주세요.
-title: "[Labels]"
+title: "[Labels] [FE]/[BE]"
 labels: ''
 assignees: ''
 
