@@ -40,6 +40,11 @@ public class Coopost {
     @Column(nullable = false, length = 20)
     private com.example.app.domain.CoopostStatus status;
 
+    @Lob
+    @Column(nullable = false)
+    private String content;
+
+
     @Column(name = "price_per_unit", precision = 15, scale = 2)
     private BigDecimal pricePerUnit;
 
