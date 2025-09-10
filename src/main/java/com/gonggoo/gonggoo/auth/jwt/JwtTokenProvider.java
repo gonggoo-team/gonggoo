@@ -1,4 +1,4 @@
-package com.gonggoo.gonggoo.jwt;
+package com.gonggoo.gonggoo.auth.jwt;
 
 import com.gonggoo.gonggoo.common.domain.Role;
 import io.jsonwebtoken.Claims;

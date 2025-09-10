@@ -1,4 +1,4 @@
-package com.gonggoo.gonggoo.auth;
+package com.gonggoo.gonggoo.security.handler;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

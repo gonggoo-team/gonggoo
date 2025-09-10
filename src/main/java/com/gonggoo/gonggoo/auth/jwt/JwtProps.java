@@ -1,4 +1,4 @@
-package com.gonggoo.gonggoo.jwt;
+package com.gonggoo.gonggoo.auth.jwt;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

@@ -1,6 +1,9 @@
-package com.gonggoo.gonggoo.auth;
+package com.gonggoo.gonggoo.security.config;
 
-import com.gonggoo.gonggoo.jwt.JwtTokenProvider;
+import com.gonggoo.gonggoo.security.filter.AuthTokenAuthenticationFilter;
+import com.gonggoo.gonggoo.security.handler.CustomAccessDeniedHandler;
+import com.gonggoo.gonggoo.security.handler.CustomAuthenticationEntryPoint;
+import com.gonggoo.gonggoo.auth.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

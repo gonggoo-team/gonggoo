@@ -1,6 +1,6 @@
-package com.gonggoo.gonggoo.auth;
+package com.gonggoo.gonggoo.security.filter;
 
-import com.gonggoo.gonggoo.jwt.JwtTokenProvider;
+import com.gonggoo.gonggoo.auth.jwt.JwtTokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
