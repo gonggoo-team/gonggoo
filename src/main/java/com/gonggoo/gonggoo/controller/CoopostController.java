@@ -5,6 +5,7 @@ import com.gonggoo.gonggoo.dto.request.CoopostStatusUpdateRequest;
 import com.gonggoo.gonggoo.dto.request.CoopostUpdateRequest;
 import com.gonggoo.gonggoo.dto.response.CoopostResponse;
 import com.gonggoo.gonggoo.dto.response.PageResponse;
+import com.gonggoo.gonggoo.global.response.ApiResponse;
 import com.gonggoo.gonggoo.service.CoopostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,87 +24,87 @@ public class CoopostController {
 
     private final CoopostService service;
 
-    // 공구글 생성
+    // 공구글 생성 (201 Created)
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public CoopostResponse create(@Valid @RequestBody CoopostCreateRequest req) {
-        return service.create(req);
+    public ApiResponse<CoopostResponse> create(@Valid @RequestBody CoopostCreateRequest req) {
+        // HttpStatus와 함께 데이터를 담아 성공 응답 반환
+        return ApiResponse.success(HttpStatus.CREATED, "공구글이 성공적으로 생성되었습니다.", service.create(req));
     }
-
     // 공구글 전체 조회 (기본 최신순)
     @GetMapping
-    public PageResponse<CoopostResponse> getAll(
+    public ApiResponse<PageResponse<CoopostResponse>> getAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "createdAt,DESC") String sort
     ) {
         Pageable pageable = buildPageable(page, size, sort);
-        return service.getAll(pageable);
+        return ApiResponse.success(service.getAll(pageable));
     }
 
     // 공구글 상세 조회 (조회수 +1)
     @GetMapping("/{coopostId}")
-    public CoopostResponse getById(@PathVariable UUID coopostId) {
-        return service.getById(coopostId, true);
+    public ApiResponse<CoopostResponse> getById(@PathVariable UUID coopostId) {
+        return ApiResponse.success(service.getById(coopostId, true));
     }
 
     // 공구글 수정 (PATCH)
     @PatchMapping("/{coopostId}")
-    public CoopostResponse update(@PathVariable UUID coopostId,
-                                  @Valid @RequestBody CoopostUpdateRequest req) {
-        return service.update(coopostId, req);
+    public ApiResponse<CoopostResponse> update(@PathVariable UUID coopostId,
+                                               @Valid @RequestBody CoopostUpdateRequest req) {
+        return ApiResponse.success(service.update(coopostId, req));
     }
 
-    // 공구글 삭제
+    // 공구글 삭제 (204 No Content)
     @DeleteMapping("/{coopostId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.NO_CONTENT) // 내용 없는 성공 응답이므로 그대로 유지
     public void delete(@PathVariable UUID coopostId) {
         service.delete(coopostId);
     }
 
     // 공구글 상태 변경
     @PatchMapping("/{coopostId}/status")
-    public CoopostResponse changeStatus(@PathVariable UUID coopostId,
-                                        @RequestBody CoopostStatusUpdateRequest req) {
-        return service.changeStatus(coopostId, req.getStatus());
+    public ApiResponse<CoopostResponse> changeStatus(@PathVariable UUID coopostId,
+                                                     @RequestBody CoopostStatusUpdateRequest req) {
+        return ApiResponse.success(service.changeStatus(coopostId, req.getStatus()));
     }
 
     // 내가 쓴 공구글
     @GetMapping("/myposts")
-    public PageResponse<CoopostResponse> myPosts(
+    public ApiResponse<PageResponse<CoopostResponse>> myPosts(
             @RequestParam UUID authorId, // JWT 붙이면 제거하고 SecurityContext에서 추출
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "createdAt,DESC") String sort
     ) {
         Pageable pageable = buildPageable(page, size, sort);
-        return service.getMyPosts(authorId, pageable);
+        return ApiResponse.success(service.getMyPosts(authorId, pageable));
     }
 
     // 인기 공구글 (조회수 기준)
     @GetMapping("/popular")
-    public PageResponse<CoopostResponse> popular(
+    public ApiResponse<PageResponse<CoopostResponse>> popular(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "viewCount"));
-        return service.getPopular(pageable);
+        return ApiResponse.success(service.getPopular(pageable));
     }
 
     // 공구글 검색
     @GetMapping("/search")
-    public PageResponse<CoopostResponse> search(
-            @RequestParam String keyword,
+    public ApiResponse<PageResponse<CoopostResponse>> search(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String location, // 'location' 파라미터 추가
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "createdAt,DESC") String sort
     ) {
         Pageable pageable = buildPageable(page, size, sort);
-        return service.search(keyword, pageable);
+        return ApiResponse.success(service.search(keyword, category, location, pageable));
     }
 
     private Pageable buildPageable(int page, int size, String sortParam) {
-        // ex) "createdAt,DESC" 또는 "viewCount,ASC"
         String[] tokens = sortParam.split(",");
         String prop = tokens[0];
         Sort.Direction dir = (tokens.length > 1 && "ASC".equalsIgnoreCase(tokens[1]))

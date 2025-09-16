@@ -7,12 +7,16 @@ import com.gonggoo.gonggoo.dto.response.CoopostResponse;
 import com.gonggoo.gonggoo.dto.response.PageResponse;
 import com.gonggoo.gonggoo.repository.CoopostRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -77,12 +81,13 @@ public class CoopostServiceImpl implements CoopostService {
         return CoopostResponse.from(e);
     }
 
+    //Soft Delete으로 공구글 삭제 처리
     @Override
     public void delete(UUID coopostId) {
-        if (!repo.existsById(coopostId)) {
-            throw new EntityNotFoundException("Coopost not found");
-        }
-        repo.deleteById(coopostId);
+        Coopost coopost = repo.findById(coopostId)
+                .orElseThrow(() -> new EntityNotFoundException("Coopost not found"));
+        coopost.setStatus(com.example.app.domain.CoopostStatus.DELETED);
+        repo.save(coopost);
     }
 
     @Override
@@ -113,10 +118,38 @@ public class CoopostServiceImpl implements CoopostService {
 
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<CoopostResponse> search(String keyword, Pageable pageable) {
-        return PageResponse.of(
-                repo.findByTitleContainingIgnoreCaseOrContentContainingIgnoreCase(keyword, keyword, pageable),
-                CoopostResponse::from
-        );
+    public PageResponse<CoopostResponse> search(String keyword,String category, String location, Pageable pageable) {
+        // Specification : 동적 쿼리 생성을 위한 인터페이스 , JPA 표준 기술
+        Specification<Coopost> spec = (root, query, criteriaBuilder) -> {
+            //Predicate 는 WHERE절 조건 하나하나를 의미
+            List<Predicate> predicates = new ArrayList<>();
+
+            // 1. keyword 조건 : not null이면 title, content 에 keyword 포함되는지 검색
+            if (keyword != null && category.trim().isEmpty()) {
+                predicates.add(criteriaBuilder.or(
+                        criteriaBuilder.like(root.get("title"), "%" + keyword + "%"),
+                        criteriaBuilder.like(root.get("content"), "%" + keyword + "%")
+                ));
+            }
+            // 2. category 조건 : not null이면 category 가 일치하는지 검색
+            if (category != null && category.trim().isEmpty()) {
+                predicates.add(criteriaBuilder.equal(root.get("category"), category));
+            }
+            // 3. location 조건 : not null이면 location 가 일치하는지 검색
+            if (location != null && location.trim().isEmpty()) {
+                predicates.add(criteriaBuilder.equal(root.get("location"), location));
+            }
+            // 4. status 조건 : 삭제된 글은 제외
+            predicates.add(criteriaBuilder.notEqual(root.get("status"), com.example.app.domain.CoopostStatus.DELETED));
+
+            // 모든 조건들을 AND로 결합
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+
+        // repo.findAll(spec, pagable)로 동적 생성 쿼리를 실행
+        Page<Coopost> page = repo.findAll(spec, pageable);
+
+        return PageResponse.of(page, CoopostResponse::from);
+        }
     }
-}
+

@@ -1,6 +1,7 @@
 package com.gonggoo.gonggoo.service;
 
 
+import com.gonggoo.gonggoo.domain.Coopost;
 import com.gonggoo.gonggoo.dto.request.CoopostCreateRequest;
 import com.gonggoo.gonggoo.dto.request.CoopostUpdateRequest;
 import com.gonggoo.gonggoo.dto.response.CoopostResponse;
@@ -20,12 +21,11 @@ public interface CoopostService {
     CoopostResponse update(UUID coopostId, CoopostUpdateRequest req);
 
     void delete(UUID coopostId);
-
     CoopostResponse changeStatus(UUID coopostId, com.example.app.domain.CoopostStatus status);
 
     PageResponse<CoopostResponse> getMyPosts(UUID authorId, Pageable pageable);
 
     PageResponse<CoopostResponse> getPopular(Pageable pageable);
 
-    PageResponse<CoopostResponse> search(String keyword, Pageable pageable);
+    PageResponse<CoopostResponse> search(String keyword,String Category,String location, Pageable pageable);
 }
