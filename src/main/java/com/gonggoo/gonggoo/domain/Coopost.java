@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
-
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -20,7 +20,7 @@ import java.util.UUID;
                 @Index(name = "ix_coopost_category", columnList = "category")
         }
 )
-@EntityListeners(AbstractMethodError.class)
+@EntityListeners(AuditingEntityListener.class) // 생성 수정 시간 자동 기록 메서드
 @Getter @Setter @Builder
 @AllArgsConstructor @NoArgsConstructor
 public class Coopost {

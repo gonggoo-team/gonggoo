@@ -6,6 +6,7 @@ import com.gonggoo.gonggoo.dto.request.CoopostUpdateRequest;
 import com.gonggoo.gonggoo.dto.response.CoopostResponse;
 import com.gonggoo.gonggoo.dto.response.PageResponse;
 import com.gonggoo.gonggoo.service.CoopostService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +26,7 @@ public class CoopostController {
     // 공구글 생성
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CoopostResponse create(@RequestBody CoopostCreateRequest req) {
+    public CoopostResponse create(@Valid @RequestBody CoopostCreateRequest req) {
         return service.create(req);
     }
 
@@ -49,7 +50,7 @@ public class CoopostController {
     // 공구글 수정 (PATCH)
     @PatchMapping("/{coopostId}")
     public CoopostResponse update(@PathVariable UUID coopostId,
-                                  @RequestBody CoopostUpdateRequest req) {
+                                  @Valid @RequestBody CoopostUpdateRequest req) {
         return service.update(coopostId, req);
     }
 

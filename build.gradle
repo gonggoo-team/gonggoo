@@ -25,6 +25,8 @@ repositories {
 }
 
 dependencies {
+	// 공구글 추가시 필요한 의존성(for not blank, size)
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
