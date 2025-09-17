@@ -14,7 +14,7 @@ public interface CoopostRepository extends JpaRepository<Coopost, UUID>, JpaSpec
 
         Page<Coopost> findByAuthorId(UUID authorId, Pageable pageable);
 
-        Page<Coopost> findByStatus(com.example.app.domain.CoopostStatus status, Pageable pageable);
+        Page<Coopost> findByStatus(com.gonggoo.gonggoo.domain.CoopostStatus status, Pageable pageable);
 
         Page<Coopost> findAllByOrderByViewCountDesc(Pageable pageable);
 

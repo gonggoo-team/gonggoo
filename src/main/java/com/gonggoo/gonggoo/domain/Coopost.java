@@ -3,10 +3,13 @@ package com.gonggoo.gonggoo.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.cglib.core.Local;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
@@ -38,7 +41,7 @@ public class Coopost {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private com.example.app.domain.CoopostStatus status;
+    private com.gonggoo.gonggoo.domain.CoopostStatus status;
 
     @Lob
     @Column(nullable = false)
@@ -63,7 +66,8 @@ public class Coopost {
     @Column(length = 120)
     private String location;
 
-    private OffsetDateTime deadlineAt;
+    @Column(name = "deadline_at", nullable = false)
+    private LocalDateTime deadlineAt;
 
     // 인기/조회수 지표
     @Column(nullable = false)
@@ -71,10 +75,10 @@ public class Coopost {
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
-    private OffsetDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @LastModifiedDate
     @Column(nullable = false)
-    private OffsetDateTime updatedAt;
+    private LocalDateTime updatedAt;
 }
 

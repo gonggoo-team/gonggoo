@@ -1,6 +1,6 @@
 package com.gonggoo.gonggoo.dto.request;
 
-import com.example.app.domain.CoopostStatus;
+import com.gonggoo.gonggoo.domain.CoopostStatus;
 import lombok.Data;
 
 @Data

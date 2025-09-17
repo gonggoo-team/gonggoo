@@ -4,6 +4,7 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
@@ -38,5 +39,5 @@ public class CoopostCreateRequest {
     private String location;
 
     @NotNull(message = "마감 기한은 필수 입력 항목입니다.")
-    private OffsetDateTime deadlineAt;
+    private LocalDateTime deadlineAt;
 }

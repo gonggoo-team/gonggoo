@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Value;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
@@ -14,7 +15,7 @@ public class CoopostResponse {
     UUID authorId;
     String title;
     String content;
-    com.example.app.domain.CoopostStatus status;
+    com.gonggoo.gonggoo.domain.CoopostStatus status;
 
     BigDecimal pricePerUnit;
     Integer minParticipants;
@@ -22,11 +23,11 @@ public class CoopostResponse {
     Integer currentParticipants;
     String category;
     String location;
-    OffsetDateTime deadlineAt;
+    LocalDateTime deadlineAt;
 
     long viewCount;
-    OffsetDateTime createdAt;
-    OffsetDateTime updatedAt;
+    LocalDateTime createdAt;
+    LocalDateTime updatedAt;
 
     public static CoopostResponse from(Coopost e) {
         return CoopostResponse.builder()

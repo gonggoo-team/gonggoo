@@ -34,7 +34,7 @@ public class CoopostServiceImpl implements CoopostService {
                 .authorId(Objects.requireNonNull(req.getAuthorId(), "authorId required"))
                 .title(req.getTitle())
                 .content(req.getContent())
-                .status(com.example.app.domain.CoopostStatus.OPEN)
+                .status(com.gonggoo.gonggoo.domain.CoopostStatus.OPEN)
                 .pricePerUnit(req.getPricePerUnit())
                 .minParticipants(req.getMinParticipants())
                 .maxParticipants(req.getMaxParticipants())
@@ -86,12 +86,12 @@ public class CoopostServiceImpl implements CoopostService {
     public void delete(UUID coopostId) {
         Coopost coopost = repo.findById(coopostId)
                 .orElseThrow(() -> new EntityNotFoundException("Coopost not found"));
-        coopost.setStatus(com.example.app.domain.CoopostStatus.DELETED);
+        coopost.setStatus(com.gonggoo.gonggoo.domain.CoopostStatus.DELETED);
         repo.save(coopost);
     }
 
     @Override
-    public CoopostResponse changeStatus(UUID coopostId, com.example.app.domain.CoopostStatus status) {
+    public CoopostResponse changeStatus(UUID coopostId, com.gonggoo.gonggoo.domain.CoopostStatus status) {
         Coopost e = repo.findById(coopostId)
                 .orElseThrow(() -> new EntityNotFoundException("Coopost not found"));
         e.setStatus(status);
@@ -124,23 +124,29 @@ public class CoopostServiceImpl implements CoopostService {
             //Predicate 는 WHERE절 조건 하나하나를 의미
             List<Predicate> predicates = new ArrayList<>();
 
-            // 1. keyword 조건 : not null이면 title, content 에 keyword 포함되는지 검색
-            if (keyword != null && category.trim().isEmpty()) {
+            // 1. keyword 조건: keyword가 null이 아니고 비어있지 않을 때 검색
+            // Fix: Use !keyword.trim().isEmpty()
+            if (keyword != null && !keyword.trim().isEmpty()) {
                 predicates.add(criteriaBuilder.or(
                         criteriaBuilder.like(root.get("title"), "%" + keyword + "%"),
                         criteriaBuilder.like(root.get("content"), "%" + keyword + "%")
                 ));
             }
-            // 2. category 조건 : not null이면 category 가 일치하는지 검색
-            if (category != null && category.trim().isEmpty()) {
+
+            // 2. category 조건: category가 null이 아니고 비어있지 않을 때 검색
+            // Fix: Use !category.trim().isEmpty()
+            if (category != null && !category.trim().isEmpty()) {
                 predicates.add(criteriaBuilder.equal(root.get("category"), category));
             }
-            // 3. location 조건 : not null이면 location 가 일치하는지 검색
-            if (location != null && location.trim().isEmpty()) {
+
+            // 3. location 조건: location가 null이 아니고 비어있지 않을 때 검색
+            // Fix: Use !location.trim().isEmpty()
+            if (location != null && !location.trim().isEmpty()) {
                 predicates.add(criteriaBuilder.equal(root.get("location"), location));
             }
-            // 4. status 조건 : 삭제된 글은 제외
-            predicates.add(criteriaBuilder.notEqual(root.get("status"), com.example.app.domain.CoopostStatus.DELETED));
+
+            // 4. status 조건: 삭제된 글은 제외
+            predicates.add(criteriaBuilder.notEqual(root.get("status"), com.gonggoo.gonggoo.domain.CoopostStatus.DELETED));
 
             // 모든 조건들을 AND로 결합
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));

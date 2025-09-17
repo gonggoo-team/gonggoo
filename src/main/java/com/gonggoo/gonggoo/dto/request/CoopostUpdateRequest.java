@@ -2,6 +2,7 @@ package com.gonggoo.gonggoo.dto.request;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
 @Data
@@ -14,5 +15,5 @@ public class CoopostUpdateRequest {
     private Integer maxParticipants;
     private String category;
     private String location;
-    private OffsetDateTime deadlineAt;
+    private LocalDateTime deadlineAt;
 }

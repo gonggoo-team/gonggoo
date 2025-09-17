@@ -21,7 +21,7 @@ public interface CoopostService {
     CoopostResponse update(UUID coopostId, CoopostUpdateRequest req);
 
     void delete(UUID coopostId);
-    CoopostResponse changeStatus(UUID coopostId, com.example.app.domain.CoopostStatus status);
+    CoopostResponse changeStatus(UUID coopostId, com.gonggoo.gonggoo.domain.CoopostStatus status);
 
     PageResponse<CoopostResponse> getMyPosts(UUID authorId, Pageable pageable);
 
