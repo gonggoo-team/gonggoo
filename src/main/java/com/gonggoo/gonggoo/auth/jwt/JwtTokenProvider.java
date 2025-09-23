@@ -1,6 +1,5 @@
 package com.gonggoo.gonggoo.auth.jwt;
 
-import com.gonggoo.gonggoo.common.domain.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -11,7 +10,6 @@ import io.jsonwebtoken.security.Keys;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.stream.Collectors;
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,8 +33,8 @@ public class JwtTokenProvider {
         this.jwtProps = jwtProps;
     }
 
-    public JwtTokenDto generateToken(String id, List<Role> roles) {
-        String accessToken = generateAccessToken(id, roles);
+    public JwtTokenDto generateToken(String id, String role) {
+        String accessToken = generateAccessToken(id, role);
         String refreshToken = generateRefreshToken(id);
 
         return JwtTokenDto.builder()
@@ -46,12 +44,12 @@ public class JwtTokenProvider {
                 .build();
     }
 
-    public String generateAccessToken(String id, List<Role> roles) {
+    public String generateAccessToken(String id, String role) {
         long now = (new Date()).getTime();
 
         return Jwts.builder()
                 .subject(id)
-                .claim(AUTHORITIES_KEY, roles)
+                .claim(AUTHORITIES_KEY, role)
                 .expiration(new Date(now + jwtProps.expireSeconds()))
                 .issuedAt(new Date(now))
                 .signWith(key, SignatureAlgorithm.HS256)
