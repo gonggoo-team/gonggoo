@@ -1,16 +1,13 @@
-package com.gonggoo.gonggoo.domain;
+package com.gonggoo.gonggoo.coopost.domain;
 
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.cglib.core.Local;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Entity
@@ -41,7 +38,7 @@ public class Coopost {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private com.gonggoo.gonggoo.domain.CoopostStatus status;
+    private CoopostStatus status;
 
     @Lob
     @Column(nullable = false)
@@ -73,12 +70,13 @@ public class Coopost {
     @Column(nullable = false)
     private long viewCount;
 
-    @CreatedDate
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
+    // Base Entity로 통합될 예정
+//    @CreatedDate
+//    @Column(nullable = false, updatable = false)
+//    private LocalDateTime createdAt;
+//
+//    @LastModifiedDate
+//    @Column(nullable = false)
+//    private LocalDateTime updatedAt;
 }
 

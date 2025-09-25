@@ -1,4 +1,4 @@
-package com.gonggoo.gonggoo.dto.response;
+package com.gonggoo.gonggoo.coopost.dto.response;
 
 
 

@@ -1,4 +1,4 @@
-package com.gonggoo.gonggoo.domain;
+package com.gonggoo.gonggoo.coopost.domain;
 
 public enum CoopostStatus {
     OPEN,      // 모집 중

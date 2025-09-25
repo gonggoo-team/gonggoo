@@ -1,20 +1,22 @@
-package com.gonggoo.gonggoo.controller;
+package com.gonggoo.gonggoo.coopost.controller;
 
-import com.gonggoo.gonggoo.dto.request.CoopostCreateRequest;
-import com.gonggoo.gonggoo.dto.request.CoopostStatusUpdateRequest;
-import com.gonggoo.gonggoo.dto.request.CoopostUpdateRequest;
-import com.gonggoo.gonggoo.dto.response.CoopostResponse;
-import com.gonggoo.gonggoo.dto.response.PageResponse;
+import com.gonggoo.gonggoo.coopost.dto.request.CoopostCreateRequest;
+import com.gonggoo.gonggoo.coopost.dto.request.CoopostStatusUpdateRequest;
+import com.gonggoo.gonggoo.coopost.dto.request.CoopostUpdateRequest;
+import com.gonggoo.gonggoo.coopost.dto.response.CoopostResponse;
+import com.gonggoo.gonggoo.coopost.dto.response.PageResponse;
 import com.gonggoo.gonggoo.global.response.ApiResponse;
-import com.gonggoo.gonggoo.service.CoopostService;
+import com.gonggoo.gonggoo.coopost.service.CoopostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @RestController
@@ -33,12 +35,13 @@ public class CoopostController {
     // 공구글 전체 조회 (기본 최신순)
     @GetMapping
     public ApiResponse<PageResponse<CoopostResponse>> getAll(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
-            @RequestParam(defaultValue = "createdAt,DESC") String sort
+            // int page 대신 LocalDateTime cursor를 받도록 변경
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime cursor,
+            @RequestParam(defaultValue = "20") int size
     ) {
-        Pageable pageable = buildPageable(page, size, sort);
-        return ApiResponse.success(service.getAll(pageable));
+        // 정렬은 항상 최신순(createdAt DESC)으로 고정
+        Pageable pageable = PageRequest.of(0, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        return ApiResponse.success(service.getAll(cursor, pageable));
     }
 
     // 공구글 상세 조회 (조회수 +1)
@@ -71,23 +74,28 @@ public class CoopostController {
     // 내가 쓴 공구글
     @GetMapping("/myposts")
     public ApiResponse<PageResponse<CoopostResponse>> myPosts(
-            @RequestParam UUID authorId, // JWT 붙이면 제거하고 SecurityContext에서 추출
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
-            @RequestParam(defaultValue = "createdAt,DESC") String sort
+            @RequestParam UUID authorId, // JWT 적용 후 SecurityContext에서 추출
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime cursor,
+            @RequestParam(defaultValue = "20") int size
     ) {
-        Pageable pageable = buildPageable(page, size, sort);
-        return ApiResponse.success(service.getMyPosts(authorId, pageable));
+        // 정렬은 항상 최신순으로 고정
+        Pageable pageable = PageRequest.of(0, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        return ApiResponse.success(service.getMyPosts(authorId, cursor, pageable));
     }
 
     // 인기 공구글 (조회수 기준)
     @GetMapping("/popular")
     public ApiResponse<PageResponse<CoopostResponse>> popular(
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) Long viewCountCursor,
+            @RequestParam(required = false) UUID idCursor,
             @RequestParam(defaultValue = "10") int size
     ) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "viewCount"));
-        return ApiResponse.success(service.getPopular(pageable));
+        // 정렬 기준: 1. 조회수(viewCount) 내림차순, 2. ID(coopostId) 내림차순
+        Pageable pageable = PageRequest.of(0, size, Sort.by(
+                Sort.Order.desc("viewCount"),
+                Sort.Order.desc("coopostId")
+        ));
+        return ApiResponse.success(service.getPopular(viewCountCursor, idCursor, pageable));
     }
 
     // 공구글 검색
@@ -95,20 +103,13 @@ public class CoopostController {
     public ApiResponse<PageResponse<CoopostResponse>> search(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String category,
-            @RequestParam(required = false) String location, // 'location' 파라미터 추가
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
-            @RequestParam(defaultValue = "createdAt,DESC") String sort
+            @RequestParam(required = false) String location,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime cursor,
+            @RequestParam(defaultValue = "20") int size
     ) {
-        Pageable pageable = buildPageable(page, size, sort);
-        return ApiResponse.success(service.search(keyword, category, location, pageable));
+        Pageable pageable = PageRequest.of(0, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        return ApiResponse.success(service.search(keyword, category, location, cursor, pageable));
     }
 
-    private Pageable buildPageable(int page, int size, String sortParam) {
-        String[] tokens = sortParam.split(",");
-        String prop = tokens[0];
-        Sort.Direction dir = (tokens.length > 1 && "ASC".equalsIgnoreCase(tokens[1]))
-                ? Sort.Direction.ASC : Sort.Direction.DESC;
-        return PageRequest.of(page, size, Sort.by(dir, prop));
-    }
+
 }

@@ -1,11 +1,11 @@
-package com.gonggoo.gonggoo.dto.response;
-import com.gonggoo.gonggoo.domain.Coopost;
+package com.gonggoo.gonggoo.coopost.dto.response;
+import com.gonggoo.gonggoo.coopost.domain.CoopostStatus;
+import com.gonggoo.gonggoo.coopost.domain.Coopost;
 import lombok.Builder;
 import lombok.Value;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Value
@@ -15,7 +15,7 @@ public class CoopostResponse {
     UUID authorId;
     String title;
     String content;
-    com.gonggoo.gonggoo.domain.CoopostStatus status;
+    CoopostStatus status;
 
     BigDecimal pricePerUnit;
     Integer minParticipants;

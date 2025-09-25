@@ -1,4 +1,4 @@
-package com.gonggoo.gonggoo.dto.request;
+package com.gonggoo.gonggoo.coopost.dto.request;
 
 import jakarta.validation.constraints.*;
 import lombok.Data;
