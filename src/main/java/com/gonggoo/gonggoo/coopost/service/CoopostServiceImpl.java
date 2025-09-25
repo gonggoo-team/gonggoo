@@ -1,5 +1,6 @@
 package com.gonggoo.gonggoo.coopost.service;
 
+import com.gonggoo.gonggoo.coopost.domain.CoopostCategory;
 import com.gonggoo.gonggoo.coopost.domain.CoopostStatus;
 import com.gonggoo.gonggoo.coopost.domain.Coopost;
 import com.gonggoo.gonggoo.coopost.dto.request.CoopostCreateRequest;
@@ -20,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional; // Optional import 추가
 import java.util.UUID;
 
 @Service
@@ -41,7 +43,8 @@ public class CoopostServiceImpl implements CoopostService {
                 .minParticipants(req.getMinParticipants())
                 .maxParticipants(req.getMaxParticipants())
                 .currentParticipants(0)
-                .category(req.getCategory())
+                // ▼▼▼ 수정된 부분 1: 카테고리가 null이면 ELSE를 기본값으로 설정 ▼▼▼
+                .category(Optional.ofNullable(req.getCategory()).orElse(CoopostCategory.ELSE))
                 .location(req.getLocation())
                 .deadlineAt(req.getDeadlineAt())
                 .viewCount(0)
@@ -149,7 +152,7 @@ public class CoopostServiceImpl implements CoopostService {
 
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<CoopostResponse> search(String keyword, String category, String location, LocalDateTime cursor, Pageable pageable) {
+    public PageResponse<CoopostResponse> search(String keyword, CoopostCategory category, String location, LocalDateTime cursor, Pageable pageable) {
         // Specification: 동적 쿼리 생성을 위한 JPA 표준 기술
         Specification<Coopost> spec = (root, query, criteriaBuilder) -> {
             // Predicate는 WHERE절의 각 조건을 의미합니다.
@@ -164,7 +167,8 @@ public class CoopostServiceImpl implements CoopostService {
             }
 
             // 2. category 조건: 카테고리가 일치하는 경우
-            if (category != null && !category.trim().isEmpty()) {
+            // ▼▼▼ 수정된 부분 2: Enum 타입에 맞게 null 체크만 하도록 변경 ▼▼▼
+            if (category != null) {
                 predicates.add(criteriaBuilder.equal(root.get("category"), category));
             }
 
@@ -192,6 +196,4 @@ public class CoopostServiceImpl implements CoopostService {
         // 조회된 Page<Coopost>를 PageResponse<CoopostResponse> 형태로 변환하여 반환
         return PageResponse.of(page, CoopostResponse::from);
     }
-        }
-
-
+}

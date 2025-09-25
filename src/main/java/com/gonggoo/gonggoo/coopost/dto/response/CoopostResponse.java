@@ -1,4 +1,5 @@
 package com.gonggoo.gonggoo.coopost.dto.response;
+import com.gonggoo.gonggoo.coopost.domain.CoopostCategory;
 import com.gonggoo.gonggoo.coopost.domain.CoopostStatus;
 import com.gonggoo.gonggoo.coopost.domain.Coopost;
 import lombok.Builder;
@@ -21,7 +22,7 @@ public class CoopostResponse {
     Integer minParticipants;
     Integer maxParticipants;
     Integer currentParticipants;
-    String category;
+    CoopostCategory category;
     String location;
     LocalDateTime deadlineAt;
 
@@ -44,8 +45,6 @@ public class CoopostResponse {
                 .location(e.getLocation())
                 .deadlineAt(e.getDeadlineAt())
                 .viewCount(e.getViewCount())
-                .createdAt(e.getCreatedAt())
-                .updatedAt(e.getUpdatedAt())
                 .build();
     }
 }

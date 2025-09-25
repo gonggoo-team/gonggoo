@@ -1,6 +1,7 @@
 package com.gonggoo.gonggoo.coopost.service;
 
 
+import com.gonggoo.gonggoo.coopost.domain.CoopostCategory;
 import com.gonggoo.gonggoo.coopost.domain.CoopostStatus;
 import com.gonggoo.gonggoo.coopost.dto.request.CoopostCreateRequest;
 import com.gonggoo.gonggoo.coopost.dto.request.CoopostUpdateRequest;
@@ -32,5 +33,5 @@ public interface CoopostService {
     PageResponse<CoopostResponse> getMyPosts(UUID authorId, LocalDateTime cursor, Pageable pageable);
 
     // 여기도 동일하게 변경
-    PageResponse<CoopostResponse> search(String keyword, String Category, String location, LocalDateTime cursor, Pageable pageable);
+    PageResponse<CoopostResponse> search(String keyword, CoopostCategory Category, String location, LocalDateTime cursor, Pageable pageable);
 }

@@ -57,8 +57,10 @@ public class Coopost {
     @Column(name = "current_participants")
     private Integer currentParticipants;
 
-    @Column(length = 50)
-    private String category;
+    @Enumerated(EnumType.STRING) // DB에 "FOOD", "ELSE" 같은 문자열로 저장
+    @Column(nullable = false, length = 30) // 길이를 enum 상수에 맞게 조절
+    private CoopostCategory category;
+
 
     @Column(length = 120)
     private String location;

@@ -1,4 +1,5 @@
 package com.gonggoo.gonggoo.coopost.dto.request;
+import com.gonggoo.gonggoo.coopost.domain.CoopostCategory;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -13,7 +14,7 @@ public class CoopostUpdateRequest {
     private BigDecimal pricePerUnit;
     private Integer minParticipants;
     private Integer maxParticipants;
-    private String category;
+    private CoopostCategory category;
     private String location;
     private LocalDateTime deadlineAt;
 }

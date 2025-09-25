@@ -1,5 +1,6 @@
 package com.gonggoo.gonggoo.coopost.controller;
 
+import com.gonggoo.gonggoo.coopost.domain.CoopostCategory;
 import com.gonggoo.gonggoo.coopost.dto.request.CoopostCreateRequest;
 import com.gonggoo.gonggoo.coopost.dto.request.CoopostStatusUpdateRequest;
 import com.gonggoo.gonggoo.coopost.dto.request.CoopostUpdateRequest;
@@ -102,7 +103,7 @@ public class CoopostController {
     @GetMapping("/search")
     public ApiResponse<PageResponse<CoopostResponse>> search(
             @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) String category,
+            @RequestParam(required = false) CoopostCategory category,
             @RequestParam(required = false) String location,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime cursor,
             @RequestParam(defaultValue = "20") int size

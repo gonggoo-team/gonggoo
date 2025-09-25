@@ -1,5 +1,6 @@
 package com.gonggoo.gonggoo.coopost.dto.request;
 
+import com.gonggoo.gonggoo.coopost.domain.CoopostCategory;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
@@ -32,8 +33,10 @@ public class CoopostCreateRequest {
     @Max(value = 100, message = "최대 참여 인원은 100명 이하이어야 합니다.")
     private Integer maxParticipants;
 
-    @NotBlank(message = "카테고리는 필수 입력 항목입니다.")
-    private String category;
+
+    // enum으로 변경할 시, 꼭 선택되어야 함.
+    @NotNull(message = "카테고리는 필수 선택 항목입니다.")
+    private CoopostCategory category;
 
     @NotBlank(message = "위치는 필수 입력 항목입니다.")
     private String location;
