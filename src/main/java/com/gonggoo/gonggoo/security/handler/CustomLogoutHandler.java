@@ -24,9 +24,6 @@ public class CustomLogoutHandler implements LogoutHandler {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
-    @Autowired
-    private RedisUtil redisUtil;
-
     @Override
     public void logout(HttpServletRequest req, HttpServletResponse res, Authentication authentication) {
         try {
