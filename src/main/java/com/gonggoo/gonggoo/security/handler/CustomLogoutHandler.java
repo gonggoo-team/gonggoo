@@ -30,7 +30,7 @@ public class CustomLogoutHandler implements LogoutHandler {
     @Override
     public void logout(HttpServletRequest req, HttpServletResponse res, Authentication authentication) {
         try {
-            String token = jwtTokenProvider.getHeaderToToken(req);
+            String token = jwtTokenProvider.resolveToken(req);
 
             if (!redisTokenBlackListService.isContainToken(token)) {
                 redisTokenBlackListService.addTokenToList(token);

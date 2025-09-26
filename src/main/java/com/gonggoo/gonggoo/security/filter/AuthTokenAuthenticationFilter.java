@@ -1,6 +1,7 @@
 package com.gonggoo.gonggoo.security.filter;
 
 import com.gonggoo.gonggoo.auth.jwt.JwtTokenProvider;
+import com.gonggoo.gonggoo.auth.service.RedisTokenBlackListService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,10 +16,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @RequiredArgsConstructor
 public class AuthTokenAuthenticationFilter extends OncePerRequestFilter {
 
-    private final String AUTH_HEADER = "Authorization";
-    private final String BEARER = "Bearer";
-
     private final JwtTokenProvider jwtTokenProvider;
+    private final RedisTokenBlackListService redisTokenBlackListService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest req,
@@ -26,7 +25,12 @@ public class AuthTokenAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
         try {
-            String accessToken = resolveToken(req);
+            String accessToken = jwtTokenProvider.resolveToken(req);
+
+            if (redisTokenBlackListService.isContainToken(accessToken)) {
+                //TODO : 공통 예외로 수정
+                throw new Exception("블랙리스트에 포함된 토큰으로 접근중 !!");
+            }
 
             if (accessToken != null && jwtTokenProvider.validateToken(accessToken)) {
                 Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
@@ -36,13 +40,5 @@ public class AuthTokenAuthenticationFilter extends OncePerRequestFilter {
             SecurityContextHolder.clearContext();
         }
         filterChain.doFilter(req, res);
-    }
-
-    private String resolveToken(HttpServletRequest req) {
-        String bearerToken = req.getHeader("Authorization");
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER)) {
-            return bearerToken.substring(bearerToken.length());
-        }
-        return null;
     }
 }
