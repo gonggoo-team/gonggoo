@@ -1,9 +1,12 @@
 package com.gonggoo.gonggoo.security.config;
 
+import com.gonggoo.gonggoo.auth.service.RedisTokenBlackListService;
 import com.gonggoo.gonggoo.security.filter.AuthTokenAuthenticationFilter;
 import com.gonggoo.gonggoo.security.handler.CustomAccessDeniedHandler;
 import com.gonggoo.gonggoo.security.handler.CustomAuthenticationEntryPoint;
 import com.gonggoo.gonggoo.auth.jwt.JwtTokenProvider;
+import com.gonggoo.gonggoo.security.handler.CustomLogoutHandler;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +14,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,6 +26,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final RedisTokenBlackListService redisTokenBlackListService;
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
     private final CustomAccessDeniedHandler accessDeniedHandler;
 
@@ -38,15 +43,27 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/member/v1/signup").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .anyRequest().authenticated())
-                .addFilterBefore(new AuthTokenAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new AuthTokenAuthenticationFilter(jwtTokenProvider, redisTokenBlackListService),
+                        UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(eh -> eh
                         .authenticationEntryPoint(authenticationEntryPoint)
                         .accessDeniedHandler(accessDeniedHandler))
+                .logout(this::configureLogout)
                 .build();
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    private void configureLogout(LogoutConfigurer<HttpSecurity> logout) {
+        logout.logoutUrl("/api/auth/v1/logout")
+                .addLogoutHandler(customLogoutHandler())
+                .logoutSuccessHandler((request, response, authentication) -> response.setStatus(HttpServletResponse.SC_OK));
+    }
+    @Bean
+    public CustomLogoutHandler customLogoutHandler() {
+        return new CustomLogoutHandler();
     }
 }
