@@ -55,8 +55,13 @@ public class MemberService {
         return PhoneNumberCheckResponse.of(phoneNumber, exists);
     }
 
+
     public NicknameCheckResponse validateDuplicateNickname(String nickname) {
         boolean exists = memberRepository.existsByNickname(nickname);
         return NicknameCheckResponse.of(nickname, exists);
+    }
+
+    public String findRoleById(String id) {
+        return memberRepository.findRoleById(id);
     }
 }

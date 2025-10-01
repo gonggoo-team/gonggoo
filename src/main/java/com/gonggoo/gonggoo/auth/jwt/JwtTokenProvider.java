@@ -110,4 +110,17 @@ public class JwtTokenProvider {
             return e.getClaims();
         }
     }
+
+    public String parseSubject(String token){
+        try{
+            return Jwts.parser()
+                    .verifyWith(key)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload()
+                    .getSubject();
+        } catch (ExpiredJwtException e){
+            return e.getMessage();
+        }
+    }
 }

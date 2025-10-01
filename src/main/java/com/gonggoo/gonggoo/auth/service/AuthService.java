@@ -35,4 +35,17 @@ public class AuthService {
                 .refreshToken(accessToken.getRefreshToken())
                 .build();
     }
+
+    public JwtTokenDto reissueToken(String refreshToken) {
+        String memberId = jwtTokenProvider.parseSubject(refreshToken);
+        String role = memberRepository.findRoleById(memberId);
+
+        String newAccessToken = jwtTokenProvider.generateAccessToken(memberId, role);
+        String newRefreshToken = jwtTokenProvider.generateRefreshToken(memberId);
+
+        return JwtTokenDto.builder()
+                .accessToken(newAccessToken)
+                .refreshToken(newRefreshToken)
+                .build();
+    }
 }
