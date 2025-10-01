@@ -19,7 +19,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public MemberResponse saveMember(MemberSignupRequest request) {
+    public MemberResponse save(MemberSignupRequest request) {
         validateDuplicate(request);
         String hashedPassword = passwordEncoder.encode(request.password());
         GeoLocation geolocation = new GeoLocation(request.location().getLatitude(), request.location().getLongitude());
