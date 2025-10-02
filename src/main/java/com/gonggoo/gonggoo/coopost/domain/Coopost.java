@@ -1,6 +1,6 @@
 package com.gonggoo.gonggoo.coopost.domain;
 
-
+import com.gonggoo.gonggoo.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -20,10 +20,9 @@ import java.util.UUID;
                 @Index(name = "ix_coopost_category", columnList = "category")
         }
 )
-@EntityListeners(AuditingEntityListener.class) // 생성 수정 시간 자동 기록 메서드
 @Getter @Setter @Builder
 @AllArgsConstructor @NoArgsConstructor
-public class Coopost {
+public class Coopost extends BaseEntity {
 
     @Id
     @GeneratedValue
@@ -72,13 +71,5 @@ public class Coopost {
     @Column(nullable = false)
     private long viewCount;
 
-    // Base Entity로 통합될 예정
-//    @CreatedDate
-//    @Column(nullable = false, updatable = false)
-//    private LocalDateTime createdAt;
-//
-//    @LastModifiedDate
-//    @Column(nullable = false)
-//    private LocalDateTime updatedAt;
 }
 
