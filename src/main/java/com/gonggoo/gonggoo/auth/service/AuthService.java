@@ -38,7 +38,7 @@ public class AuthService {
 
     public JwtTokenDto reissueToken(String refreshToken) {
         String memberId = jwtTokenProvider.parseSubject(refreshToken);
-        String role = memberRepository.findRoleById(memberId);
+        String role = memberRepository.findRoleById(Integer.parseInt(memberId));
 
         String newAccessToken = jwtTokenProvider.generateAccessToken(memberId, role);
         String newRefreshToken = jwtTokenProvider.generateRefreshToken(memberId);
