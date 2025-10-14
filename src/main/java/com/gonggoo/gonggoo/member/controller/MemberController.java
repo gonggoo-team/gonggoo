@@ -4,6 +4,7 @@ import com.gonggoo.gonggoo.auth.jwt.JwtTokenProvider;
 import com.gonggoo.gonggoo.member.dto.request.MemberSignupRequest;
 import com.gonggoo.gonggoo.member.dto.request.MemberUpdateRequest;
 import com.gonggoo.gonggoo.member.dto.response.EmailCheckResponse;
+import com.gonggoo.gonggoo.member.dto.response.LocationResponse;
 import com.gonggoo.gonggoo.member.dto.response.MemberResponse;
 import com.gonggoo.gonggoo.member.dto.response.NicknameCheckResponse;
 import com.gonggoo.gonggoo.member.service.MemberService;
@@ -64,5 +65,14 @@ public class MemberController {
 
         memberService.delete(memberId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/location")
+    public ResponseEntity<LocationResponse> getLocation(@RequestHeader("Authorization") String authorizationHeader) {
+        String accessToken = authorizationHeader.split(" ")[1];
+        int memberId = Integer.parseInt(jwtTokenProvider.parseSubject(accessToken));
+
+        LocationResponse locationResponse = memberService.getLocation(memberId);
+        return ResponseEntity.ok(locationResponse);
     }
 }

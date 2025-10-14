@@ -5,6 +5,7 @@ import com.gonggoo.gonggoo.member.domain.Member;
 import com.gonggoo.gonggoo.member.dto.request.MemberSignupRequest;
 import com.gonggoo.gonggoo.member.dto.request.MemberUpdateRequest;
 import com.gonggoo.gonggoo.member.dto.response.EmailCheckResponse;
+import com.gonggoo.gonggoo.member.dto.response.LocationResponse;
 import com.gonggoo.gonggoo.member.dto.response.MemberResponse;
 import com.gonggoo.gonggoo.member.dto.response.NicknameCheckResponse;
 import com.gonggoo.gonggoo.member.dto.response.PhoneNumberCheckResponse;
@@ -97,5 +98,12 @@ public class MemberService {
         if (StringUtils.hasText(newValue) && !Objects.equals(newValue, currentGetter.get())) {
             applier.accept(newValue);
         }
+    }
+
+    public LocationResponse getLocation(int id) {
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Member가 없습니다"));
+
+        return LocationResponse.of(member.getLocation(), member.getModifiedAt());
     }
 }
