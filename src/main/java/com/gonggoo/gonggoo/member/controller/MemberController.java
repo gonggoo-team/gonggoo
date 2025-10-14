@@ -1,11 +1,13 @@
 package com.gonggoo.gonggoo.member.controller;
 
+import com.gonggoo.gonggoo.auth.jwt.JwtTokenProvider;
 import com.gonggoo.gonggoo.member.dto.request.MemberSignupRequest;
 import com.gonggoo.gonggoo.member.dto.request.MemberUpdateRequest;
 import com.gonggoo.gonggoo.member.dto.response.EmailCheckResponse;
 import com.gonggoo.gonggoo.member.dto.response.MemberResponse;
 import com.gonggoo.gonggoo.member.dto.response.NicknameCheckResponse;
 import com.gonggoo.gonggoo.member.service.MemberService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberController {
 
     private final MemberService memberService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/signup")
     public ResponseEntity<MemberResponse> saveMember(@RequestBody MemberSignupRequest request) {
@@ -43,7 +46,12 @@ public class MemberController {
     }
 
     @PatchMapping("/me")
-    public ResponseEntity<MemberResponse> updateMember(@RequestBody MemberUpdateRequest request) {
+    public ResponseEntity<MemberResponse> updateMember(@RequestBody MemberUpdateRequest memberUpdateRequest,
+                                                       HttpServletRequest httpServletRequest) {
+        String accessToken = jwtTokenProvider.resolveToken(httpServletRequest);
+        int memberId = Integer.parseInt(jwtTokenProvider.parseSubject(accessToken));
 
+        MemberResponse memberResponse = memberService.update(memberId, memberUpdateRequest);
+        return ResponseEntity.ok(memberResponse);
     }
 }

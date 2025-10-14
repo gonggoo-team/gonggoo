@@ -52,4 +52,20 @@ public class Member extends BaseEntity {
         this.role = Role.USER;
         this.location = location;
     }
+
+    public void changeNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void changePhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public void changeEmail(String email) {
+        this.email = email;
+    }
+
+    public void changeProfileImage(String profileImage) {
+        this.profileImage = profileImage;
+    }
 }
