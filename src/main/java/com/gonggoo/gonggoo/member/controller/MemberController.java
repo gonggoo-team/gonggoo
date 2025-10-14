@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -47,8 +48,8 @@ public class MemberController {
 
     @PatchMapping("/me")
     public ResponseEntity<MemberResponse> updateMember(@RequestBody MemberUpdateRequest memberUpdateRequest,
-                                                       HttpServletRequest httpServletRequest) {
-        String accessToken = jwtTokenProvider.resolveToken(httpServletRequest);
+                                                       @RequestHeader("Authorization") String authorizationHeader) {
+        String accessToken = authorizationHeader.split(" ")[1];
         int memberId = Integer.parseInt(jwtTokenProvider.parseSubject(accessToken));
 
         MemberResponse memberResponse = memberService.update(memberId, memberUpdateRequest);
