@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -54,5 +55,14 @@ public class MemberController {
 
         MemberResponse memberResponse = memberService.update(memberId, memberUpdateRequest);
         return ResponseEntity.ok(memberResponse);
+    }
+
+    @DeleteMapping("/me")
+    public ResponseEntity<Void> deleteMember(@RequestHeader("Authorization") String authorizationHeader) {
+        String accessToken = authorizationHeader.split(" ")[1];
+        int memberId = Integer.parseInt(jwtTokenProvider.parseSubject(accessToken));
+
+        memberService.delete(memberId);
+        return ResponseEntity.noContent().build();
     }
 }

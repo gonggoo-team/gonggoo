@@ -11,6 +11,7 @@ import com.gonggoo.gonggoo.member.dto.response.PhoneNumberCheckResponse;
 import com.gonggoo.gonggoo.member.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
@@ -81,6 +82,13 @@ public class MemberService {
         applyIfChanged(memberUpdateRequest.profileImage(), member::getProfileImage, member::changeProfileImage);
 
         return MemberResponse.from(member);
+    }
+
+    public void delete(int id) {
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Member가 없습니다"));
+
+        memberRepository.deleteById(id);
     }
 
     private void applyIfChanged(String newValue,
