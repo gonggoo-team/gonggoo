@@ -68,4 +68,8 @@ public class Member extends BaseEntity {
     public void changeProfileImage(String profileImage) {
         this.profileImage = profileImage;
     }
+
+    public void changeLocation(GeoLocation location) {
+        this.location = location;
+    }
 }

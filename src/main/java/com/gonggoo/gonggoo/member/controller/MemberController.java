@@ -1,6 +1,7 @@
 package com.gonggoo.gonggoo.member.controller;
 
 import com.gonggoo.gonggoo.auth.jwt.JwtTokenProvider;
+import com.gonggoo.gonggoo.member.dto.request.LocationUpdateRequest;
 import com.gonggoo.gonggoo.member.dto.request.MemberSignupRequest;
 import com.gonggoo.gonggoo.member.dto.request.MemberUpdateRequest;
 import com.gonggoo.gonggoo.member.dto.response.EmailCheckResponse;
@@ -8,7 +9,6 @@ import com.gonggoo.gonggoo.member.dto.response.LocationResponse;
 import com.gonggoo.gonggoo.member.dto.response.MemberResponse;
 import com.gonggoo.gonggoo.member.dto.response.NicknameCheckResponse;
 import com.gonggoo.gonggoo.member.service.MemberService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -74,5 +74,15 @@ public class MemberController {
 
         LocationResponse locationResponse = memberService.getLocation(memberId);
         return ResponseEntity.ok(locationResponse);
+    }
+
+    @PatchMapping("/location")
+    public ResponseEntity<MemberResponse> updateLocation(@RequestHeader("Authorization") String authorizationHeader,
+                                                         @RequestBody LocationUpdateRequest locationUpdateRequest) {
+        String accessToken = authorizationHeader.split(" ")[1];
+        int memberId = Integer.parseInt(jwtTokenProvider.parseSubject(accessToken));
+
+        MemberResponse memberResponse = memberService.updateLocation(memberId, locationUpdateRequest);
+        return ResponseEntity.ok(memberResponse);
     }
 }

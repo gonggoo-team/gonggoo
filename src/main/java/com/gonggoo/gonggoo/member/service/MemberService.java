@@ -2,6 +2,7 @@ package com.gonggoo.gonggoo.member.service;
 
 import com.gonggoo.gonggoo.common.domain.GeoLocation;
 import com.gonggoo.gonggoo.member.domain.Member;
+import com.gonggoo.gonggoo.member.dto.request.LocationUpdateRequest;
 import com.gonggoo.gonggoo.member.dto.request.MemberSignupRequest;
 import com.gonggoo.gonggoo.member.dto.request.MemberUpdateRequest;
 import com.gonggoo.gonggoo.member.dto.response.EmailCheckResponse;
@@ -92,10 +93,10 @@ public class MemberService {
         memberRepository.deleteById(id);
     }
 
-    private void applyIfChanged(String newValue,
-                                Supplier<String> currentGetter,
-                                Consumer<String> applier) {
-        if (StringUtils.hasText(newValue) && !Objects.equals(newValue, currentGetter.get())) {
+    private <T> void applyIfChanged(T newValue,
+                                Supplier<T> currentGetter,
+                                Consumer<T> applier) {
+        if (newValue != null && !Objects.equals(newValue, currentGetter.get())) {
             applier.accept(newValue);
         }
     }
@@ -105,5 +106,17 @@ public class MemberService {
                 .orElseThrow(() -> new EntityNotFoundException("Member가 없습니다"));
 
         return LocationResponse.of(member.getLocation(), member.getModifiedAt());
+    }
+
+    @Transactional
+    public MemberResponse updateLocation(int id, LocationUpdateRequest locationUpdateRequest) {
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Member가 없습니다"));
+
+        GeoLocation requestMemberLocation = new GeoLocation(locationUpdateRequest.latitude(),
+                locationUpdateRequest.longitude());
+
+        applyIfChanged(requestMemberLocation, member::getLocation, member::changeLocation);
+        return MemberResponse.from(member);
     }
 }
