@@ -7,6 +7,7 @@ import com.gonggoo.gonggoo.coopost.dto.request.CoopostCreateRequest;
 import com.gonggoo.gonggoo.coopost.dto.request.CoopostUpdateRequest;
 import com.gonggoo.gonggoo.coopost.dto.response.CoopostResponse;
 import com.gonggoo.gonggoo.coopost.dto.response.PageResponse;
+import com.gonggoo.gonggoo.coopost.dto.response.SliceResponse;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
@@ -25,13 +26,26 @@ public interface CoopostService {
     CoopostResponse changeStatus(UUID coopostId, CoopostStatus status);
 
 
-    PageResponse<CoopostResponse> getPopular(Long viewCountCursor, UUID idCursor, Pageable pageable);
-    // Pageable만 받던 것을 cursor를 받도록 변경
-    PageResponse<CoopostResponse> getAll(LocalDateTime cursor, Pageable pageable);
+    // --- Slice 기반 커서 페이지네이션 API ---
 
-    // 여기도 동일하게 변경
-    PageResponse<CoopostResponse> getMyPosts(UUID authorId, LocalDateTime cursor, Pageable pageable);
+    /**
+     * 전체 게시글 조회
+     */
+    SliceResponse<CoopostResponse> getAll(LocalDateTime createdAtCursor, UUID idCursor, Pageable pageable);
 
-    // 여기도 동일하게 변경
-    PageResponse<CoopostResponse> search(String keyword, CoopostCategory Category, String location, LocalDateTime cursor, Pageable pageable);
+    /**
+     * 내가 쓴 게시글 조회
+     */
+    SliceResponse<CoopostResponse> getMyPosts(UUID authorId, LocalDateTime createdAtCursor, UUID idCursor, Pageable pageable);
+
+    /**
+     * 인기 게시글 조회
+     */
+    SliceResponse<CoopostResponse> getPopular(Long viewCountCursor, UUID idCursor, Pageable pageable);
+
+    /**
+     * 게시글 검색
+     */
+    SliceResponse<CoopostResponse> search(String keyword, CoopostCategory category, String location,
+                                          LocalDateTime createdAtCursor, UUID idCursor, Pageable pageable);
 }

@@ -7,11 +7,13 @@ import com.gonggoo.gonggoo.coopost.dto.request.CoopostCreateRequest;
 import com.gonggoo.gonggoo.coopost.dto.request.CoopostUpdateRequest;
 import com.gonggoo.gonggoo.coopost.dto.response.CoopostResponse;
 import com.gonggoo.gonggoo.coopost.dto.response.PageResponse;
+import com.gonggoo.gonggoo.coopost.dto.response.SliceResponse;
 import com.gonggoo.gonggoo.coopost.repository.CoopostRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,46 +29,29 @@ public class CoopostServiceImpl implements CoopostService {
 
     private final CoopostRepository repo;
 
-    // ... (create, getAll, getMyPosts 등 다른 메서드는 그대로) ...
+    // 공구글 생성
     @Override
     public CoopostResponse create(CoopostCreateRequest req) {
-        Coopost entity = Coopost.builder()
-                .authorId(Objects.requireNonNull(req.getAuthorId(), "authorId required"))
-                .title(req.getTitle())
-                .content(req.getContent())
-                .status(CoopostStatus.OPEN)
-                .pricePerUnit(req.getPricePerUnit())
-                .minParticipants(req.getMinParticipants())
-                .maxParticipants(req.getMaxParticipants())
-                .currentParticipants(0)
-                .category(Optional.ofNullable(req.getCategory()).orElse(CoopostCategory.ELSE))
-                .location(req.getLocation())
-                .deadlineAt(req.getDeadlineAt())
-                .viewCount(0)
-                .build();
+    Coopost entity = Coopost.builder()
+            .authorId(Objects.requireNonNull(req.getAuthorId(), "authorId required"))
+            .title(req.getTitle())
+            .content(req.getContent())
+            .status(CoopostStatus.OPEN)
+            .pricePerUnit(req.getPricePerUnit())
+            .minParticipants(req.getMinParticipants())
+            .maxParticipants(req.getMaxParticipants())
+            .currentParticipants(0)
+            .category(Optional.ofNullable(req.getCategory()).orElse(CoopostCategory.ELSE))
+            .location(req.getLocation())
+            .deadlineAt(req.getDeadlineAt())
+            .viewCount(0)
+            .build();
         return CoopostResponse.from(repo.save(entity));
     }
 
+    // 공구글 상세 조회 (조회수 +1) ID는 CoopostID를 말함
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<CoopostResponse> getAll(LocalDateTime cursor, Pageable pageable) {
-        Page<Coopost> page;
-        if (cursor == null) {
-            page = repo.findByOrderByCreatedAtDesc(pageable);
-        } else {
-            page = repo.findByCreatedAtBeforeOrderByCreatedAtDesc(cursor, pageable);
-        }
-        return PageResponse.of(page, CoopostResponse::from);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public PageResponse<CoopostResponse> getMyPosts(UUID authorId, LocalDateTime cursor, Pageable pageable) {
-        Page<Coopost> page = repo.findMyPosts(authorId, cursor, pageable);
-        return PageResponse.of(page, CoopostResponse::from);
-    }
-
-    @Override
     public CoopostResponse getById(UUID coopostId, boolean increaseView) {
         Coopost e = repo.findById(coopostId)
                 .orElseThrow(() -> new EntityNotFoundException("Coopost not found"));
@@ -76,6 +61,7 @@ public class CoopostServiceImpl implements CoopostService {
         return CoopostResponse.from(e);
     }
 
+    //공구글 업데이트
     @Override
     public CoopostResponse update(UUID coopostId, CoopostUpdateRequest req) {
         Coopost e = repo.findById(coopostId)
@@ -93,6 +79,7 @@ public class CoopostServiceImpl implements CoopostService {
         return CoopostResponse.from(e);
     }
 
+    // 공구글 삭제 (Soft Delete)
     @Override
     public void delete(UUID coopostId) {
         Coopost coopost = repo.findById(coopostId)
@@ -101,6 +88,7 @@ public class CoopostServiceImpl implements CoopostService {
         repo.save(coopost);
     }
 
+    //공구글 상태 변경
     @Override
     public CoopostResponse changeStatus(UUID coopostId, CoopostStatus status) {
         Coopost e = repo.findById(coopostId)
@@ -109,19 +97,43 @@ public class CoopostServiceImpl implements CoopostService {
         return CoopostResponse.from(e);
     }
 
-    // ▼▼▼ 이 메서드를 수정해야 합니다 ▼▼▼
+    // --- Slice 기반 커서 페이지네이션 API ---
+
+    //전체 공구글 조회
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<CoopostResponse> getPopular(Long viewCountCursor, UUID idCursor, Pageable pageable) {
-        // 기존 if/else 로직을 삭제하고 새로운 repo.findPopular() 메서드를 호출합니다.
-        Page<Coopost> page = repo.findPopular(viewCountCursor, idCursor, pageable);
-        return PageResponse.of(page, CoopostResponse::from);
+    public SliceResponse<CoopostResponse> getAll(LocalDateTime createdAtCursor, UUID idCursor, Pageable pageable) {
+        Slice<Coopost> slice;
+        if (createdAtCursor == null || idCursor == null) {
+            slice = repo.findByOrderByCreatedAtDescCoopostIdDesc(pageable);
+        } else {
+            slice = repo.findNextPage(createdAtCursor, idCursor, pageable);
+        }
+        return SliceResponse.of(slice, CoopostResponse::from);
     }
 
+    // 내가 쓴 공구글 조회
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<CoopostResponse> search(String keyword, CoopostCategory category, String location, LocalDateTime cursor, Pageable pageable) {
-        Page<Coopost> page = repo.search(keyword, category, location, cursor, pageable);
-        return PageResponse.of(page, CoopostResponse::from);
+    public SliceResponse<CoopostResponse> getMyPosts(UUID authorId, LocalDateTime createdAtCursor, UUID idCursor, Pageable pageable) {
+        Slice<Coopost> slice = repo.findMyPosts(authorId, createdAtCursor, idCursor, pageable);
+        return SliceResponse.of(slice, CoopostResponse::from);
+    }
+
+    // 인기 공구글 조회
+    @Override
+    @Transactional(readOnly = true)
+    public SliceResponse<CoopostResponse> getPopular(Long viewCountCursor, UUID idCursor, Pageable pageable) {
+        Slice<Coopost> slice = repo.findPopular(viewCountCursor, idCursor, pageable);
+        return SliceResponse.of(slice, CoopostResponse::from);
+    }
+
+    // 공구글 검색
+    @Override
+    @Transactional(readOnly = true)
+    public SliceResponse<CoopostResponse> search(String keyword, CoopostCategory category, String location,
+                                                 LocalDateTime createdAtCursor, UUID idCursor, Pageable pageable) {
+        Slice<Coopost> slice = repo.search(keyword, category, location, createdAtCursor, idCursor, pageable);
+        return SliceResponse.of(slice, CoopostResponse::from);
     }
 }
