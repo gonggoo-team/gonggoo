@@ -39,8 +39,8 @@ public class Coopost extends BaseEntity {
     @Column(nullable = false, length = 20)
     private CoopostStatus status;
 
-    @Lob
-    @Column(nullable = false)
+
+    @Column(nullable = false, length = 2000)
     private String content;
 
 
