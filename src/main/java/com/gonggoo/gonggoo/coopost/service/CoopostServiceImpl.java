@@ -84,8 +84,7 @@ public class CoopostServiceImpl implements CoopostService {
     public void delete(UUID coopostId) {
         Coopost coopost = repo.findById(coopostId)
                 .orElseThrow(() -> new EntityNotFoundException("Coopost not found"));
-        coopost.setStatus(CoopostStatus.DELETED);
-        repo.save(coopost);
+        coopost.setDeletedAt(LocalDateTime.now());
     }
 
     //공구글 상태 변경
@@ -99,13 +98,14 @@ public class CoopostServiceImpl implements CoopostService {
 
     // --- Slice 기반 커서 페이지네이션 API ---
 
-    //전체 공구글 조회
+    // 전체 공구글 조회
     @Override
     @Transactional(readOnly = true)
     public SliceResponse<CoopostResponse> getAll(LocalDateTime createdAtCursor, UUID idCursor, Pageable pageable) {
         Slice<Coopost> slice;
         if (createdAtCursor == null || idCursor == null) {
-            slice = repo.findByOrderByCreatedAtDescCoopostIdDesc(pageable);
+            // 3. Repository 메소드 이름 변경에 따라 수정
+            slice = repo.findByDeletedAtIsNullOrderByCreatedAtDescCoopostIdDesc(pageable);
         } else {
             slice = repo.findNextPage(createdAtCursor, idCursor, pageable);
         }

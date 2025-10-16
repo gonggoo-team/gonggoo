@@ -11,16 +11,17 @@ import org.springframework.data.repository.query.Param; // 변경점
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-// ▼▼▼ 수정된 부분: JpaSpecificationExecutor를 삭제하고 CoopostRepositoryCustom를 상속받습니다. ▼▼▼
+
 public interface CoopostRepository extends JpaRepository<Coopost, UUID>, CoopostRepositoryCustom {
 
-        // 첫 페이지 조회를 위한 메서드 (커서 없음)
-        Slice<Coopost> findByOrderByCreatedAtDescCoopostIdDesc(Pageable pageable);
+        // 1. deletedAt IS NULL 조건을 메소드 이름에 추가
+        Slice<Coopost> findByDeletedAtIsNullOrderByCreatedAtDescCoopostIdDesc(Pageable pageable);
 
-        // @Query를 사용하여 복합 커서 WHERE 절 구현
+        // 2. @Query 어노테이션 안의 WHERE 절에 c.deletedAt IS NULL 조건 추가
         @Query("SELECT c FROM Coopost c " +
-                "WHERE (c.createdAt < :createdAtCursor) OR " +
-                "(c.createdAt = :createdAtCursor AND c.coopostId < :idCursor) " +
+                "WHERE ((c.createdAt < :createdAtCursor) OR " +
+                "(c.createdAt = :createdAtCursor AND c.coopostId < :idCursor)) " +
+                "AND c.deletedAt IS NULL " + // 조건 추가
                 "ORDER BY c.createdAt DESC, c.coopostId DESC")
         Slice<Coopost> findNextPage(@Param("createdAtCursor") LocalDateTime createdAtCursor,
                                     @Param("idCursor") UUID idCursor,

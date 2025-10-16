@@ -28,7 +28,7 @@ public class CoopostResponse {
 
     long viewCount;
     LocalDateTime createdAt;
-    LocalDateTime updatedAt;
+    LocalDateTime modifiedAt;
 
     public static CoopostResponse from(Coopost e) {
         return CoopostResponse.builder()
@@ -45,6 +45,8 @@ public class CoopostResponse {
                 .location(e.getLocation())
                 .deadlineAt(e.getDeadlineAt())
                 .viewCount(e.getViewCount())
+                .createdAt(e.getCreatedAt())
+                .modifiedAt(e.getModifiedAt())
                 .build();
     }
 }

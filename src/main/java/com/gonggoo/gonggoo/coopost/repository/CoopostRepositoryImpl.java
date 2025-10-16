@@ -31,6 +31,8 @@ public class CoopostRepositoryImpl implements CoopostRepositoryCustom {
         List<Coopost> content = queryFactory
                 .selectFrom(coopost)
                 .where(
+                        //삭제되지 않은 글
+                        coopost.deletedAt.isNull(),
                         // 커서 조건
                         cursorCondition(createdAtCursor, idCursor),
                         // 검색 조건
@@ -50,6 +52,8 @@ public class CoopostRepositoryImpl implements CoopostRepositoryCustom {
         List<Coopost> content = queryFactory
                 .selectFrom(coopost)
                 .where(
+                        //삭제되지 않은 글
+                        coopost.deletedAt.isNull(),
                         // 커서 조건
                         cursorCondition(createdAtCursor, idCursor),
                         // 작성자 ID 조건
@@ -67,6 +71,8 @@ public class CoopostRepositoryImpl implements CoopostRepositoryCustom {
         List<Coopost> content = queryFactory
                 .selectFrom(coopost)
                 .where(
+                        //삭제되지 않은 글
+                        coopost.deletedAt.isNull(),
                         // 인기글 전용 커서 조건
                         popularCursorCondition(viewCountCursor, idCursor)
                 )

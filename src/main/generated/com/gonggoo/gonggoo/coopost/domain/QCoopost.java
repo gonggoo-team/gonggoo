@@ -36,20 +36,23 @@ public class QCoopost extends EntityPathBase<Coopost> {
 
     public final DateTimePath<java.time.LocalDateTime> deadlineAt = createDateTime("deadlineAt", java.time.LocalDateTime.class);
 
+    //inherited
+    public final DateTimePath<java.time.LocalDateTime> deletedAt = _super.deletedAt;
+
     public final StringPath location = createString("location");
 
     public final NumberPath<Integer> maxParticipants = createNumber("maxParticipants", Integer.class);
 
     public final NumberPath<Integer> minParticipants = createNumber("minParticipants", Integer.class);
 
+    //inherited
+    public final DateTimePath<java.time.LocalDateTime> modifiedAt = _super.modifiedAt;
+
     public final NumberPath<java.math.BigDecimal> pricePerUnit = createNumber("pricePerUnit", java.math.BigDecimal.class);
 
     public final EnumPath<CoopostStatus> status = createEnum("status", CoopostStatus.class);
 
     public final StringPath title = createString("title");
-
-    //inherited
-    public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
 
     public final NumberPath<Long> viewCount = createNumber("viewCount", Long.class);
 
