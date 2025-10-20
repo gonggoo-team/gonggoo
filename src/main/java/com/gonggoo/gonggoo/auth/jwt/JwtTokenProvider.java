@@ -1,5 +1,6 @@
 package com.gonggoo.gonggoo.auth.jwt;
 
+import com.gonggoo.gonggoo.common.domain.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -19,7 +20,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 @Component
 public class JwtTokenProvider {
@@ -35,7 +35,7 @@ public class JwtTokenProvider {
         this.jwtProps = jwtProps;
     }
 
-    public JwtTokenDto generateToken(String id, String role) {
+    public JwtTokenDto generateToken(String id, Role role) {
         String accessToken = generateAccessToken(id, role);
         String refreshToken = generateRefreshToken(id);
 
@@ -46,12 +46,12 @@ public class JwtTokenProvider {
                 .build();
     }
 
-    public String generateAccessToken(String id, String role) {
+    public String generateAccessToken(String id, Role role) {
         long now = (new Date()).getTime();
 
         return Jwts.builder()
                 .subject(id)
-                .claim(AUTHORITIES_KEY, role)
+                .claim(AUTHORITIES_KEY, role.authority())
                 .expiration(new Date(now + jwtProps.expireSeconds()))
                 .issuedAt(new Date(now))
                 .signWith(key, SignatureAlgorithm.HS256)

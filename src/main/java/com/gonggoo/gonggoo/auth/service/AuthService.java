@@ -3,6 +3,7 @@ package com.gonggoo.gonggoo.auth.service;
 import com.gonggoo.gonggoo.auth.dto.LoginRequest;
 import com.gonggoo.gonggoo.auth.jwt.JwtTokenDto;
 import com.gonggoo.gonggoo.auth.jwt.JwtTokenProvider;
+import com.gonggoo.gonggoo.common.domain.Role;
 import com.gonggoo.gonggoo.member.domain.Member;
 import com.gonggoo.gonggoo.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,7 @@ public class AuthService {
             throw new IllegalStateException("비밀번호가 틀렸습니다.");
         }
 
-        var accessToken = jwtTokenProvider.generateToken(String.valueOf(member.getId()), String.valueOf(member.getRole()));
+        var accessToken = jwtTokenProvider.generateToken(String.valueOf(member.getId()), member.getRole());
         return JwtTokenDto.builder()
                 .grantType(accessToken.getGrantType())
                 .accessToken(accessToken.getAccessToken())
@@ -38,7 +39,7 @@ public class AuthService {
 
     public JwtTokenDto reissueToken(String refreshToken) {
         String memberId = jwtTokenProvider.parseSubject(refreshToken);
-        String role = memberRepository.findRoleById(Integer.parseInt(memberId));
+        Role role = memberRepository.findRoleById(Integer.parseInt(memberId));
 
         String newAccessToken = jwtTokenProvider.generateAccessToken(memberId, role);
         String newRefreshToken = jwtTokenProvider.generateRefreshToken(memberId);
