@@ -4,6 +4,7 @@ package com.gonggoo.gonggoo.member.dto.response;
 import com.gonggoo.gonggoo.common.domain.GeoLocation;
 import com.gonggoo.gonggoo.common.domain.Role;
 import com.gonggoo.gonggoo.member.domain.Member;
+import java.time.LocalDateTime;
 
 public record MemberResponse (
         int id,
@@ -12,7 +13,10 @@ public record MemberResponse (
         String email,
         String profileImage,
         Role role,
-        GeoLocation location
+        GeoLocation location,
+        LocalDateTime createdAt,
+        LocalDateTime modifiedAt,
+        LocalDateTime deletedAt
 ) {
     public static MemberResponse from(final Member member) {
         return new MemberResponse(
@@ -22,7 +26,10 @@ public record MemberResponse (
                 member.getEmail(),
                 member.getProfileImage(),
                 member.getRole(),
-                member.getLocation()
+                member.getLocation(),
+                member.getCreatedAt(),
+                member.getModifiedAt(),
+                member.getDeletedAt()
                 );
     }
 }
