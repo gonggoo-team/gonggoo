@@ -86,11 +86,12 @@ public class MemberService {
         return MemberResponse.from(member);
     }
 
+    @Transactional
     public void delete(int id) {
         Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Member가 없습니다"));
 
-        memberRepository.deleteById(id);
+        memberRepository.softDeletedById(id);
     }
 
     private <T> void applyIfChanged(T newValue,

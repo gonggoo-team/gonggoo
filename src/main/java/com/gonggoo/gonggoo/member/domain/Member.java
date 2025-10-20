@@ -42,8 +42,12 @@ public class Member extends BaseEntity {
     @Embedded
     private GeoLocation location;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private MemberStatus status;
+
     @Builder
-    public Member(String nickname, String phoneNumber, String email, String password, String profileImage, Role role, GeoLocation location) {
+    public Member(String nickname, String phoneNumber, String email, String password, String profileImage, Role role, GeoLocation location, MemberStatus status) {
         this.nickname = nickname;
         this.phoneNumber = phoneNumber;
         this.email = email;
@@ -51,6 +55,7 @@ public class Member extends BaseEntity {
         this.profileImage = "/images/default.png";
         this.role = Role.USER;
         this.location = location;
+        this.status = MemberStatus.ACTIVE;
     }
 
     public void changeNickname(String nickname) {
