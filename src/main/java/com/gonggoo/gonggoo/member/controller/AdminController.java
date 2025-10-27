@@ -1,5 +1,6 @@
 package com.gonggoo.gonggoo.member.controller;
 
+import com.gonggoo.gonggoo.global.response.ApiResponse;
 import com.gonggoo.gonggoo.member.dto.response.MemberInfoResponse;
 import com.gonggoo.gonggoo.member.service.AdminService;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,8 @@ public class AdminController {
     private final AdminService adminService;
 
     @GetMapping("/users")
-    public ResponseEntity<MemberInfoResponse> getMembers() {
-        return ResponseEntity.ok(adminService.getAllMembers());
+    public ApiResponse<MemberInfoResponse> getMembers() {
+        MemberInfoResponse members = adminService.getAllMembers();
+        return ApiResponse.success("MEMBER_LIST_FETCHED", members);
     }
 }

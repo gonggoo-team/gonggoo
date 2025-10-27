@@ -4,6 +4,7 @@ import com.gonggoo.gonggoo.auth.dto.LoginRequest;
 import com.gonggoo.gonggoo.auth.jwt.JwtTokenDto;
 import com.gonggoo.gonggoo.auth.jwt.JwtTokenProvider;
 import com.gonggoo.gonggoo.auth.service.AuthService;
+import com.gonggoo.gonggoo.global.response.ApiResponse;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -17,17 +18,16 @@ public class AuthController {
     private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/login")
-    public JwtTokenDto login(@RequestBody LoginRequest loginRequest) {
-        return authService.login(loginRequest);
+    public ApiResponse<JwtTokenDto> login(@RequestBody LoginRequest loginRequest) {
+        JwtTokenDto token = authService.login(loginRequest);
+        return ApiResponse.success("LOGIN_SUCCESS", token);
     }
 
     @GetMapping("/reissue")
-    public JwtTokenDto reissueToken(@RequestHeader("RefreshToken") String refreshToken) {
-        try {
-            jwtTokenProvider.validateToken(refreshToken);
-            return authService.reissueToken(refreshToken);
-        } catch (IllegalArgumentException e) {
-            throw new JwtException(e.getMessage());
-        }
+    public ApiResponse<JwtTokenDto> reissueToken(@RequestHeader("RefreshToken") String refreshToken) {
+        jwtTokenProvider.validateToken(refreshToken);
+        JwtTokenDto newToken = authService.reissueToken(refreshToken);
+        return ApiResponse.success("TOKEN_REISSUED", newToken);
+
     }
 }

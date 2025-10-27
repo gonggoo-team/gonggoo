@@ -1,6 +1,12 @@
 package com.gonggoo.gonggoo.auth.jwt;
 
+import static com.gonggoo.gonggoo.global.response.ErrorCode.NO_AUTHORITY;
+import static com.gonggoo.gonggoo.global.response.ErrorCode.TOKEN_EXPIRED;
+import static com.gonggoo.gonggoo.global.response.ErrorCode.UNAUTHORIZED_TOKEN;
+
 import com.gonggoo.gonggoo.common.domain.Role;
+import com.gonggoo.gonggoo.global.exception.NeighborsException;
+import com.gonggoo.gonggoo.global.response.ErrorCode;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -84,7 +90,7 @@ public class JwtTokenProvider {
         Claims claim = parseClaims(accessToken);
 
         if (claim.get(AUTHORITIES_KEY) == null) {
-            throw new RuntimeException("권한 정보가 없는 토큰입니다.");
+            throw new NeighborsException(NO_AUTHORITY);
         }
 
         Collection<? extends GrantedAuthority> authorities = Arrays.stream(claim.get(AUTHORITIES_KEY).toString().split(","))
@@ -107,7 +113,11 @@ public class JwtTokenProvider {
                     .parseSignedClaims(accessToken)
                     .getPayload();
         } catch (ExpiredJwtException e) {
-            return e.getClaims();
+            throw new NeighborsException(TOKEN_EXPIRED);
+        } catch (JwtException e) {
+            throw new NeighborsException(UNAUTHORIZED_TOKEN);
+        } catch (IllegalArgumentException e) {
+            throw new NeighborsException(UNAUTHORIZED_TOKEN);
         }
     }
 
@@ -119,8 +129,12 @@ public class JwtTokenProvider {
                     .parseSignedClaims(token)
                     .getPayload()
                     .getSubject();
-        } catch (ExpiredJwtException e){
-            return e.getMessage();
+        } catch (ExpiredJwtException e) {
+            throw new NeighborsException(TOKEN_EXPIRED);
+        } catch (JwtException e) {
+            throw new NeighborsException(UNAUTHORIZED_TOKEN);
+        } catch (IllegalArgumentException e) {
+            throw new NeighborsException(UNAUTHORIZED_TOKEN);
         }
     }
 }

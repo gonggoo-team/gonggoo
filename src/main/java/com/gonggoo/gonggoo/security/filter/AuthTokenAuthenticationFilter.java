@@ -1,7 +1,12 @@
 package com.gonggoo.gonggoo.security.filter;
 
+import static com.gonggoo.gonggoo.global.response.ErrorCode.BLACKLISTED_TOKEN;
+
 import com.gonggoo.gonggoo.auth.jwt.JwtTokenProvider;
 import com.gonggoo.gonggoo.auth.service.RedisTokenBlackListService;
+import com.gonggoo.gonggoo.global.exception.NeighborsException;
+import com.gonggoo.gonggoo.global.response.ErrorCode;
+import com.gonggoo.gonggoo.security.writer.SecurityErrorResponseWriter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,6 +24,7 @@ public class AuthTokenAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTokenBlackListService redisTokenBlackListService;
+    private final SecurityErrorResponseWriter securityErrorResponseWriter;
 
     @Override
     protected void doFilterInternal(HttpServletRequest req,
@@ -29,17 +35,21 @@ public class AuthTokenAuthenticationFilter extends OncePerRequestFilter {
             String accessToken = jwtTokenProvider.resolveToken(req);
 
             if (redisTokenBlackListService.isContainToken(accessToken)) {
-                //TODO : 공통 예외로 수정
-                throw new Exception("블랙리스트에 포함된 토큰으로 접근중 !!");
+                throw new NeighborsException(BLACKLISTED_TOKEN);
             }
-            log.debug("AccessToken 1 : " + accessToken);
+            log.debug("AccessToken : " + accessToken);
             if (accessToken != null && jwtTokenProvider.validateToken(accessToken)) {
                 Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
-        } catch (Exception e) {
-            log.debug("Error : " + e.getMessage());
+        } catch (NeighborsException e) {
+            log.debug("Auth failure: {}", e.getMessage());
             SecurityContextHolder.clearContext();
+            securityErrorResponseWriter.writeError(res, e.getErrorCode());
+        } catch (Exception e) {
+            log.error("Unexpected auth filter error: {}", e.getMessage(), e);
+            SecurityContextHolder.clearContext();
+            securityErrorResponseWriter.writeError(res, ErrorCode.SERVER_ERROR);
         }
         filterChain.doFilter(req, res);
     }

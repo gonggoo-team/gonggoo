@@ -1,6 +1,11 @@
 package com.gonggoo.gonggoo.member.service;
 
+import static com.gonggoo.gonggoo.global.response.ErrorCode.DUPLICATE_MEMBER_EMAIL;
+import static com.gonggoo.gonggoo.global.response.ErrorCode.DUPLICATE_MEMBER_PHONE_NUMBER;
+import static com.gonggoo.gonggoo.global.response.ErrorCode.MEMBER_NOT_FOUND;
+
 import com.gonggoo.gonggoo.common.domain.GeoLocation;
+import com.gonggoo.gonggoo.global.exception.NeighborsException;
 import com.gonggoo.gonggoo.member.domain.Member;
 import com.gonggoo.gonggoo.member.dto.request.LocationUpdateRequest;
 import com.gonggoo.gonggoo.member.dto.request.MemberSignupRequest;
@@ -13,7 +18,6 @@ import com.gonggoo.gonggoo.member.dto.response.PhoneNumberCheckResponse;
 import com.gonggoo.gonggoo.member.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -49,11 +52,11 @@ public class MemberService {
 
     public void validateDuplicate(MemberSignupRequest memberSignupRequest) {
         if (validateDuplicateEmail(memberSignupRequest.email()).exists()) {
-            throw new IllegalStateException("이미 사용중인 이메일입니다.");
+            throw new NeighborsException(DUPLICATE_MEMBER_EMAIL);
         }
 
         if (validateDuplicatePhoneNumber(memberSignupRequest.phoneNumber()).exists()) {
-            throw new IllegalStateException("이미 등록된 전화번호입니다.");
+            throw new NeighborsException(DUPLICATE_MEMBER_PHONE_NUMBER);
         }
     }
 
@@ -76,7 +79,7 @@ public class MemberService {
     @Transactional
     public MemberResponse update(int id, MemberUpdateRequest memberUpdateRequest) {
         Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Member가 없습니다"));
+                .orElseThrow(() -> new NeighborsException(MEMBER_NOT_FOUND));
 
         applyIfChanged(memberUpdateRequest.nickname(), member::getNickname, member::changeNickname);
         applyIfChanged(memberUpdateRequest.phoneNumber(), member::getPhoneNumber, member::changePhoneNumber);
@@ -89,7 +92,7 @@ public class MemberService {
     @Transactional
     public void delete(int id) {
         Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Member가 없습니다"));
+                .orElseThrow(() -> new NeighborsException(MEMBER_NOT_FOUND));
 
         memberRepository.softDeletedById(id);
     }
@@ -104,7 +107,7 @@ public class MemberService {
 
     public LocationResponse getLocation(int id) {
         Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Member가 없습니다"));
+                .orElseThrow(() -> new NeighborsException(MEMBER_NOT_FOUND));
 
         return LocationResponse.of(member.getLocation(), member.getModifiedAt());
     }
@@ -112,7 +115,7 @@ public class MemberService {
     @Transactional
     public MemberResponse updateLocation(int id, LocationUpdateRequest locationUpdateRequest) {
         Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Member가 없습니다"));
+                .orElseThrow(() -> new NeighborsException(MEMBER_NOT_FOUND));
 
         GeoLocation requestMemberLocation = new GeoLocation(locationUpdateRequest.latitude(),
                 locationUpdateRequest.longitude());
