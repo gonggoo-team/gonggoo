@@ -6,7 +6,9 @@ import com.gonggoo.gonggoo.global.response.ErrorCode;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
+@Component
 @RequiredArgsConstructor
 public class SecurityErrorResponseWriter {
     private final ObjectMapper objectMapper; // @Bean으로 이미 등록돼 있다고 가정

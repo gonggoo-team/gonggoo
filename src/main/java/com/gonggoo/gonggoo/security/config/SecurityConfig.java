@@ -6,6 +6,7 @@ import com.gonggoo.gonggoo.security.filter.AuthTokenAuthenticationFilter;
 import com.gonggoo.gonggoo.security.handler.CustomAccessDeniedHandler;
 import com.gonggoo.gonggoo.security.handler.CustomAuthenticationEntryPoint;
 import com.gonggoo.gonggoo.security.handler.CustomLogoutHandler;
+import com.gonggoo.gonggoo.security.writer.SecurityErrorResponseWriter;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -29,6 +30,7 @@ public class SecurityConfig {
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
     private final CustomAccessDeniedHandler accessDeniedHandler;
     private final CustomLogoutHandler customLogoutHandler;
+    private final SecurityErrorResponseWriter securityErrorResponseWriter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(final HttpSecurity http) throws Exception {
@@ -46,7 +48,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/member/**").hasAnyRole("ADMIN", "USER")
                         .anyRequest().authenticated())
-                .addFilterBefore(new AuthTokenAuthenticationFilter(jwtTokenProvider, redisTokenBlackListService),
+                .addFilterBefore(new AuthTokenAuthenticationFilter(jwtTokenProvider, redisTokenBlackListService, securityErrorResponseWriter),
                         UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(eh -> eh
                         .authenticationEntryPoint(authenticationEntryPoint)
