@@ -38,7 +38,7 @@ public class AuthTokenAuthenticationFilter extends OncePerRequestFilter {
                 throw new NeighborsException(BLACKLISTED_TOKEN);
             }
             log.debug("AccessToken : " + accessToken);
-            if (accessToken != null && jwtTokenProvider.validateToken(accessToken)) {
+            if (accessToken != null && jwtTokenProvider.verifyToken(accessToken)) {
                 Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }

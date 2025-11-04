@@ -74,7 +74,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public boolean validateToken(String token) {
+    public boolean verifyToken(String token) {
         try {
             Jwts.parser()
                     .verifyWith(key)
