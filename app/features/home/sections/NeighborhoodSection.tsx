@@ -1,0 +1,66 @@
+/**
+ * Neighborhood Section Component
+ *
+ * 우리 동네에서 모집중 섹션
+ */
+
+import type { ProductCardVerticalData } from '@/app/shared/types/product.types';
+import { ProductCardVertical, ProductSection, useTheme } from '@/design-system';
+import React from 'react';
+import { ScrollView } from 'react-native';
+
+interface NeighborhoodSectionProps {
+  products: ProductCardVerticalData[];
+  onViewAll: () => void;
+  onProductPress: (id: string) => void;
+  onLikePress: (id: string) => void;
+}
+
+export const NeighborhoodSection: React.FC<NeighborhoodSectionProps> = ({
+  products,
+  onViewAll,
+  onProductPress,
+  onLikePress,
+}) => {
+  const { theme } = useTheme();
+
+  return (
+    <ProductSection
+      title="우리 동네에서 모집 중!"
+      subtitle="00동에서 모집 중인 팟을 한눈에 확인하세요!"
+      actionLabel="전체보기"
+      onActionPress={onViewAll}
+    >
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{
+          gap: theme.spacing.md,
+          paddingHorizontal: theme.spacing.lg,
+        }}
+      >
+        {products.map((product) => (
+          <ProductCardVertical
+            key={product.id}
+            id={product.id}
+            imageUri={product.imageUri}
+            title={product.title}
+            price={product.price}
+            pricePerSlot={product.pricePerSlot}
+            priceStrikethrough={true}
+            priceLabelValue={product.priceLabelValue}
+            priceLabelColor={theme.colors.surface.texticon.onnormal.text.red}
+            priceLabel="슬롯"
+            badges={[]}
+            likes={3}
+            progress={60}
+            showProgress={true}
+            onPress={() => onProductPress(product.id)}
+            onLikePress={() => onLikePress(product.id)}            
+            width={150}
+          />
+        ))}
+      </ScrollView>
+    </ProductSection>
+  );
+};
