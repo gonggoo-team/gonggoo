@@ -13,7 +13,7 @@ import java.util.UUID;
 @Builder
 public class CoopostResponse {
     UUID coopostId;
-    UUID authorId;
+    int authorId;
     String title;
     String content;
     CoopostStatus status;

@@ -19,7 +19,7 @@ public interface CoopostRepositoryCustom {
     /**
      * 내가 쓴 게시글 조회
      */
-    Slice<Coopost> findMyPosts(UUID authorId,
+    Slice<Coopost> findMyPosts(int authorId,
                                LocalDateTime createdAtCursor, UUID idCursor, Pageable pageable);
 
     /**

@@ -48,7 +48,7 @@ public class CoopostRepositoryImpl implements CoopostRepositoryCustom {
     }
 
     @Override
-    public Slice<Coopost> findMyPosts(UUID authorId, LocalDateTime createdAtCursor, UUID idCursor, Pageable pageable) {
+    public Slice<Coopost> findMyPosts(int authorId, LocalDateTime createdAtCursor, UUID idCursor, Pageable pageable) {
         List<Coopost> content = queryFactory
                 .selectFrom(coopost)
                 .where(
@@ -120,8 +120,8 @@ public class CoopostRepositoryImpl implements CoopostRepositoryCustom {
     }
 
     // --- 기타 검색 조건 메서드들 ---
-    private BooleanExpression authorIdEq(UUID authorId) {
-        return authorId != null ? coopost.authorId.eq(authorId) : null;
+    private BooleanExpression authorIdEq(int authorId) {
+        return authorId > 0 ? coopost.authorId.eq(authorId) : null;
     }
 
     private BooleanExpression keywordContains(String keyword) {

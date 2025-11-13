@@ -36,7 +36,7 @@ public interface CoopostService {
     /**
      * 내가 쓴 게시글 조회
      */
-    SliceResponse<CoopostResponse> getMyPosts(UUID authorId, LocalDateTime createdAtCursor, UUID idCursor, Pageable pageable);
+    SliceResponse<CoopostResponse> getMyPosts(int authorId, LocalDateTime createdAtCursor, UUID idCursor, Pageable pageable);
 
     /**
      * 인기 게시글 조회

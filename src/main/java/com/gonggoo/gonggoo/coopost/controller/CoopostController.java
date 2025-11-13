@@ -97,7 +97,7 @@ public class CoopostController {
      */
     @GetMapping("/myposts")
     public ApiResponse<SliceResponse<CoopostResponse>> myPosts(
-            @RequestParam UUID authorId, // JWT 적용 후 SecurityContext에서 추출
+            @RequestParam int authorId, // JWT 적용 후 SecurityContext에서 추출
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime createdAtCursor,
             @RequestParam(required = false) UUID idCursor,
             @RequestParam(defaultValue = "20") int size

@@ -115,7 +115,7 @@ public class CoopostServiceImpl implements CoopostService {
     // 내가 쓴 공구글 조회
     @Override
     @Transactional(readOnly = true)
-    public SliceResponse<CoopostResponse> getMyPosts(UUID authorId, LocalDateTime createdAtCursor, UUID idCursor, Pageable pageable) {
+    public SliceResponse<CoopostResponse> getMyPosts(int authorId, LocalDateTime createdAtCursor, UUID idCursor, Pageable pageable) {
         Slice<Coopost> slice = repo.findMyPosts(authorId, createdAtCursor, idCursor, pageable);
         return SliceResponse.of(slice, CoopostResponse::from);
     }

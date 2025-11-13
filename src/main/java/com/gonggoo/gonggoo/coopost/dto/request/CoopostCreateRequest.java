@@ -3,6 +3,7 @@ package com.gonggoo.gonggoo.coopost.dto.request;
 import com.gonggoo.gonggoo.coopost.domain.CoopostCategory;
 import jakarta.validation.constraints.*;
 import lombok.Data;
+import org.antlr.v4.runtime.misc.NotNull;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -12,7 +13,7 @@ import java.util.UUID;
 @Data
 public class CoopostCreateRequest {
     // 임시로 헤더 대신 바디로 authorId 받도록 (JWT 붙이면 제거)
-    private UUID authorId;
+    private int authorId;
 
     @NotBlank(message = "제목은 필수 입력 항목입니다.")
     @Size(max = 120, message = "제목은 최대 120자까지 입력 가능합니다.")
@@ -35,12 +36,12 @@ public class CoopostCreateRequest {
 
 
     // enum으로 변경할 시, 꼭 선택되어야 함.
-    @NotNull(message = "카테고리는 필수 선택 항목입니다.")
+    @NotNull
     private CoopostCategory category;
 
     @NotBlank(message = "위치는 필수 입력 항목입니다.")
     private String location;
 
-    @NotNull(message = "마감 기한은 필수 입력 항목입니다.")
+    @NotNull
     private LocalDateTime deadlineAt;
 }

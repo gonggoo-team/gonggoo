@@ -1,6 +1,7 @@
 package com.gonggoo.gonggoo.coopost.domain;
 
 import com.gonggoo.gonggoo.global.entity.BaseEntity;
+import com.gonggoo.gonggoo.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -29,8 +30,8 @@ public class Coopost extends BaseEntity {
     @Column(name = "coopost_id", columnDefinition = "UUID")
     private UUID coopostId;
 
-    @Column(name= "author_id", nullable=false, columnDefinition = "UUID")
-    private UUID authorId;
+    @Column(name= "author_id", nullable=false)
+    private int authorId;
 
     @Column(nullable = false, length = 120)
     private String title;
