@@ -9,6 +9,10 @@ import com.gonggoo.gonggoo.coopost.dto.response.CoopostResponse;
 import com.gonggoo.gonggoo.coopost.dto.response.PageResponse;
 import com.gonggoo.gonggoo.coopost.dto.response.SliceResponse;
 import com.gonggoo.gonggoo.coopost.repository.CoopostRepository;
+import com.gonggoo.gonggoo.global.exception.NeighborsException;
+import com.gonggoo.gonggoo.global.response.ErrorCode;
+import com.gonggoo.gonggoo.member.domain.Member;
+import com.gonggoo.gonggoo.member.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -28,12 +32,14 @@ import java.util.UUID;
 public class CoopostServiceImpl implements CoopostService {
 
     private final CoopostRepository repo;
-
+    private final MemberRepository memberRepository;
     // 공구글 생성
     @Override
-    public CoopostResponse create(CoopostCreateRequest req) {
+    public CoopostResponse create(CoopostCreateRequest req, int memberId) {
+        Member author = memberRepository.findById(memberId)
+                .orElseThrow(() -> new NeighborsException(ErrorCode.MEMBER_NOT_FOUND));
     Coopost entity = Coopost.builder()
-            .authorId(Objects.requireNonNull(req.getAuthorId(), "authorId required"))
+            .member(author)
             .title(req.getTitle())
             .content(req.getContent())
             .status(CoopostStatus.OPEN)
@@ -115,8 +121,8 @@ public class CoopostServiceImpl implements CoopostService {
     // 내가 쓴 공구글 조회
     @Override
     @Transactional(readOnly = true)
-    public SliceResponse<CoopostResponse> getMyPosts(int authorId, LocalDateTime createdAtCursor, UUID idCursor, Pageable pageable) {
-        Slice<Coopost> slice = repo.findMyPosts(authorId, createdAtCursor, idCursor, pageable);
+    public SliceResponse<CoopostResponse> getMyPosts(int memberId, LocalDateTime createdAtCursor, UUID idCursor, Pageable pageable) {
+        Slice<Coopost> slice = repo.findMyPosts(memberId, createdAtCursor, idCursor, pageable);
         return SliceResponse.of(slice, CoopostResponse::from);
     }
 

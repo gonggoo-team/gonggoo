@@ -33,7 +33,7 @@ public class CoopostResponse {
     public static CoopostResponse from(Coopost e) {
         return CoopostResponse.builder()
                 .coopostId(e.getCoopostId())
-                .authorId(e.getAuthorId())
+                .authorId(e.getMember().getId())
                 .title(e.getTitle())
                 .content(e.getContent())
                 .status(e.getStatus())

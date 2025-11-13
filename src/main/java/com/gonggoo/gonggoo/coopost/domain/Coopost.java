@@ -30,8 +30,9 @@ public class Coopost extends BaseEntity {
     @Column(name = "coopost_id", columnDefinition = "UUID")
     private UUID coopostId;
 
-    @Column(name= "author_id", nullable=false)
-    private int authorId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id", nullable = false)
+    private Member member;
 
     @Column(nullable = false, length = 120)
     private String title;

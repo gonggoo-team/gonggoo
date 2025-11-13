@@ -13,7 +13,7 @@ import java.util.UUID;
 @Data
 public class CoopostCreateRequest {
     // 임시로 헤더 대신 바디로 authorId 받도록 (JWT 붙이면 제거)
-    private int authorId;
+    //private int authorId;
 
     @NotBlank(message = "제목은 필수 입력 항목입니다.")
     @Size(max = 120, message = "제목은 최대 120자까지 입력 가능합니다.")

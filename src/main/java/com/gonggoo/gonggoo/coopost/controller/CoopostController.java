@@ -17,7 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
+import com.gonggoo.gonggoo.auth.jwt.JwtTokenProvider;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -27,15 +27,23 @@ import java.util.UUID;
 public class CoopostController {
 
     private final CoopostService service;
-
+    private final JwtTokenProvider jwtTokenProvider;
     /**
      * 공구글 생성 (201 Created)
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ApiResponse<CoopostResponse> create(@Valid @RequestBody CoopostCreateRequest req) {
-        // ApiResponse의 success(status, message, data) 오버로딩 메서드 사용
-        return ApiResponse.success(HttpStatus.CREATED, "공구글이 성공적으로 생성되었습니다.", service.create(req));
+    public ApiResponse<CoopostResponse> create(
+            @Valid @RequestBody CoopostCreateRequest req,
+            @RequestHeader("Authorization") String authorizationHeader) {
+
+        String accessToken = authorizationHeader.split(" ")[1];
+        int memberId = Integer.parseInt(jwtTokenProvider.parseSubject(accessToken));
+
+
+        return ApiResponse.success(HttpStatus.CREATED,
+                "공구글이 성공적으로 생성되었습니다.",
+                service.create(req, memberId));
     }
 
     /**
@@ -97,16 +105,21 @@ public class CoopostController {
      */
     @GetMapping("/myposts")
     public ApiResponse<SliceResponse<CoopostResponse>> myPosts(
-            @RequestParam int authorId, // JWT 적용 후 SecurityContext에서 추출
+            @RequestHeader("Authorization") String authorizationHeader,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime createdAtCursor,
             @RequestParam(required = false) UUID idCursor,
             @RequestParam(defaultValue = "20") int size
     ) {
+
+        String accessToken = authorizationHeader.split(" ")[1];
+        int memberId = Integer.parseInt(jwtTokenProvider.parseSubject(accessToken));
+
+
         Pageable pageable = PageRequest.of(0, size, Sort.by(
                 Sort.Order.desc("createdAt"),
                 Sort.Order.desc("coopostId")
         ));
-        return ApiResponse.success(service.getMyPosts(authorId, createdAtCursor, idCursor, pageable));
+        return ApiResponse.success(service.getMyPosts(memberId, createdAtCursor, idCursor, pageable));
     }
 
     /**

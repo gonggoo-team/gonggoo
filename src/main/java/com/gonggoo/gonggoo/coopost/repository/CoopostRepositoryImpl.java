@@ -121,7 +121,7 @@ public class CoopostRepositoryImpl implements CoopostRepositoryCustom {
 
     // --- 기타 검색 조건 메서드들 ---
     private BooleanExpression authorIdEq(int authorId) {
-        return authorId > 0 ? coopost.authorId.eq(authorId) : null;
+        return authorId > 0 ? coopost.member.id.eq(authorId) : null;
     }
 
     private BooleanExpression keywordContains(String keyword) {

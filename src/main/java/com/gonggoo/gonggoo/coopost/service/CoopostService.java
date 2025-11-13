@@ -15,7 +15,7 @@ import java.util.UUID;
 
 public interface CoopostService {
 
-    CoopostResponse create(CoopostCreateRequest req);
+    CoopostResponse create(CoopostCreateRequest req, int memberId);
 
 
     CoopostResponse getById(UUID coopostId, boolean increaseView);
@@ -36,7 +36,7 @@ public interface CoopostService {
     /**
      * 내가 쓴 게시글 조회
      */
-    SliceResponse<CoopostResponse> getMyPosts(int authorId, LocalDateTime createdAtCursor, UUID idCursor, Pageable pageable);
+    SliceResponse<CoopostResponse> getMyPosts(int memberId, LocalDateTime createdAtCursor, UUID idCursor, Pageable pageable);
 
     /**
      * 인기 게시글 조회
