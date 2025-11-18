@@ -60,7 +60,7 @@ public class CoopostServiceImpl implements CoopostService {
     @Transactional(readOnly = true)
     public CoopostResponse getById(UUID coopostId, boolean increaseView) {
         Coopost e = repo.findById(coopostId)
-                .orElseThrow(() -> new EntityNotFoundException("Coopost not found"));
+                .orElseThrow(() -> new NeighborsException(ErrorCode.COOPOST_NOT_FOUND));
         if (increaseView) {
             e.setViewCount(e.getViewCount() + 1);
         }
@@ -71,8 +71,7 @@ public class CoopostServiceImpl implements CoopostService {
     @Override
     public CoopostResponse update(UUID coopostId, CoopostUpdateRequest req) {
         Coopost e = repo.findById(coopostId)
-                .orElseThrow(() -> new EntityNotFoundException("Coopost not found"));
-
+                .orElseThrow(() -> new NeighborsException(ErrorCode.COOPOST_NOT_FOUND));
         if (req.getTitle() != null) e.setTitle(req.getTitle());
         if (req.getContent() != null) e.setContent(req.getContent());
         if (req.getPricePerUnit() != null) e.setPricePerUnit(req.getPricePerUnit());
@@ -89,7 +88,7 @@ public class CoopostServiceImpl implements CoopostService {
     @Override
     public void delete(UUID coopostId) {
         Coopost coopost = repo.findById(coopostId)
-                .orElseThrow(() -> new EntityNotFoundException("Coopost not found"));
+                .orElseThrow(() -> new NeighborsException(ErrorCode.COOPOST_NOT_FOUND));
         coopost.setDeletedAt(LocalDateTime.now());
     }
 
@@ -97,7 +96,7 @@ public class CoopostServiceImpl implements CoopostService {
     @Override
     public CoopostResponse changeStatus(UUID coopostId, CoopostStatus status) {
         Coopost e = repo.findById(coopostId)
-                .orElseThrow(() -> new EntityNotFoundException("Coopost not found"));
+                .orElseThrow(() -> new NeighborsException(ErrorCode.COOPOST_NOT_FOUND));
         e.setStatus(status);
         return CoopostResponse.from(e);
     }
