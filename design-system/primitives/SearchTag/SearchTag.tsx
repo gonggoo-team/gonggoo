@@ -66,7 +66,7 @@ export const SearchTag: React.FC<SearchTagProps> = ({
   };
 
   // 삭제 핸들러 (recent variant만)
-  const handleDelete = (e: any) => {
+  const handleDelete = (e: { stopPropagation?: () => void }) => {
     // 이벤트 전파 방지 (태그 클릭과 구분)
     e?.stopPropagation?.();
     onDelete?.(text);

@@ -33,9 +33,11 @@
 
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+
 import { useTheme, useResponsive } from '../../../hooks';
 import { ProductImage } from '../../../primitives/ProductImage';
 import { ProgressBar } from '../../../primitives/ProgressBar';
+
 import { ProductBadges, ProductLike, ProductPrice } from '../shared';
 import type { ProductCardVerticalProps } from './ProductCardVertical.types';
 

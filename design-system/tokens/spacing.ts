@@ -16,6 +16,9 @@ export const spacing = {
   /** 4px - 아주 작은 간격 */
   xxs: 4,
 
+  /** 7px - 배지 간격 */
+  xxs7: 7,
+
   /** 8px - 작은 간격 */
   xs: 8,
 

@@ -19,8 +19,10 @@
  */
 
 import React, { useMemo } from 'react';
-import { Dimensions, FlatList, View } from 'react-native';
+import { FlatList, View, useWindowDimensions } from 'react-native';
+
 import { useTheme, useResponsive } from '../../hooks';
+
 import { createProductGridStyles } from './ProductGrid.styles';
 import type { ProductGridProps } from './ProductGrid.types';
 
@@ -38,6 +40,7 @@ export function ProductGrid<T>({
 }: ProductGridProps<T>) {
   const { theme } = useTheme();
   const { spacing } = useResponsive();
+  const { width: screenWidth } = useWindowDimensions();
   const styles = createProductGridStyles(theme);
 
   // 반응형 간격 계산
@@ -47,21 +50,21 @@ export function ProductGrid<T>({
   // 2열 그리드 카드 너비 계산 (반응형 간격 적용)
   const cardWidth = useMemo(() => {
     if (numColumns === 2) {
-      const screenWidth = Dimensions.get('window').width;
       const containerPadding = 40; // columnWrapper paddingHorizontal (좌우 각 20px)
       const availableWidth = screenWidth - containerPadding;
       return (availableWidth - gapSize) / 2;
     }
     return undefined;
-  }, [numColumns, gapSize]);
+  }, [screenWidth, numColumns, gapSize]);
 
   // keyExtractor 기본값 설정
   const defaultKeyExtractor = useMemo(
     () =>
       keyExtractor ||
-      ((item: any, index: number) => {
+      ((item: T, index: number) => {
         // 'id' 속성이 있으면 사용, 없으면 인덱스 사용
-        return item?.id?.toString() || `item-${index}`;
+        const itemWithId = item as { id?: string | number };
+        return itemWithId?.id?.toString() || `item-${index}`;
       }),
     [keyExtractor]
   );
@@ -95,7 +98,7 @@ export function ProductGrid<T>({
   const getItemLayout = useMemo(() => {
     if (numColumns === 2) {
       // 2열 그리드의 경우, 행 단위로 계산
-      return (_: any, index: number) => {
+      return (_: unknown, index: number) => {
         const rowIndex = Math.floor(index / 2);
         return {
           length: ITEM_HEIGHT,
@@ -105,7 +108,7 @@ export function ProductGrid<T>({
       };
     }
     // 1열의 경우
-    return (_: any, index: number) => ({
+    return (_: unknown, index: number) => ({
       length: ITEM_HEIGHT,
       offset: ITEM_HEIGHT * index,
       index,
@@ -117,7 +120,7 @@ export function ProductGrid<T>({
       <FlatList
         data={data}
         renderItem={wrappedRenderItem}
-        keyExtractor={defaultKeyExtractor as any}
+        keyExtractor={defaultKeyExtractor}
         numColumns={numColumns}
         columnWrapperStyle={numColumns === 2 ? styles.columnWrapper : undefined}
         contentContainerStyle={

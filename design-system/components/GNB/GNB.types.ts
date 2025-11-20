@@ -17,6 +17,7 @@ export type LeftSectionConfig =
   | { type: 'logo-text'; text: string; onPress?: () => void }
   | { type: 'logo-image'; uri: string; onPress?: () => void }
   | { type: 'back'; onPress: () => void }
+  | { type: 'back-with-title'; title: string; onPress: () => void }
   | { type: 'close'; onPress: () => void }
   | { type: 'menu'; onPress: () => void }
   | { type: 'address'; text: string; onPress: () => void };
@@ -44,7 +45,7 @@ export type CenterSectionConfig =
  */
 export interface RightIconConfig {
   /** 아이콘 타입 */
-  type: 'search' | 'cart' | 'notification' | 'share' | 'menu' | 'filter' | 'more' | 'x';
+  type: 'search' | 'cart' | 'notification' | 'share' | 'menu' | 'filter' | 'more' | 'x' | 'settings';
 
   /** 클릭 핸들러 */
   onPress: () => void;
@@ -62,6 +63,30 @@ export interface RightIconConfig {
 }
 
 /**
+ * 오른쪽 텍스트 버튼 설정
+ * 프로필 수정 화면의 "완료" 버튼 등에 사용
+ */
+export interface RightTextButtonConfig {
+  /** 텍스트 버튼 타입 */
+  type: 'text-button';
+
+  /** 버튼 텍스트 */
+  text: string;
+
+  /** 클릭 핸들러 */
+  onPress: () => void;
+
+  /** 비활성화 상태 */
+  disabled?: boolean;
+
+  /** 접근성 라벨 */
+  accessibilityLabel?: string;
+
+  /** 버튼 variant (색상 및 스타일) */
+  variant?: 'primary' | 'secondary' | 'danger';
+}
+
+/**
  * GNB Props
  */
 export interface GNBProps {
@@ -73,4 +98,7 @@ export interface GNBProps {
 
   /** 오른쪽 아이콘 배열 */
   rightIcons?: RightIconConfig[];
+
+  /** 오른쪽 텍스트 버튼 (아이콘 대신 사용) */
+  rightTextButton?: RightTextButtonConfig;
 }

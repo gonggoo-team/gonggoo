@@ -41,7 +41,17 @@ export type IconName =
   | 'refresh'
   | 'arrow-up'
   | 'arrow-down'
-  | 'ranking-maintain';
+  | 'ranking-maintain'
+  | 'chevron-right'
+  | 'small-chevron'
+  | 'edit'
+  | 'settings'
+  | 'recruiting'
+  | 'recruitment-complete'
+  | 'group-complete'
+  | 'joined'
+  | 'profile-default'
+  | 'camera';
 
 /**
  * Icon 크기 프리셋

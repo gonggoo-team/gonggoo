@@ -49,7 +49,7 @@ export const CategoryFilterBar: React.FC<CategoryFilterBarProps> = ({
 
   // getItemLayout 구현 (고정 너비 추정)
   const ITEM_WIDTH = 80; // 버튼 평균 너비 + 마진
-  const getItemLayout = useCallback((_: any, index: number) => ({
+  const getItemLayout = useCallback((_: unknown, index: number) => ({
     length: ITEM_WIDTH,
     offset: ITEM_WIDTH * index,
     index,

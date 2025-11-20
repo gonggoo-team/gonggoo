@@ -6,6 +6,7 @@ export const createGNBStyles = (theme: Theme) => {
   // 반응형 폰트 크기
   const fontSize16 = scaleFontSize(theme.typography.scalableFontSize.md); // 16px → 16-18px
   const fontSize20 = scaleFontSize(theme.typography.scalableFontSize.xl); // 20px → 20-23px
+  const minContentHeight = theme.dimensions.iconSize.md + (theme.spacing.xxs * 2);
 
   return StyleSheet.create({
     container: {
@@ -14,6 +15,7 @@ export const createGNBStyles = (theme: Theme) => {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
+      
       paddingVertical: theme.spacing.md, // 16px
       paddingHorizontal: theme.spacing.lg, // 20px
     },
@@ -21,6 +23,7 @@ export const createGNBStyles = (theme: Theme) => {
     // ===== 왼쪽 섹션 =====
     leftSection: {
       minWidth: 30,
+      minHeight: minContentHeight,
       justifyContent: 'center',
       alignItems: 'flex-start',
     },
@@ -54,6 +57,18 @@ export const createGNBStyles = (theme: Theme) => {
       letterSpacing: theme.typography.getLetterSpacing(fontSize20),
       color: theme.colors.surface.texticon.onnormal.text.black,
       flexShrink: 1, // 긴 텍스트 시 아이콘 영역 보호
+    },
+    backWithTitleContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: theme.spacing.md, // 16px (Figma: gap: 16px)
+    },
+    leftSectionTitle: {
+      fontSize: fontSize16, // 16px (Figma 사양)
+      fontWeight: theme.typography.fontWeight.semiBold, // 600
+      lineHeight: fontSize16 * 1.19,
+      letterSpacing: theme.typography.getLetterSpacing(fontSize16),
+      color: theme.colors.surface.texticon.onnormal.text.black,
     },
 
     // ===== 중앙 섹션 =====
@@ -130,6 +145,29 @@ export const createGNBStyles = (theme: Theme) => {
       fontSize: theme.typography.fixedFontSize.badgeCount, // 고정: 10px (배지)
       fontWeight: '600',
       lineHeight: 16,
+    },
+
+    // ===== 오른쪽 텍스트 버튼 =====
+    rightTextButton: {
+      fontSize: theme.typography.fontSize.md, // 15px (Figma 사양)
+      fontWeight: theme.typography.fontWeight.medium, // 500
+      lineHeight: theme.typography.fontSize.md * 1.19,
+      letterSpacing: theme.typography.getLetterSpacing(theme.typography.fontSize.md),
+      color: theme.colors.surface.texticon.onnormal.text.black,
+      padding: theme.spacing.xxs, // 4px 터치 영역 확보
+    },
+    rightTextButtonPrimary: {
+      color: theme.colors.surface.texticon.onnormal.text.black,
+    },
+    rightTextButtonSecondary: {
+      color: theme.colors.surface.texticon.onnormal.text.midEmp, // #A6A6A6 (회색)
+    },
+    rightTextButtonDanger: {
+      color: theme.colors.surface.env.accent, // #F7514D (빨간색)
+    },
+    rightTextButtonDisabled: {
+      color: theme.colors.surface.texticon.onnormal.text.midEmp, // 비활성화 시 회색
+      opacity: 0.5,
     },
   });
 };

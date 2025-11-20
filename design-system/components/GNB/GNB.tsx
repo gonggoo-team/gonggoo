@@ -29,9 +29,11 @@
 import React from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import { useTheme } from '../../hooks';
 import { Icon } from '../../primitives/Icon';
 import { SearchBar } from '../../primitives/SearchBar';
+
 import { createGNBStyles } from './GNB.styles';
 import type { GNBProps, RightIconConfig } from './GNB.types';
 
@@ -49,6 +51,7 @@ const ICON_TYPE_MAP = {
   x: 'x',
   back: 'back',
   close: 'x',
+  settings: 'settings',
 } as const;
 
 /**
@@ -58,6 +61,7 @@ export const GNB: React.FC<GNBProps> = ({
   leftSection,
   centerSection,
   rightIcons = [],
+  rightTextButton,
 }) => {
   const { theme } = useTheme();
   const styles = createGNBStyles(theme);
@@ -148,6 +152,29 @@ export const GNB: React.FC<GNBProps> = ({
                 color={theme.colors.surface.texticon.onnormal.icon.black}
               />
             </TouchableOpacity>
+          </View>
+        );
+
+      case 'back-with-title':
+        return (
+          <View style={styles.leftSection}>
+            <View style={styles.backWithTitleContainer}>
+              <TouchableOpacity
+                onPress={leftSection.onPress}
+                style={styles.leftButton}
+                accessibilityRole="button"
+                accessibilityLabel="뒤로가기"
+              >
+                <Icon
+                  name={ICON_TYPE_MAP.back}
+                  size={theme.dimensions.iconSize.md}
+                  color={theme.colors.surface.texticon.onnormal.icon.black}
+                />
+              </TouchableOpacity>
+              <Text style={styles.leftSectionTitle} numberOfLines={1}>
+                {leftSection.title}
+              </Text>
+            </View>
           </View>
         );
 
@@ -271,6 +298,39 @@ export const GNB: React.FC<GNBProps> = ({
    * 오른쪽 섹션 렌더링
    */
   const renderRightSection = () => {
+    // 텍스트 버튼이 있으면 텍스트 버튼 렌더링 (아이콘 대신)
+    if (rightTextButton) {
+      const variant = rightTextButton.variant || 'primary';
+      const variantStyle =
+        variant === 'secondary' ? styles.rightTextButtonSecondary :
+        variant === 'danger' ? styles.rightTextButtonDanger :
+        styles.rightTextButtonPrimary;
+
+      return (
+        <View style={styles.rightSection}>
+          <TouchableOpacity
+            onPress={rightTextButton.onPress}
+            disabled={rightTextButton.disabled}
+            activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel={rightTextButton.accessibilityLabel || rightTextButton.text}
+            accessibilityState={{ disabled: rightTextButton.disabled }}
+          >
+            <Text
+              style={[
+                styles.rightTextButton,
+                variantStyle,
+                rightTextButton.disabled && styles.rightTextButtonDisabled,
+              ]}
+            >
+              {rightTextButton.text}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      );
+    }
+
+    // 아이콘 렌더링
     if (rightIcons.length === 0) {
       return <View style={styles.rightSection} />;
     }

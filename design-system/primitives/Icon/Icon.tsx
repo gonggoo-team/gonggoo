@@ -11,6 +11,7 @@
  */
 
 import React from 'react';
+import { View } from 'react-native';
 import Svg, { Path, Line, G, Circle } from 'react-native-svg';
 import { useResponsive } from '../../hooks';
 import { ICON_PATHS } from './icons';
@@ -35,7 +36,19 @@ export const Icon: React.FC<IconProps> = ({
 
   if (!iconData) {
     console.warn(`Icon "${name}" not found in ICON_PATHS`);
-    return null;
+    // Fallback: 아이콘이 없을 때 회색 placeholder 표시
+    return (
+      <View
+        style={{
+          width: finalSize,
+          height: finalSize,
+          backgroundColor: '#E0E0E0',
+          borderRadius: finalSize / 2,
+        }}
+        testID={testID}
+        accessibilityLabel={accessibilityLabel || `${name} icon (placeholder)`}
+      />
+    );
   }
 
   const { viewBox, paths, circles } = iconData;

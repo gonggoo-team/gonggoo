@@ -53,7 +53,7 @@ export const DropdownOverlay: React.FC<DropdownOverlayProps> = ({
   style,
 }) => {
   // 드롭다운 메뉴 영역 클릭 시 닫기 방지
-  const handleDropdownPress = (e: any) => {
+  const handleDropdownPress = (e: { stopPropagation: () => void }) => {
     e.stopPropagation();
   };
 

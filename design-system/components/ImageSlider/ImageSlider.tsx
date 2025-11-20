@@ -9,18 +9,16 @@
 
 import React, { useCallback, useRef, useState } from 'react';
 import {
-  Dimensions,
   FlatList,
   StyleSheet,
   TouchableOpacity,
   View,
+  useWindowDimensions,
 } from 'react-native';
 import { Image } from 'expo-image';
 import { useTheme } from '../../hooks';
 import { Icon } from '../../primitives/Icon';
 import type { ImageSliderProps } from './ImageSlider.types';
-
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export const ImageSlider: React.FC<ImageSliderProps> = ({
   images,
@@ -31,17 +29,18 @@ export const ImageSlider: React.FC<ImageSliderProps> = ({
   showShareButton = true,
 }) => {
   const { theme } = useTheme();
+  const { width: screenWidth } = useWindowDimensions();
   const [currentIndex, setCurrentIndex] = useState(0);
   const flatListRef = useRef<FlatList>(null);
 
-  const handleScroll = (event: any) => {
+  const handleScroll = (event: { nativeEvent: { contentOffset: { x: number } } }) => {
     const scrollPosition = event.nativeEvent.contentOffset.x;
-    const index = Math.round(scrollPosition / SCREEN_WIDTH);
+    const index = Math.round(scrollPosition / screenWidth);
     setCurrentIndex(index);
   };
 
   const renderImage = useCallback(({ item }: { item: string }) => (
-    <View style={[styles.imageContainer, { width: SCREEN_WIDTH }]}>
+    <View style={[styles.imageContainer, { width: screenWidth }]}>
       <Image
         source={{ uri: item }}
         style={[styles.image, { height }]}
@@ -51,13 +50,13 @@ export const ImageSlider: React.FC<ImageSliderProps> = ({
         priority="high"
       />
     </View>
-  ), [height]);
+  ), [height, screenWidth]);
 
-  const getItemLayout = useCallback((_: any, index: number) => ({
-    length: SCREEN_WIDTH,
-    offset: SCREEN_WIDTH * index,
+  const getItemLayout = useCallback((_: unknown, index: number) => ({
+    length: screenWidth,
+    offset: screenWidth * index,
     index,
-  }), []);
+  }), [screenWidth]);
 
   return (
     <View style={[styles.container, { height }]}>

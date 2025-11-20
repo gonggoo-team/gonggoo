@@ -36,6 +36,22 @@ export interface ProductCardHorizontalProps {
   onPress: () => void;
 
   /**
+   * 카드 variant
+   * - default: 일반 상품 리스트 (이미지 136px, 진행률 바 표시)
+   * - recent: 최근 본 상품/취소 내역 (이미지 106px, 진행률 바 없음)
+   * - profile: 프로필 상품 리스트 (이미지 62px, 진행률 바/배지 없음, 더 좁은 간격)
+   * @default 'default'
+   */
+  variant?: 'default' | 'recent' | 'profile';
+
+  /**
+   * 모집 완료 상태 (recent variant 전용)
+   * true일 경우 반투명 오버레이 + "모집 완료" 텍스트 표시
+   * @default false
+   */
+  completed?: boolean;
+
+  /**
    * 총 가격 표시 여부
    * @default true
    */
@@ -64,6 +80,19 @@ export interface ProductCardHorizontalProps {
    * @default 2
    */
   titleLines?: number;
+
+  /**
+   * 구분선(divider) 표시 여부
+   * @default true
+   */
+  showDivider?: boolean;
+
+  /**
+   * 텍스트 영역 상하 중앙 정렬 여부
+   * true일 경우 텍스트 컨테이너를 이미지 높이 기준으로 상하 중앙에 배치
+   * @default false
+   */
+  centerTextVertically?: boolean;
 }
 
 /**
