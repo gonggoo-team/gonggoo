@@ -10,23 +10,6 @@
  * UI/UX 참고: 쿠팡, 네이버 쇼핑, 당근마켓 등의 검색 결과 화면
  */
 
-import { useFilterNavigation, useProductCardGrid, useProductList, useTabFilters, useTabSort } from '@/app/shared/hooks';
-import { useThrottledNavigation, useThrottledNavigationWithBack } from '@/app/shared/hooks/useThrottledNavigation';
-import { SearchService } from '@/app/shared/services/searchService';
-import type { ProductCardVerticalData } from '@/app/shared/types/product.types';
-import { convertBadges, calculatePriceRange } from '@/app/shared/utils';
-import { getDefaultFilters } from '@/app/shared/types/filter.types';
-import {
-  DEFAULT_SORT_OPTIONS,
-  Icon,
-  // ProductCardHorizontal, // 주석 처리: 나중에 재사용을 위해 보존
-  ProductCardVertical,
-  SearchBar,
-  SortFilterBar,
-  ThemeProvider,
-  useTheme
-} from '@/design-system';
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -35,28 +18,34 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { useFilterNavigation, useProductCardGrid, useProductList, useTabFilters, useTabSort } from '@/app/shared/hooks';
+import { useThrottledNavigation } from '@/app/shared/hooks/useThrottledNavigation';
+import { SearchService } from '@/app/shared/services/searchService';
+import type { ProductCardVerticalData } from '@/app/shared/types/product.types';
+import { convertBadges, calculatePriceRange } from '@/app/shared/utils';
+import { getDefaultFilters } from '@/app/shared/types/filter.types';
+
+import {
+  DEFAULT_SORT_OPTIONS,
+  Icon,
+  ProductCardVertical,
+  SearchBar,
+  SortFilterBar,
+  useTheme
+} from '@/design-system';
+
 import { EmptySearchResults } from './components';
 
 /**
- * SearchResultsScreen Component with ThemeProvider
+ * SearchResultsScreen Component
  */
 export default function SearchResultsScreen() {
-  return (
-    <ThemeProvider>
-      <SearchResultsScreenContent />
-    </ThemeProvider>
-  );
-}
-
-/**
- * SearchResultsScreenContent Component (ThemeProvider 내부)
- */
-function SearchResultsScreenContent() {
   const { theme } = useTheme();
   const router = useRouter();
-  const { push } = useThrottledNavigation();
-  const { back } = useThrottledNavigationWithBack();
+  const { push, back } = useThrottledNavigation();
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ q?: string }>();
 
@@ -260,7 +249,7 @@ function SearchResultsScreenContent() {
             paddingHorizontal: theme.spacing.lg,
             paddingBottom: theme.spacing.xs,
             borderBottomWidth: theme.dimensions.borderWidth.thin,
-            borderBottomColor: '#F4F4F4', // Figma 기준
+            borderBottomColor: theme.colors.surface.normal.bg2, // Figma 기준
           },
         ]}
       >

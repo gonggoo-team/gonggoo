@@ -10,6 +10,7 @@
 import type { PriceButtonConfig } from '@/app/shared/types/filter.types';
 import { generatePriceButtons } from '@/app/shared/types/filter.types';
 import { Button, Divider, PriceRangeSlider, useTheme } from '@/design-system';
+import type { Theme } from '@/design-system/theme/types';
 import { triggerLightImpact } from '@/design-system/utils/haptics';
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -134,7 +135,7 @@ export const PriceSection: React.FC<PriceSectionProps> = ({
   );
 };
 
-const createStyles = (theme: any) =>
+const createStyles = (theme: Theme) =>
   StyleSheet.create({
     section: {
       paddingHorizontal: theme.spacing.lg,

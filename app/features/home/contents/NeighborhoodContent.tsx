@@ -7,12 +7,16 @@
  * - TabContentLayout 기반
  */
 
+import React, { forwardRef, useCallback, useMemo } from 'react';
+import { FlatList, View } from 'react-native';
+
 import { TabContentLayout } from '@/app/shared/components/layouts';
 import { useProductCardGrid, useProductList, useTabFilters, useTabSort, useFilterNavigation } from '@/app/shared/hooks';
 import { useThrottledNavigation } from '@/app/shared/hooks/useThrottledNavigation';
 import { getAllProducts } from '@/app/shared/services/mock/products.mock';
 import type { ProductCardVerticalData } from '@/app/shared/types/product.types';
 import { convertBadges, calculatePriceRange } from '@/app/shared/utils';
+
 import {
   CategoryFilterBar,
   DEFAULT_CATEGORIES,
@@ -22,13 +26,9 @@ import {
   SortFilterBar,
   useTheme,
 } from '@/design-system';
-import { useRouter } from 'expo-router';
-import React, { forwardRef, useCallback, useMemo } from 'react';
-import { FlatList, View } from 'react-native';
 
 export const NeighborhoodContent = forwardRef<FlatList>((props, ref) => {
   const { theme } = useTheme();
-  const router = useRouter();
   const { push } = useThrottledNavigation();
 
   // Mock 데이터 로드 - 동네 탭은 모든 상품 표시
@@ -84,7 +84,9 @@ export const NeighborhoodContent = forwardRef<FlatList>((props, ref) => {
   }, [push]);
 
   const handleLikePress = useCallback((id: string) => {
-    console.log('Like pressed:', id);
+    if (__DEV__) {
+      console.log('Like pressed:', id);
+    }
   }, []);
 
   // 2열 그리드 레이아웃 계산

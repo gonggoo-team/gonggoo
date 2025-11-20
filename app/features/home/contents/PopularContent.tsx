@@ -25,11 +25,9 @@ import {
 import { FilterBottomSheet } from '@/design-system/components/FilterBottomSheet';
 import { TabContentLayout } from '@/app/shared/components/layouts';
 import { useTabFilters, useProductCardGrid } from '@/app/shared/hooks';
-import { useRouter } from 'expo-router';
 
 export const PopularContent = forwardRef<FlatList>((props, ref) => {
   const { theme } = useTheme();
-  const router = useRouter();
   const { push } = useThrottledNavigation();
 
   // 공통 훅 사용 (카테고리 필터만)
@@ -87,7 +85,9 @@ export const PopularContent = forwardRef<FlatList>((props, ref) => {
   }, [push]);
 
   const handleLikePress = useCallback((id: string) => {
-    console.log('Like pressed:', id);
+    if (__DEV__) {
+      console.log('Like pressed:', id);
+    }
   }, []);
 
   const handleSelectOption = useCallback((filterType: 'gender' | 'age' | 'period', option: string) => {
@@ -127,8 +127,14 @@ export const PopularContent = forwardRef<FlatList>((props, ref) => {
         }}
       >
         {/* 랭킹 배지 */}
-        <View style={styles.rankingBadge}>
-          <Text style={styles.rankingText}>{ranking}</Text>
+        <View style={[
+          styles.rankingBadge,
+          { backgroundColor: theme.colors.surface.texticon.onnormal.text.black }
+        ]}>
+          <Text style={[
+            styles.rankingText,
+            { color: theme.colors.surface.normal.white }
+          ]}>{ranking}</Text>
         </View>
         <ProductCardVertical
           imageUri={item.imageUri}
@@ -146,7 +152,7 @@ export const PopularContent = forwardRef<FlatList>((props, ref) => {
         />
       </View>
     );
-  }, [cardWidth, gap, rowGap, handleProductPress, handleLikePress]);
+  }, [cardWidth, gap, rowGap, handleProductPress, handleLikePress, theme]);
 
   // 카테고리 필터 (배경색 포함)
   const fixedHeader = useMemo(
@@ -232,13 +238,11 @@ const styles = StyleSheet.create({
     zIndex: 1,
     width: 30,
     height: 30,
-    backgroundColor: '#181A1A',
     borderTopLeftRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
   },
   rankingText: {
-    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',

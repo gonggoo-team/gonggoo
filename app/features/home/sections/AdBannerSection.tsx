@@ -18,7 +18,7 @@ export interface AdBannerSectionProps {
   autoPlay?: boolean;
 }
 
-export const AdBannerSection: React.FC<AdBannerSectionProps> = ({
+export const AdBannerSection = React.memo<AdBannerSectionProps>(({
   banners,
   onBannerPress,
   autoPlay = false,
@@ -37,4 +37,4 @@ export const AdBannerSection: React.FC<AdBannerSectionProps> = ({
       height={82}
     />
   );
-};
+});

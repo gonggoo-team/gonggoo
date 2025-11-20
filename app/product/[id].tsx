@@ -6,7 +6,14 @@
  * - Figma: https://www.figma.com/design/IcB57n6VE5UKU4Np0RNr5C/공구팟_기획?node-id=452-7601
  */
 
+import React, { useState, useEffect } from 'react';
+import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
+
+import { useThrottledNavigation, useThrottledCallback } from '@/app/shared/hooks';
 import { getProductDetailById } from '@/app/shared/services/mock';
+import { addRecentProductId } from '@/app/shared/services/storage';
+
 import {
   Divider,
   FloatingActionBar,
@@ -15,31 +22,15 @@ import {
   InfoRow,
   ProductProgressSlots,
   StatusBadge,
-  ThemeProvider,
   useTheme,
 } from '@/design-system';
-import { useLocalSearchParams } from 'expo-router';
-import React, { useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useThrottledNavigationWithBack, useThrottledCallback } from '@/app/shared/hooks';
 
 /**
- * ProductDetailScreen Component with ThemeProvider
+ * ProductDetailScreen Component
  */
 export default function ProductDetailScreen() {
-  return (
-    <ThemeProvider>
-      <ProductDetailContent />
-    </ThemeProvider>
-  );
-}
-
-/**
- * ProductDetailContent Component (ThemeProvider 내부)
- */
-function ProductDetailContent() {
   const { theme } = useTheme();
-  const { back } = useThrottledNavigationWithBack();
+  const { back } = useThrottledNavigation();
   const { id } = useLocalSearchParams<{ id: string }>();
 
   // 상품 데이터 로드
@@ -47,6 +38,13 @@ function ProductDetailContent() {
 
   // 좋아요 상태
   const [isLiked, setIsLiked] = useState(false);
+
+  // 최근 본 상품에 추가
+  useEffect(() => {
+    if (id) {
+      addRecentProductId(id);
+    }
+  }, [id]);
 
   if (!product) {
     return (
@@ -174,10 +172,10 @@ function ProductDetailContent() {
               <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 5 }}>
                 <Text
                   style={{
-                    fontSize: 25,
+                    fontSize: theme.typography.fontSize.xxl25,
                     fontWeight: theme.typography.fontWeight.semiBold,
-                    lineHeight: 25 * 1.2,
-                    letterSpacing: theme.typography.getLetterSpacing(25),
+                    lineHeight: theme.typography.fontSize.xxl25 * 1.2,
+                    letterSpacing: theme.typography.getLetterSpacing(theme.typography.fontSize.xxl25),
                     color: theme.colors.surface.brand.primary,
                   }}
                 >
@@ -348,9 +346,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   sectionTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    lineHeight: 14 * 1.2,
-    letterSpacing: -0.025 * 14,
+    // Note: theme values applied inline in JSX for dynamic access
   },
 });

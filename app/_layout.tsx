@@ -1,6 +1,7 @@
 import { Stack } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+
 import { ThemeProvider } from "@/design-system";
 
 export default function RootLayout() {
@@ -19,7 +20,6 @@ export default function RootLayout() {
                 headerShown: false,
                 presentation: 'card',
                 animation: 'slide_from_right',
-                contentStyle: { backgroundColor: '#FFFFFF' },
               }}
             />
 
@@ -42,6 +42,83 @@ export default function RootLayout() {
               options={{
                 headerShown: false,
                 presentation: 'card',
+              }}
+            />
+            <Stack.Screen
+              name="my-info"
+              options={{
+                headerShown: false,
+              }}
+            />
+
+            <Stack.Screen
+              name="account-deletion"
+              options={{
+                headerShown: false,
+              }}
+            />
+
+            <Stack.Screen
+              name="profile-edit"
+              options={{
+                headerShown: false,
+              }}
+            />
+
+            <Stack.Screen
+              name="recent-products"
+              options={{
+                headerShown: false,
+              }}
+            />
+
+            <Stack.Screen
+              name="cancel-history"
+              options={{
+                headerShown: false,
+              }}
+            />
+
+            <Stack.Screen
+              name="profile/recruiting-list"
+              options={{
+                headerShown: false,
+              }}
+            />
+
+            <Stack.Screen
+              name="profile/recruitment-complete-list"
+              options={{
+                headerShown: false,
+              }}
+            />
+
+            <Stack.Screen
+              name="profile/group-complete-list"
+              options={{
+                headerShown: false,
+              }}
+            />
+
+
+            <Stack.Screen
+              name="profile/wishlist"
+              options={{
+                headerShown: false,
+              }}
+            />
+
+            <Stack.Screen
+              name="profile/joined-list"
+              options={{
+                headerShown: false,
+              }}
+            />
+
+            <Stack.Screen
+              name="profile/transaction-complete-list"
+              options={{
+                headerShown: false,
               }}
             />
 

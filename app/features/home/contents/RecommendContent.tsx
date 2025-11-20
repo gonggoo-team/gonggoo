@@ -20,27 +20,24 @@ import {
   SectionHeader,
   useTheme
 } from '@/design-system';
-import { useRouter } from 'expo-router';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useMemo } from 'react';
 import {
-  Dimensions,
   NativeScrollEvent,
   NativeSyntheticEvent,
   ScrollView,
   StyleSheet,
   View,
+  useWindowDimensions,
 } from 'react-native';
 import { AdBannerSection } from '../sections';
 
 export const RecommendContent: React.FC = () => {
   const { theme } = useTheme();
-  const router = useRouter();
   const { push } = useThrottledNavigation();
+  const { width: screenWidth } = useWindowDimensions();
   const [currentPage1, setCurrentPage1] = useState(0);
   const [currentPage2, setCurrentPage2] = useState(0);
   const [selectedAgeGroup, setSelectedAgeGroup] = useState('전체');
-
-  const screenWidth = Dimensions.get('window').width;
 
   // 3열 그리드 동적 카드 너비 계산 (Figma 기준)
   const horizontalPadding = 40; // 20px × 2
@@ -48,28 +45,31 @@ export const RecommendContent: React.FC = () => {
   const gap = 9; // Figma 기준 카드 간격
   const cardWidth = Math.floor((availableWidth - gap * 2) / 3);
 
-  // Mock 데이터 로드 - 추천 상품 (할인율 20% 이상, 할인율 순 정렬)
-  const products: ProductCardVerticalData[] = getMockRecommendedProducts();
-  const bannerData: AdBannerItem[] = getMockMainBanners();
-  const horizontalBanners: AdBannerItem[] = getMockHorizontalBanner();
+  // Mock 데이터 로드 - useMemo로 최적화
+  const products: ProductCardVerticalData[] = useMemo(() => getMockRecommendedProducts(), []);
+  const bannerData: AdBannerItem[] = useMemo(() => getMockMainBanners(), []);
+  const horizontalBanners: AdBannerItem[] = useMemo(() => getMockHorizontalBanner(), []);
 
-  // 연령대별 필터링 (실제로는 API에서 ageGroup 필드를 받아야 함)
-  // 현재는 Mock 데이터이므로 전체 표시
-  const filteredProducts =
+  // 연령대별 필터링 - useMemo로 최적화
+  const filteredProducts = useMemo(() =>
     selectedAgeGroup === '전체'
       ? products
       : products.filter((product) => {
           // TODO: product.ageGroup === selectedAgeGroup 로 필터링
           // 현재는 Mock 데이터에 ageGroup 필드가 없으므로 전체 표시
           return true;
-        });
+        }),
+    [selectedAgeGroup, products]
+  );
 
   const handleProductPress = useCallback((id: string) => {
     push(`/product/${id}`);
   }, [push]);
 
-  const handleBannerPress = useCallback((item: any) => {
-    console.log('Banner pressed:', item);
+  const handleBannerPress = useCallback((item: unknown) => {
+    if (__DEV__) {
+      console.log('Banner pressed:', item);
+    }
   }, []);
 
   const handleScroll1 = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {

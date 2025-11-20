@@ -3,18 +3,22 @@
  *
  * 홈 탭 화면입니다.
  * - CategoryTabBar를 통해 카테고리 전환 (State 기반)
- * - GNB는 카테고리에 따라 동적 변경
+ * - GNB는 모든 카테고리에서 동일 (주소, 검색, 장바구니, 알림)
  * - 하단 탭바는 고정
+ * - 모든 네비게이션 핸들러는 useThrottledNavigation으로 쓰로틀링 적용 (300ms)
  *
  * Figma 링크: https://www.figma.com/design/IcB57n6VE5UKU4Np0RNr5C/공구팟_기획?node-id=445-6474&m=dev
  * 마지막 동기화: 2025-10-10
  */
 
-import { CategoryTabBar, FloatingActionButton, ThemeProvider, useTheme } from '@/design-system';
-import type { CategoryType } from '@/design-system/components/CategoryTabBar';
 import React, { useRef, useState } from 'react';
 import { Alert, FlatList, StyleSheet, View } from 'react-native';
-import { DynamicGNB } from './components/DynamicGNB';
+
+import { useThrottledNavigation } from '@/app/shared/hooks';
+
+import { CategoryTabBar, FloatingActionButton, GNB, useTheme } from '@/design-system';
+import type { CategoryType } from '@/design-system/components/CategoryTabBar';
+
 import {
   HomeContent,
   NeighborhoodContent,
@@ -24,21 +28,11 @@ import {
 } from './contents';
 
 /**
- * HomeScreen Component with ThemeProvider
+ * HomeScreen Component
  */
 export default function HomeScreen() {
-  return (
-    <ThemeProvider>
-      <HomeScreenContent />
-    </ThemeProvider>
-  );
-}
-
-/**
- * HomeScreenContent Component (ThemeProvider 내부)
- */
-function HomeScreenContent() {
   const { theme } = useTheme();
+  const { push } = useThrottledNavigation();
   const [selectedCategory, setSelectedCategory] = useState<CategoryType>('home');
 
   // 각 탭별 FlatList ref
@@ -73,10 +67,44 @@ function HomeScreenContent() {
     Alert.alert('준비중', '상품 등록 기능은 준비 중입니다');
   };
 
+  // GNB 핸들러들 (모두 쓰로틀링 적용)
+  const handleSearchPress = () => {
+    push('/search');
+  };
+
+  const handleCartPress = () => {
+    console.log('[HomeScreen] Cart pressed');
+    // TODO: 장바구니 화면으로 이동
+  };
+
+  const handleNotificationPress = () => {
+    console.log('[HomeScreen] Notification pressed');
+    // TODO: 알림 화면으로 이동
+  };
+
+  const handleAddressPress = () => {
+    Alert.alert('준비중', '동네 설정 기능은 준비 중입니다');
+  };
+
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.surface.normal.bg1 }]}>
-      {/* 동적 GNB */}
-      <DynamicGNB selectedCategory={selectedCategory} />
+      {/* GNB */}
+      <GNB
+        leftSection={{ type: 'address', text: '논현동', onPress: handleAddressPress }}
+        rightIcons={[
+          { type: 'search', onPress: handleSearchPress },
+          {
+            type: 'cart',
+            badge: { count: 3 },
+            onPress: handleCartPress,
+          },
+          {
+            type: 'notification',
+            badge: { dot: true },
+            onPress: handleNotificationPress,
+          },
+        ]}
+      />
 
       {/* CategoryTabBar */}
       <CategoryTabBar selectedCategory={selectedCategory} onCategoryChange={handleCategoryChange} />

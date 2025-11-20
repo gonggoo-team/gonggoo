@@ -11,20 +11,6 @@
  * Figma node-id: 930-3663
  */
 
-import { useThrottledNavigationWithBack } from '@/app/shared/hooks';
-import { getProductPriceRange } from '@/app/shared/services/mock/products.mock';
-import type { CommonFilters } from '@/app/shared/types/filter.types';
-import { getDefaultFilters } from '@/app/shared/types/filter.types';
-import {
-  Button,
-  Checkbox,
-  Divider,
-  Icon,
-  ThemeProvider,
-  Tooltip,
-  useTheme,
-} from '@/design-system';
-import { Stack, useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
 import {
   DeviceEventEmitter,
@@ -34,28 +20,34 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import { Stack, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { useThrottledNavigation } from '@/app/shared/hooks';
+import { getProductPriceRange } from '@/app/shared/services/mock/products.mock';
+import type { CommonFilters } from '@/app/shared/types/filter.types';
+import { getDefaultFilters } from '@/app/shared/types/filter.types';
+
+import {
+  Button,
+  Checkbox,
+  Divider,
+  Icon,
+  Tooltip,
+  useTheme,
+} from '@/design-system';
+import type { Theme } from '@/design-system/theme/types';
+
 import { FilterHeader } from './components/FilterHeader';
 import { PriceSection } from './components/PriceSection';
 import { useFilterLogic } from './hooks/useFilterLogic';
 
 /**
- * FilterScreen Component with ThemeProvider
+ * FilterScreen Component
  */
 export default function FilterScreen() {
-  return (
-    <ThemeProvider>
-      <FilterScreenContent />
-    </ThemeProvider>
-  );
-}
-
-/**
- * FilterScreenContent Component (ThemeProvider 내부)
- */
-function FilterScreenContent() {
   const { theme } = useTheme();
-  const { back } = useThrottledNavigationWithBack();
+  const { back } = useThrottledNavigation();
   const params = useLocalSearchParams();
   const insets = useSafeAreaInsets();
 
@@ -149,14 +141,11 @@ function FilterScreenContent() {
           paddingTop: insets.top + theme.spacing.md, // Safe Area + 16px
         }
       ,]}>
-      {/* StatusBar 설정 */}
-      {/* <StatusBar barStyle="dark-content" backgroundColor={theme.colors.surface.normal.bg1} /> */}
-
       {/* Stack Screen 헤더 숨김 */}
       <Stack.Screen
         options={{
           headerShown: false,
-          gestureEnabled: false, // 뒤로가기 제스처 불가
+          gestureEnabled: false,
         }}
       />
 
@@ -308,12 +297,11 @@ function FilterScreenContent() {
   );
 }
 
-const createStyles = (theme: any) =>
+const createStyles = (theme: Theme) =>
   StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: theme.colors.surface.normal.bg1,
-      // paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,      
     },
     scrollContent: {
       flex: 1,

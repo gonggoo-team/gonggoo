@@ -4,10 +4,12 @@
  * 오늘 마감 섹션 (카운트다운 타이머 포함)
  */
 
-import type { ProductCardVerticalData } from '@/app/shared/types/product.types';
-import { CountdownTimer, ProductCardVertical, ProductSection, useTheme } from '@/design-system';
 import React from 'react';
 import { ScrollView, View } from 'react-native';
+
+import type { ProductCardVerticalData } from '@/app/shared/types/product.types';
+
+import { CountdownTimer, ProductCardVertical, ProductSection, useTheme } from '@/design-system';
 
 interface DeadlineSectionProps {
   products: ProductCardVerticalData[];
@@ -18,7 +20,7 @@ interface DeadlineSectionProps {
   onExpire: () => void;
 }
 
-export const DeadlineSection: React.FC<DeadlineSectionProps> = ({
+export const DeadlineSection = React.memo<DeadlineSectionProps>(({
   products,
   targetTime,
   onViewAll,
@@ -71,4 +73,4 @@ export const DeadlineSection: React.FC<DeadlineSectionProps> = ({
       </ProductSection>
     </View>
   );
-};
+});

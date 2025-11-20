@@ -11,21 +11,6 @@
  * 마지막 동기화: 2025-10-28
  */
 
-import { useFilterNavigation, useProductCardGrid, useProductList, useTabFilters, useTabSort } from '@/app/shared/hooks';
-import { useThrottledNavigationWithBack } from '@/app/shared/hooks/useThrottledNavigation';
-import { getMockCategories } from '@/app/shared/services/mock';
-import type { ProductCardVerticalData } from '@/app/shared/types/product.types';
-import { convertBadges, calculatePriceRange } from '@/app/shared/utils';
-import { getDefaultFilters } from '@/app/shared/types/filter.types';
-import {
-  DEFAULT_SORT_OPTIONS,
-  Icon,
-  ProductCardVertical,
-  SortFilterBar,
-  ThemeProvider,
-  useTheme
-} from '@/design-system';
-import { Stack, useLocalSearchParams } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
@@ -35,25 +20,30 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import { Stack, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-/**
- * CategoryResultsScreen Component with ThemeProvider
- */
-export default function CategoryResultsScreen() {
-  return (
-    <ThemeProvider>
-      <CategoryResultsScreenContent />
-    </ThemeProvider>
-  );
-}
+import { useFilterNavigation, useProductCardGrid, useProductList, useTabFilters, useTabSort } from '@/app/shared/hooks';
+import { useThrottledNavigation } from '@/app/shared/hooks/useThrottledNavigation';
+import { getMockCategories } from '@/app/shared/services/mock';
+import type { ProductCardVerticalData } from '@/app/shared/types/product.types';
+import { convertBadges, calculatePriceRange } from '@/app/shared/utils';
+import { getDefaultFilters } from '@/app/shared/types/filter.types';
+
+import {
+  DEFAULT_SORT_OPTIONS,
+  Icon,
+  ProductCardVertical,
+  SortFilterBar,
+  useTheme
+} from '@/design-system';
 
 /**
- * CategoryResultsScreenContent Component (ThemeProvider 내부)
+ * CategoryResultsScreen Component
  */
-function CategoryResultsScreenContent() {
+export default function CategoryResultsScreen() {
   const { theme } = useTheme();
-  const { push, back } = useThrottledNavigationWithBack();
+  const { push, back } = useThrottledNavigation();
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ category?: string }>();
 
@@ -274,7 +264,7 @@ function CategoryResultsScreenContent() {
             paddingHorizontal: theme.spacing.lg, // 20px
             paddingBottom: theme.spacing.xs, // 8px
             borderBottomWidth: theme.dimensions.borderWidth.thin, // 1px
-            borderBottomColor: '#E1E1E1', // Figma 기준
+            borderBottomColor: theme.colors.border.lowEmp, // Figma 기준
           },
         ]}
       >

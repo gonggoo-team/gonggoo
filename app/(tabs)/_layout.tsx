@@ -9,9 +9,10 @@
  * Figma 링크: https://www.figma.com/design/IcB57n6VE5UKU4Np0RNr5C/공구팟_기획?node-id=249-1477&m=dev
  */
 
-import { TabBarIcon, useTheme } from '@/design-system';
-import { Tabs } from 'expo-router';
 import React from 'react';
+import { Tabs } from 'expo-router';
+
+import { TabBarIcon, useTheme } from '@/design-system';
 
 /**
  * TabsLayout Component
@@ -24,14 +25,14 @@ export default function TabsLayout() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: theme.colors.surface.normal.bg1, // #FFFFFF
+          backgroundColor: theme.colors.surface.normal.bg1,
           borderTopWidth: 1,
-          borderTopColor: theme.colors.border.lowEmp, // #E1E1E1
-          height: 84, // Figma 기준 전체 높이 (60px 컨텐츠 + 24px 패딩)
-          paddingBottom: 24, // 홈 인디케이터 영역 (Figma 기준)
+          borderTopColor: theme.colors.border.lowEmp,
+          height: 84,
+          paddingBottom: 24,
         },
-        tabBarActiveTintColor: theme.colors.surface.texticon.onnormal.text.green, // #006242
-        tabBarInactiveTintColor: theme.colors.surface.texticon.onnormal.icon.tabBar, // #9C9DA4
+        tabBarActiveTintColor: theme.colors.surface.texticon.onnormal.text.green,
+        tabBarInactiveTintColor: theme.colors.surface.texticon.onnormal.icon.tabBar,
         tabBarShowLabel: false,
       }}
     >

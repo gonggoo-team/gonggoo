@@ -10,6 +10,9 @@
  * - 추천 공구팟 섹션
  */
 
+import React, { useMemo, useCallback } from 'react';
+import { ScrollView } from 'react-native';
+
 import {
   getMockDeadlineProducts,
   getMockMainBanners,
@@ -17,10 +20,9 @@ import {
 } from '@/app/shared/services/mock';
 import { getMockHorizontalBanner } from '@/app/shared/services/mock/banners.mock';
 import { useThrottledNavigation } from '@/app/shared/hooks/useThrottledNavigation';
+
 import { AdBanner, useTheme } from '@/design-system';
-import { useRouter } from 'expo-router';
-import React from 'react';
-import { ScrollView } from 'react-native';
+
 import {
   AdBannerSection,
   DeadlineSection,
@@ -33,29 +35,31 @@ interface HomeContentProps {
   onNavigateToCategory: (category: string) => void;
 }
 
-export const HomeContent: React.FC<HomeContentProps> = ({ onNavigateToCategory }) => {
+export const HomeContent = React.memo<HomeContentProps>(({ onNavigateToCategory }) => {
   const { theme } = useTheme();
-  const router = useRouter();
   const { push } = useThrottledNavigation();
 
-  // Mock 데이터 로드
-  const bannerData = getMockMainBanners();
-  const horizontalBanners = getMockHorizontalBanner();
-  const deadlineProducts = getMockDeadlineProducts();
-  const popularProducts = getMockPopularProducts();
+  // Mock 데이터 로드 - useMemo로 최적화
+  const bannerData = useMemo(() => getMockMainBanners(), []);
+  const horizontalBanners = useMemo(() => getMockHorizontalBanner(), []);
+  const deadlineProducts = useMemo(() => getMockDeadlineProducts(), []);
+  const popularProducts = useMemo(() => getMockPopularProducts(), []);
 
-  // 이벤트 핸들러
-  const handleBannerPress = (item: any) => {
-    console.log('Banner pressed:', item);
-  };
+  // 이벤트 핸들러 - useCallback으로 최적화
+  const handleBannerPress = useCallback((item: unknown) => {
+    // Banner press handled
+  }, []);
 
-  const handleProductPress = (id: string) => {
+  const handleProductPress = useCallback((id: string) => {
+    console.log(`/product/${id}`)
     push(`/product/${id}`);
-  };
+  }, [push]);
 
-  const handleLikePress = (id: string) => {
-    console.log('Like pressed:', id);
-  };
+  const handleLikePress = useCallback((id: string) => {
+    if (__DEV__) {
+      console.log('Like pressed:', id);
+    }
+  }, []);
 
   return (
     <ScrollView
@@ -88,7 +92,11 @@ export const HomeContent: React.FC<HomeContentProps> = ({ onNavigateToCategory }
         onViewAll={() => onNavigateToCategory('today')}
         onProductPress={handleProductPress}
         onLikePress={handleLikePress}
-        onExpire={() => console.log('마감되었습니다!')}
+        onExpire={() => {
+          if (__DEV__) {
+            console.log('마감되었습니다!');
+          }
+        }}
       />
 
       {/* 가장 인기 있는! 섹션 */}
@@ -114,4 +122,4 @@ export const HomeContent: React.FC<HomeContentProps> = ({ onNavigateToCategory }
       />
     </ScrollView>
   );
-};
+});

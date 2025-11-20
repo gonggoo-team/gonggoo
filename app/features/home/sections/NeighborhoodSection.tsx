@@ -16,7 +16,7 @@ interface NeighborhoodSectionProps {
   onLikePress: (id: string) => void;
 }
 
-export const NeighborhoodSection: React.FC<NeighborhoodSectionProps> = ({
+export const NeighborhoodSection = React.memo<NeighborhoodSectionProps>(({
   products,
   onViewAll,
   onProductPress,
@@ -63,4 +63,4 @@ export const NeighborhoodSection: React.FC<NeighborhoodSectionProps> = ({
       </ScrollView>
     </ProductSection>
   );
-};
+});

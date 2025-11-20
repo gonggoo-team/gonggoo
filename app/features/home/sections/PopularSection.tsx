@@ -5,7 +5,7 @@
  */
 
 import React, { useState } from 'react';
-import { ScrollView, View, NativeSyntheticEvent, NativeScrollEvent, Dimensions } from 'react-native';
+import { ScrollView, View, NativeSyntheticEvent, NativeScrollEvent, useWindowDimensions } from 'react-native';
 import { ProductSection, ProductCardHorizontal, ScrollIndicator, useTheme } from '@/design-system';
 import type { ProductCardHorizontalData } from '@/app/shared/types/product.types';
 
@@ -15,14 +15,14 @@ interface PopularSectionProps {
   onProductPress: (id: string) => void;
 }
 
-export const PopularSection: React.FC<PopularSectionProps> = ({
+export const PopularSection = React.memo<PopularSectionProps>(({
   products,
   onViewAll,
   onProductPress,
 }) => {
   const { theme } = useTheme();
+  const { width: screenWidth } = useWindowDimensions();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const screenWidth = Dimensions.get('window').width;
 
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const scrollX = event.nativeEvent.contentOffset.x;
@@ -84,4 +84,4 @@ export const PopularSection: React.FC<PopularSectionProps> = ({
       />
     </View>
   );
-};
+});
