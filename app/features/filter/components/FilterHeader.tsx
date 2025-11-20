@@ -9,14 +9,14 @@
 
 import { Icon, useTheme } from '@/design-system';
 import { useRouter } from 'expo-router';
-import { useThrottledNavigationWithBack } from '@/app/shared/hooks';
+import { useThrottledNavigation } from '@/app/shared/hooks';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export const FilterHeader: React.FC = () => {
   const { theme } = useTheme();
   const router = useRouter();
-  const { back } = useThrottledNavigationWithBack();
+  const { back } = useThrottledNavigation();
 
   const handleClose = () => {
     back();

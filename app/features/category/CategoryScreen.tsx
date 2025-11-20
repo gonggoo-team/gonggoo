@@ -11,35 +11,25 @@
  * 마지막 동기화: 2025-10-27
  */
 
+import React, { useMemo, useCallback } from 'react';
+import { ScrollView, StyleSheet, View } from 'react-native';
+
 import { getMockCategories, getMockRecommendedProducts } from '@/app/shared/services/mock';
 import { getMockHorizontalBanner } from '@/app/shared/services/mock/banners.mock';
 import { useThrottledNavigation } from '@/app/shared/hooks/useThrottledNavigation';
 import type { CategoryData } from '@/app/shared/types';
-import { GNB, ThemeProvider, useTheme } from '@/design-system';
+
+import { GNB, useTheme } from '@/design-system';
+
 import { AdBannerSection } from '@/app/features/home/sections';
-import { useRouter } from 'expo-router';
-import React, { useMemo } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
 import { CategoryGridSection } from './components';
 import { RecommendationSection } from './sections';
 
 /**
- * CategoryScreen Component with ThemeProvider
+ * CategoryScreen Component
  */
 export default function CategoryScreen() {
-  return (
-    <ThemeProvider>
-      <CategoryScreenContent />
-    </ThemeProvider>
-  );
-}
-
-/**
- * CategoryScreenContent Component (ThemeProvider 내부)
- */
-function CategoryScreenContent() {
   const { theme } = useTheme();
-  const router = useRouter();
   const { push } = useThrottledNavigation();
 
   // Mock 데이터 로드
@@ -47,23 +37,23 @@ function CategoryScreenContent() {
   const horizontalBanners = useMemo(() => getMockHorizontalBanner(), []);
   const recommendedProducts = useMemo(() => getMockRecommendedProducts(), []);
 
-  // 카테고리 선택 핸들러
-  const handleCategoryPress = (category: CategoryData) => {
+  // 카테고리 선택 핸들러 (useCallback으로 안정적인 참조 유지)
+  const handleCategoryPress = useCallback((category: CategoryData) => {
     console.log('Category selected:', category);
     // 카테고리 결과 화면으로 이동
     push(`/category-results?category=${category.slug}`);
-  };
+  }, [push]);
 
-  // 상품 클릭 핸들러
-  const handleProductPress = (id: string) => {
+  // 상품 클릭 핸들러 (useCallback으로 안정적인 참조 유지)
+  const handleProductPress = useCallback((id: string) => {
     push(`/product/${id}`);
-  };
+  }, [push]);
 
-  // 배너 클릭 핸들러
-  const handleBannerPress = (item: any) => {
+  // 배너 클릭 핸들러 (useCallback으로 안정적인 참조 유지)
+  const handleBannerPress = useCallback((item: unknown) => {
     console.log('Banner pressed:', item);
     // TODO: 배너 링크 처리
-  };
+  }, []);
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.surface.normal.bg1 }]}>
@@ -89,7 +79,7 @@ function CategoryScreenContent() {
           style={[
             styles.divider,
             {
-              backgroundColor: theme.colors.surface.normal.bg2, // #F5F5F5
+              backgroundColor: theme.colors.surface.normal.bg2,
               height: 6,
             },
           ]}

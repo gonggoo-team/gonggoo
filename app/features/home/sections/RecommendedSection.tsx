@@ -17,7 +17,7 @@ interface RecommendedSectionProps {
   onLikePress: (id: string) => void;
 }
 
-export const RecommendedSection: React.FC<RecommendedSectionProps> = ({
+export const RecommendedSection = React.memo<RecommendedSectionProps>(({
   products,
   userName = '00', // 기본값
   onViewAll,
@@ -65,4 +65,4 @@ export const RecommendedSection: React.FC<RecommendedSectionProps> = ({
       </ScrollView>
     </ProductSection>
   );
-};
+});

@@ -13,7 +13,7 @@
 
 import { useTheme } from '@/design-system';
 import React, { ReactNode } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, StyleProp, ViewStyle } from 'react-native';
 
 /**
  * SearchSection Props
@@ -29,7 +29,7 @@ export interface SearchSectionProps {
   children: ReactNode;
 
   /** 커스텀 스타일 */
-  style?: any;
+  style?: StyleProp<ViewStyle>;
 
   /** 헤더 없이 콘텐츠만 표시 */
   hideHeader?: boolean;

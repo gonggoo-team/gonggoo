@@ -24,13 +24,11 @@ import {
   SortFilterBar,
   useTheme,
 } from '@/design-system';
-import { useRouter } from 'expo-router';
 import React, { forwardRef, useCallback, useMemo } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 
 export const TodayContent = forwardRef<FlatList>((props, ref) => {
   const { theme } = useTheme();
-  const router = useRouter();
   const { push } = useThrottledNavigation();
 
   // Mock 데이터 로드
@@ -73,11 +71,15 @@ export const TodayContent = forwardRef<FlatList>((props, ref) => {
   }, [push]);
 
   const handleLikePress = useCallback((id: string) => {
-    console.log('Like pressed:', id);
+    if (__DEV__) {
+      console.log('Like pressed:', id);
+    }
   }, []);
 
   const handleExpire = useCallback(() => {
-    console.log('마감되었습니다!');
+    if (__DEV__) {
+      console.log('마감되었습니다!');
+    }
   }, []);
 
   // 상품 카드 렌더링 (1열, ProductCardLarge, useCallback으로 메모이제이션)

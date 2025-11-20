@@ -15,20 +15,6 @@
  * - 반응형 개선 (모든 디바이스 대응)
  */
 
-import { SearchService } from '@/app/shared/services/searchService';
-import { useThrottledNavigationWithBack } from '@/app/shared/hooks/useThrottledNavigation';
-import type {
-  PopularSearch,
-  RecentSearch,
-  RecommendedSearch,
-} from '@/app/shared/types/search';
-import {
-  Icon,
-  SearchBar,
-  ThemeProvider,
-  useTheme,
-} from '@/design-system';
-import { useFocusEffect } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ScrollView,
@@ -37,7 +23,23 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { useFocusEffect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { SearchService } from '@/app/shared/services/searchService';
+import { useThrottledNavigation } from '@/app/shared/hooks/useThrottledNavigation';
+import type {
+  PopularSearch,
+  RecentSearch,
+  RecommendedSearch,
+} from '@/app/shared/types/search';
+
+import {
+  Icon,
+  SearchBar,
+  useTheme,
+} from '@/design-system';
+
 import {
   EmptyRecentSearches,
   PopularSearchGrid,
@@ -47,22 +49,11 @@ import {
 } from './components';
 
 /**
- * SearchScreen Component with ThemeProvider
+ * SearchScreen Component
  */
 export default function SearchScreen() {
-  return (
-    <ThemeProvider>
-      <SearchScreenContent />
-    </ThemeProvider>
-  );
-}
-
-/**
- * SearchScreenContent Component (ThemeProvider 내부)
- */
-function SearchScreenContent() {
   const { theme } = useTheme();
-  const { push, back } = useThrottledNavigationWithBack();
+  const { push, back } = useThrottledNavigation();
   const insets = useSafeAreaInsets();
   
   // 상태 관리

@@ -9,7 +9,7 @@
 import type { ProductCardVerticalData } from '@/app/shared/types';
 import { ProductCardVertical, SectionHeader, useTheme } from '@/design-system';
 import React from 'react';
-import { Dimensions, ScrollView, View } from 'react-native';
+import { ScrollView, View, useWindowDimensions } from 'react-native';
 
 interface RecommendationSectionProps {
   /** 추천 상품 목록 */
@@ -26,7 +26,7 @@ export const RecommendationSection: React.FC<RecommendationSectionProps> = ({
   userName = '만댱',
 }) => {
   const { theme } = useTheme();
-  const screenWidth = Dimensions.get('window').width;
+  const { width: screenWidth } = useWindowDimensions();
   // 3열 그리드 동적 카드 너비 계산 (Figma 기준)
   const horizontalPadding = 40; // 20px × 2
   const availableWidth = screenWidth - horizontalPadding;
