@@ -10,6 +10,7 @@
  */
 
 import { useMemo } from 'react';
+
 import type { CommonFilters } from '@/app/shared/types/filter.types';
 import type { ProductCardVerticalData, ProductCardHorizontalData } from '@/app/shared/types/product.types';
 import { applyFilters } from '@/app/shared/utils/filterProducts';

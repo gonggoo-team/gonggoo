@@ -6,6 +6,7 @@
  */
 
 import type { Badge } from '../types/product.types';
+
 import type { StatusBadgeType } from '@/design-system/primitives/StatusBadge';
 
 /**
