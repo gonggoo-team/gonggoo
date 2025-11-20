@@ -6,10 +6,12 @@
  * - 필터 화면으로 라우팅
  */
 
-import { useRouter } from 'expo-router';
 import { useCallback } from 'react';
-import { useThrottledNavigation } from './useThrottledNavigation';
+import { useRouter } from 'expo-router';
+
 import type { CommonFilters } from '../types/filter.types';
+
+import { useThrottledNavigation } from './useThrottledNavigation';
 
 /**
  * 가격 범위를 가진 상품 타입

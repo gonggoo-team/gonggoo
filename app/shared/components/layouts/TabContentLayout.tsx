@@ -30,6 +30,7 @@
 
 import React, { forwardRef, useMemo, useRef, useState } from 'react';
 import { Animated, FlatList, StyleSheet, View } from 'react-native';
+
 import type { TabContentLayoutProps } from './TabContentLayout.types';
 
 /**
@@ -116,7 +117,7 @@ export const TabContentLayout = forwardRef<FlatList, TabContentLayoutProps>(
     // onScroll 핸들러 (스크롤 방향 감지 - 쿠팡/당근마켓 스타일)
     const handleScroll = Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
       useNativeDriver: true,
-      listener: (event: any) => {
+      listener: (event: { nativeEvent: { contentOffset: { y: number } } }) => {
         if (!enableCollapsibleHeader) return;
 
         const currentScrollY = event.nativeEvent.contentOffset.y;
@@ -173,7 +174,7 @@ export const TabContentLayout = forwardRef<FlatList, TabContentLayoutProps>(
     const getItemLayout = useMemo(() => {
       if (numColumns > 1) {
         // 다중 열 그리드의 경우, 행 단위로 계산
-        return (_: any, index: number) => {
+        return (_: unknown, index: number) => {
           const rowIndex = Math.floor(index / numColumns);
           return {
             length: ITEM_HEIGHT,
@@ -183,7 +184,7 @@ export const TabContentLayout = forwardRef<FlatList, TabContentLayoutProps>(
         };
       }
       // 단일 열의 경우
-      return (_: any, index: number) => ({
+      return (_: unknown, index: number) => ({
         length: ITEM_HEIGHT,
         offset: ITEM_HEIGHT * index,
         index,
