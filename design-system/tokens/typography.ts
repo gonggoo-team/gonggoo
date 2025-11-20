@@ -59,6 +59,9 @@ export const scalableFontSize = {
   /** 24px - 큰 제목 → 24-28px */
   xxl: 24,
 
+  /** 25px - 상품 가격 표시 → 25-29px */
+  xxl25: 25,
+
   /** 28px - 아주 큰 제목 → 28-32px */
   xxxl: 28,
 
@@ -100,6 +103,9 @@ export const fontSize = {
 
   /** 24px - 큰 제목 */
   xxl: 24,
+
+  /** 25px - 상품 가격 표시 */
+  xxl25: 25,
 
   /** 28px - 아주 큰 제목 */
   xxxl: 28,

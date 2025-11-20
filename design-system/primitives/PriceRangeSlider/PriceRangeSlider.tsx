@@ -16,13 +16,13 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Animated,
-  Dimensions,
   LayoutChangeEvent,
   PanResponder,
   StyleProp,
   Text,
   View,
   ViewStyle,
+  useWindowDimensions,
 } from 'react-native';
 import { useTheme } from '../../hooks';
 import { triggerLightImpact, triggerMediumImpact, triggerSelection } from '../../utils/haptics';
@@ -88,10 +88,10 @@ export const PriceRangeSlider: React.FC<PriceRangeSliderProps> = ({
   onDragEnd,
 }) => {
   const { theme } = useTheme();
+  const { width: screenWidth } = useWindowDimensions();
   const styles = createPriceRangeSliderStyles(theme);
 
   // 슬라이더 트랙 너비를 미리 계산 (containerPaddingHorizontal = 24 * 2 = 48)
-  const screenWidth = Dimensions.get('window').width;
   const initialTrackWidth = screenWidth - 48; // 48 = paddingHorizontal 24 * 2
 
   // 슬라이더 트랙 너비 (초기값을 계산된 값으로 설정)

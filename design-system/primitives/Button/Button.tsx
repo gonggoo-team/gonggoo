@@ -19,7 +19,9 @@ import {
   TouchableOpacity,
   ViewStyle,
 } from 'react-native';
+
 import { useTheme } from '../../hooks';
+
 import { createButtonStyles } from './Button.styles';
 
 /**

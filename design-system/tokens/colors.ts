@@ -36,6 +36,8 @@ export const colors = {
     normal: {
       bg1: '#FFFFFF',           // Figma: BG1 - 배경 색상 1
       bg2: '#F5F5F5',           // Figma: BG2 - 배경 색상 2
+      bg3: '#F4F4F4',           // 배경 색상 3 (밝은 그레이)
+      white: '#FFFFFF',         // 순수 화이트
       container0: '#FFFFFF',    // Figma: Container0 - 버튼 색상 1
       container10: '#F5F5F5',   // Figma: Container10 - 버튼 색상 2
       containerRed: '#FFF4F6',  // Figma: Container red - 버튼 색상 3

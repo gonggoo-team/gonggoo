@@ -20,8 +20,8 @@
  */
 
 import type { CategoryData } from '@/app/shared/types/category.types';
-import React, { useMemo } from 'react';
-import { Dimensions, FlatList, View } from 'react-native';
+import React, { useMemo, useCallback } from 'react';
+import { FlatList, View, useWindowDimensions } from 'react-native';
 import { useTheme } from '../../hooks';
 import { CategoryItem } from '../../primitives/CategoryItem';
 import { createCategoryGridStyles } from './CategoryGrid.styles';
@@ -38,38 +38,46 @@ export const CategoryGrid: React.FC<CategoryGridProps> = ({
 }) => {
   const { theme } = useTheme();
   const styles = createCategoryGridStyles(theme);
+  const { width: screenWidth } = useWindowDimensions();
 
   // 2열 그리드 카드 너비 계산
   const itemWidth = useMemo(() => {
-    // if (numColumns === 2) {
-      const screenWidth = Dimensions.get('window').width;
-      const containerPadding = 40; // columnWrapper paddingHorizontal (좌우 각 20px)
-      const gap = theme.spacing.xs9; // 9px
-      const availableWidth = screenWidth - containerPadding;
-      return (availableWidth - gap) / 2;
-    // }
-    // return undefined;
-  }, [numColumns, theme.spacing.xs9]);
+    const containerPadding = 40; // columnWrapper paddingHorizontal (좌우 각 20px)
+    const gap = theme.spacing.xs9; // 9px
+    const availableWidth = screenWidth - containerPadding;
+    return (availableWidth - gap) / 2;
+  }, [screenWidth, theme.spacing.xs9]);
 
   // 키 추출
   const keyExtractor = (item: CategoryData) => item.id;
 
-  // 아이템 렌더링
-  const renderItem = ({ item, index }: { item: CategoryData; index: number }) => {
-    // 마지막 행의 아이템들은 border를 표시하지 않음
-    const totalItems = categories.length;
-    const isLastRow = index >= totalItems - numColumns;
+  // 카테고리 아이템 클릭 핸들러 (메모이제이션으로 안정적인 참조 유지)
+  const handleItemPress = useCallback(
+    (item: CategoryData) => {
+      onCategoryPress(item);
+    },
+    [onCategoryPress]
+  );
 
-    return (
-      <View style={{ width: itemWidth }}>
-        <CategoryItem
-          label={item.label}
-          onPress={() => onCategoryPress(item)}
-          showBorder={!isLastRow}
-        />
-      </View>
-    );
-  };
+  // 아이템 렌더링 (메모이제이션으로 불필요한 재렌더링 방지)
+  const renderItem = useCallback(
+    ({ item, index }: { item: CategoryData; index: number }) => {
+      // 마지막 행의 아이템들은 border를 표시하지 않음
+      const totalItems = categories.length;
+      const isLastRow = index >= totalItems - numColumns;
+
+      return (
+        <View style={{ width: itemWidth }}>
+          <CategoryItem
+            label={item.label}
+            onPress={() => handleItemPress(item)}
+            showBorder={!isLastRow}
+          />
+        </View>
+      );
+    },
+    [categories.length, numColumns, itemWidth, handleItemPress]
+  );
 
   return (
     <View style={[styles.container, style]}>

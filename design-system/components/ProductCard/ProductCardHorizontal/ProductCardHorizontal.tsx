@@ -29,7 +29,7 @@
  */
 
 import React, { useMemo } from 'react';
-import { Dimensions, StyleSheet, Text, Pressable, View } from 'react-native';
+import { StyleSheet, Text, Pressable, View, useWindowDimensions } from 'react-native';
 import { useTheme } from '../../../hooks';
 import { ProductImage } from '../../../primitives/ProductImage';
 import { ProgressBar } from '../../../primitives/ProgressBar';
@@ -52,21 +52,41 @@ export const ProductCardHorizontal = React.memo<ProductCardHorizontalProps>(({
   progress,
   badges,
   onPress,
+  variant = 'default',
+  completed = false,
   showPrice = true,
   showPricePerSlot = true,
   showBadges = true,
   showProgress = true,
   titleLines = 2,
+  showDivider = true,
+  centerTextVertically = false,
 }) => {
   const { theme } = useTheme();
+  const { width: screenWidth } = useWindowDimensions();
+
+  // variant에 따른 설정
+  const isRecentVariant = variant === 'recent';
+  const isProfileVariant = variant === 'profile';
+
+  // recent/profile variant는 진행률 바를 표시하지 않음
+  const finalShowProgress = (isRecentVariant || isProfileVariant) ? false : showProgress;
+
+  // profile variant는 배지를 표시하지 않음
+  const finalShowBadges = isProfileVariant ? false : showBadges;
 
   // 반응형 레이아웃 계산
   const layout = useMemo(() => {
-    const screenWidth = Dimensions.get('window').width;
     const containerWidth = screenWidth - 40; // 좌우 padding 20px * 2
 
-    // 이미지 크기: 136px 기준, 최소 100px ~ 최대 136px
-    const imageSize = Math.min(136, Math.max(100, containerWidth * 0.36));
+    // profile variant: 62px 고정
+    // recent variant: 106px 고정
+    // default variant: 136px 기준, 최소 100px ~ 최대 136px
+    const imageSize = isProfileVariant
+      ? 62
+      : isRecentVariant
+      ? 106
+      : Math.min(136, Math.max(100, containerWidth * 0.36));
 
     // 진행률 바 최대 너비: 97px 기준, 최소 70px
     const progressBarMaxWidth = Math.min(97, Math.max(70, containerWidth - imageSize - 100));
@@ -75,16 +95,34 @@ export const ProductCardHorizontal = React.memo<ProductCardHorizontalProps>(({
       imageSize,
       progressBarMaxWidth,
     };
-  }, []);
+  }, [screenWidth, isRecentVariant, isProfileVariant]);
+
+  // variant별 스타일 계산
+  const variantStyles = useMemo(() => {
+    if (isProfileVariant) {
+      return {
+        paddingVertical: 4,  // 상하 4px 공백 (이미지 62px + 상하 8px = 70px 전체 높이)
+        gap: 10,             // 이미지-내용 간격
+        contentGap: 4,       // 내부 요소 간격 (더 타이트하게)
+      };
+    }
+    return {
+      paddingVertical: 15,
+      gap: 13, // 이미지-내용 간격
+      contentGap: 9, // 내부 요소 간격
+    };
+  }, [isProfileVariant]);
 
   return (
     <Pressable
       style={({ pressed }) => [
         styles.container,
         {
-          borderBottomWidth: theme.dimensions.borderWidth.thin, // 1px
-          borderBottomColor: '#F4F4F4', // Figma 기준 #F4F4F4
+          borderBottomWidth: showDivider ? theme.dimensions.borderWidth.thin : 0, // 1px or 0
+          borderBottomColor: showDivider ? theme.colors.surface.normal.bg3 : 'transparent',
           opacity: pressed ? 0.8 : 1,
+          paddingVertical: variantStyles.paddingVertical,
+          gap: variantStyles.gap,
         },
       ]}
       onPress={onPress}
@@ -99,28 +137,59 @@ export const ProductCardHorizontal = React.memo<ProductCardHorizontalProps>(({
       {/* 이미지 영역 (반응형) */}
       <View style={[styles.imageContainer, { width: layout.imageSize, height: layout.imageSize }]}>
         <ProductImage uri={imageUri} aspectRatio={1} />
+
+        {/* 모집 완료 오버레이 (recent/profile variant 전용) */}
+        {(isRecentVariant || isProfileVariant) && completed && (
+          <View style={styles.completedOverlay}>
+            <Text style={[styles.completedText, {
+              fontSize: theme.typography.fontSize.sm, // 14px
+              fontWeight: theme.typography.fontWeight.medium, // 500
+              lineHeight: theme.typography.fontSize.sm * 1.193,
+              letterSpacing: theme.typography.getLetterSpacing(14),
+            }]}>
+              모집 완료
+            </Text>
+          </View>
+        )}
       </View>
 
       {/* 내용 영역 */}
       <View
         style={{
           flex: 1,
-          gap: 9, // Figma 기준: 9px (섹션 간 간격)
+          gap: variantStyles.contentGap, // variant별 간격
+          justifyContent: centerTextVertically || isProfileVariant ? 'center' : 'flex-start', // 중앙 정렬 옵션
+          height: centerTextVertically || isProfileVariant ? layout.imageSize : undefined, // 중앙 정렬 시 이미지 높이와 동일
         }}
       >
         {/* 제목 */}
-        <ProductInfo title={title} maxLines={titleLines} fontSize={theme.typography.fontSize.sm} />
+        <ProductInfo
+          title={title}
+          maxLines={titleLines}
+          fontSize={isProfileVariant ? theme.typography.fontSize.xs : theme.typography.fontSize.sm}
+        />
 
-        {/* 가격 정보 */}
-        <View style={{ gap: 0 }}>
+        {/* 가격 정보 - 한 줄 표시: "1슬롯 15,000원 75,000원" */}
+        <View style={{ flexDirection: 'row', gap: 5, flexWrap: 'wrap', alignItems: 'center' }}>
+          {/* 슬롯당 가격 (optional) */}
+          {showPricePerSlot && pricePerSlot !== undefined && (
+            <ProductPrice
+              pricePerSlot={pricePerSlot}
+              label={priceLabel}
+              labelValue={priceLabelValue}
+              labelColor={priceLabelColor}
+              fontSize={isProfileVariant ? theme.typography.fontSize.xs : theme.typography.fontSize.sm}
+            />
+          )}
+
           {/* 총 가격 (optional, strikethrough 지원) */}
           {showPrice && price !== undefined && (
             <Text
               style={{
-                fontSize: theme.typography.fontSize.sm, // 14px
-                fontWeight: theme.typography.fontWeight.medium, // 500
-                lineHeight: theme.typography.fontSize.sm * 1.4,
-                letterSpacing: theme.typography.getLetterSpacing(14),
+                fontSize: isProfileVariant ? theme.typography.fontSize.xs : theme.typography.fontSize.sm,
+                fontWeight: theme.typography.fontWeight.semiBold, // 600
+                lineHeight: isProfileVariant ? theme.typography.fontSize.xs * 1.4 : theme.typography.fontSize.sm * 1.4,
+                letterSpacing: theme.typography.getLetterSpacing(isProfileVariant ? 12 : 14),
                 color: theme.colors.surface.texticon.onnormal.text.midEmp, // #9FA7B1
                 textDecorationLine: priceStrikethrough ? 'line-through' : 'none',
               }}
@@ -130,24 +199,13 @@ export const ProductCardHorizontal = React.memo<ProductCardHorizontalProps>(({
               {price.toLocaleString()}원
             </Text>
           )}
-
-          {/* 슬롯당 가격 (optional) */}
-          {showPricePerSlot && pricePerSlot !== undefined && (
-            <ProductPrice
-              pricePerSlot={pricePerSlot}
-              label={priceLabel}
-              labelValue={priceLabelValue}
-              labelColor={priceLabelColor}
-              fontSize={theme.typography.fontSize.sm} // 14px (Figma 기준)
-            />
-          )}
         </View>
 
         {/* 배지 */}
-        {showBadges && <ProductBadges badges={badges} />}
+        {finalShowBadges && <ProductBadges badges={badges} />}
 
         {/* 진행률 바 + 구매 중인 인원 (반응형) */}
-        {showProgress && (
+        {finalShowProgress && (
           <View style={styles.progressRow}>
             <View style={{ width: layout.progressBarMaxWidth, minWidth: 70 }}>
               <ProgressBar percentage={progress} variant="light" showLabel={true} />
@@ -176,13 +234,13 @@ const styles = StyleSheet.create({
   container: {
     width: '100%',
     flexDirection: 'row',
-    gap: 13, // Figma 기준: 13px
-    paddingVertical: 15, // Figma 기준: 15px
+    // gap과 paddingVertical은 variant별로 동적 설정됨
   },
   imageContainer: {
     // width와 height는 동적으로 계산됨 (반응형)
     borderRadius: 12, // Figma 기준
     overflow: 'hidden',
+    position: 'relative',
   },
   pricePerSlotRow: {
     flexDirection: 'row',
@@ -193,5 +251,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-end', // Figma 기준: 하단 정렬
     gap: 3, // Figma 기준: 3px (게이지와 텍스트 사이)
+  },
+  // 모집 완료 오버레이 (recent variant 전용)
+  completedOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(24, 26, 26, 0.7)', // Figma 기준: #181A1A 70% opacity
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 12, // 부모 컨테이너와 동일
+  },
+  completedText: {
+    color: '#FFFFFF', // Figma 기준: 흰색 텍스트
   },
 });

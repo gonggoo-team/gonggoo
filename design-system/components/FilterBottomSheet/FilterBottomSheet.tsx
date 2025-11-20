@@ -73,7 +73,7 @@ export const FilterBottomSheet: React.FC<FilterBottomSheetProps> = ({
 
   // Backdrop 렌더링 함수 (Figma 디자인: rgba(24, 26, 26, 0.4))
   const renderBackdrop = useCallback(
-    (props: any) => (
+    (props: React.ComponentProps<typeof BottomSheetBackdrop>) => (
       <BottomSheetBackdrop
         {...props}
         disappearsOnIndex={-1}

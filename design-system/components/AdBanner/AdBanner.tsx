@@ -20,17 +20,15 @@
 
 import React, { useEffect, useRef } from 'react';
 import {
-  Dimensions,
   FlatList,
   Image,
   StyleSheet,
   Pressable,
   View,
+  useWindowDimensions,
 } from 'react-native';
 import { useTheme } from '../../hooks';
 import type { AdBannerItem, AdBannerProps } from './AdBanner.types';
-
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 /**
  * AdBanner Component
@@ -46,11 +44,12 @@ export const AdBanner: React.FC<AdBannerProps> = ({
   aspectRatio,
 }) => {
   const { theme } = useTheme();
+  const { width: screenWidth } = useWindowDimensions();
   const flatListRef = useRef<FlatList<AdBannerItem>>(null);
   const currentIndexRef = useRef(0);
 
   // 이미지 너비 계산
-  const imageWidth = fullWidth ? SCREEN_WIDTH : (width || SCREEN_WIDTH - 40);
+  const imageWidth = fullWidth ? screenWidth : (width || screenWidth - 40);
 
   useEffect(() => {
     if (!autoPlay || items.length <= 1) return;
@@ -68,7 +67,13 @@ export const AdBanner: React.FC<AdBannerProps> = ({
 
   const renderBannerItem = ({ item }: { item: AdBannerItem }) => {
     // 이미지 스타일: aspectRatio 우선, 없으면 height 사용
-    const imageStyle: any = {
+    const imageStyle: {
+      width: number;
+      borderRadius: number;
+      backgroundColor: string;
+      aspectRatio?: number;
+      height?: number;
+    } = {
       width: imageWidth,
       borderRadius: fullWidth ? 0 : 10, // fullWidth일 때는 borderRadius 제거
       backgroundColor: '#D9D9D9',
@@ -137,7 +142,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   bannerImage: {
-    width: SCREEN_WIDTH - 40, // screen width - (20px padding × 2)
+    // width는 imageWidth prop으로 동적 계산 (inline style)
     // height는 prop으로 전달받아 inline style로 처리
   },
 });
