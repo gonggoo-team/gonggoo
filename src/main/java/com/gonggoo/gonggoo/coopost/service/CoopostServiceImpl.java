@@ -4,6 +4,7 @@ import com.gonggoo.gonggoo.coopost.domain.CoopostCategory;
 import com.gonggoo.gonggoo.coopost.domain.CoopostStatus;
 import com.gonggoo.gonggoo.coopost.domain.Coopost;
 import com.gonggoo.gonggoo.coopost.dto.request.CoopostCreateRequest;
+import com.gonggoo.gonggoo.coopost.dto.request.CoopostSearchCondition;
 import com.gonggoo.gonggoo.coopost.dto.request.CoopostUpdateRequest;
 import com.gonggoo.gonggoo.coopost.dto.response.CoopostResponse;
 import com.gonggoo.gonggoo.coopost.dto.response.PageResponse;
@@ -140,5 +141,23 @@ public class CoopostServiceImpl implements CoopostService {
                                                  LocalDateTime createdAtCursor, UUID idCursor, Pageable pageable) {
         Slice<Coopost> slice = repo.search(keyword, category, location, createdAtCursor, idCursor, pageable);
         return SliceResponse.of(slice, CoopostResponse::from);
+    }
+
+    //통합 검색
+    @Override
+    @Transactional(readOnly = true)
+    public SliceResponse<CoopostResponse> searchByCondition(CoopostSearchCondition cond,
+                                                            Object cursorValue, UUID cursorId,
+                                                            Pageable pageable) {
+        Slice<Coopost> slice = repo.searchByCondition(cond, cursorValue, cursorId, pageable);
+
+        return SliceResponse.of(slice, CoopostResponse::from);
+
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Long countByCondition(CoopostSearchCondition condition) {
+        return repo.countByCondition(condition);
     }
 }
