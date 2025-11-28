@@ -10,3 +10,4 @@ export * from './categories.mock';
 export * from './user.mock';
 export * from './recentProducts.mock';
 export * from './cancelHistory.mock';
+export * from './auth.mock';

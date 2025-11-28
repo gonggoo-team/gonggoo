@@ -88,6 +88,14 @@ export const createButtonStyles = (theme: Theme) => {
       width: '100%', // 반응형 대응
     },
 
+    'full-primary-rounded': {
+      backgroundColor: theme.colors.surface.brand.primary, // #006242
+      borderRadius: theme.radius.md, // 12px
+      paddingVertical: theme.spacing.md, // 16px (반응형: minHeight 제거)
+      paddingHorizontal: theme.spacing.lg, // 20px
+      width: '100%', // 반응형 대응
+    },
+
     'full-secondary': {
       backgroundColor: theme.colors.surface.env.disabled, // #E1E1E1
       borderRadius: theme.radius.none, // 0px
@@ -200,6 +208,13 @@ export const createButtonStyles = (theme: Theme) => {
 
     // Full Width Button Text (반응형: 16px → 16-18px)
     'full-primary-text': {
+      color: theme.colors.surface.texticon.onnormal.text.white, // #FFFFFF
+      fontSize: fontSize16, // 반응형: 16px → 16-18px
+      fontWeight: theme.typography.fontWeight.semiBold, // 600
+      letterSpacing: theme.typography.getLetterSpacing(fontSize16),
+    },
+
+    'full-primary-rounded-text': {
       color: theme.colors.surface.texticon.onnormal.text.white, // #FFFFFF
       fontSize: fontSize16, // 반응형: 16px → 16-18px
       fontWeight: theme.typography.fontWeight.semiBold, // 600

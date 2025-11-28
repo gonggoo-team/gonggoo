@@ -13,6 +13,7 @@
 import React, { useMemo, useCallback } from 'react';
 import { ScrollView } from 'react-native';
 
+import { useAuth } from '@/app/shared/contexts';
 import {
   getMockDeadlineProducts,
   getMockMainBanners,
@@ -20,6 +21,7 @@ import {
 } from '@/app/shared/services/mock';
 import { getMockHorizontalBanner } from '@/app/shared/services/mock/banners.mock';
 import { useThrottledNavigation } from '@/app/shared/hooks/useThrottledNavigation';
+import { getNicknameDisplay } from '@/app/shared/utils';
 
 import { AdBanner, useTheme } from '@/design-system';
 
@@ -37,7 +39,11 @@ interface HomeContentProps {
 
 export const HomeContent = React.memo<HomeContentProps>(({ onNavigateToCategory }) => {
   const { theme } = useTheme();
+  const { user } = useAuth();
   const { push } = useThrottledNavigation();
+
+  // 사용자 닉네임 (없으면 "00" 표시)
+  const userName = getNicknameDisplay(user?.nickname, '00');
 
   // Mock 데이터 로드 - useMemo로 최적화
   const bannerData = useMemo(() => getMockMainBanners(), []);
@@ -116,6 +122,7 @@ export const HomeContent = React.memo<HomeContentProps>(({ onNavigateToCategory 
       {/* 00님을 위한 추천 공구팟 섹션 */}
       <RecommendedSection
         products={deadlineProducts}
+        userName={userName}
         onViewAll={() => onNavigateToCategory('recommend')}
         onProductPress={handleProductPress}
         onLikePress={handleLikePress}

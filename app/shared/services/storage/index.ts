@@ -3,3 +3,4 @@
  */
 
 export * from './recentProducts';
+export * from './authStorage';

@@ -15,11 +15,13 @@
 
 import React, { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { useRouter } from 'expo-router';
 
 import { MenuList } from '@/app/shared/components';
 import { useThrottledNavigation } from '@/app/shared/hooks';
-import { getMockUserProfile } from '@/app/shared/services/mock/user.mock';
-import type { UserProfile, ProfileMenuItem } from '@/app/shared/types';
+import { getNeighborhoodDisplay } from '@/app/shared/utils';
+import { useAuth } from '@/app/shared/contexts';
+import type { ProfileMenuItem } from '@/app/shared/types';
 
 import { useTheme } from '@/design-system';
 import { GNB } from '@/design-system/components';
@@ -29,10 +31,8 @@ import { ProfileImageSection } from './components/ProfileImageSection';
 export default function MyInfoScreen() {
   const { theme } = useTheme();
   const { push, back } = useThrottledNavigation();
-
-  // Mock 데이터 로드
-  const mockProfile = getMockUserProfile();
-  const [userProfile] = useState<UserProfile>(mockProfile);
+  const { user, logout } = useAuth();
+  const router = useRouter();
 
   /**
    * 프로필 수정 화면으로 이동
@@ -65,7 +65,18 @@ export default function MyInfoScreen() {
       '로그아웃 하시겠습니까?',
       [
         { text: '취소', style: 'cancel' },
-        { text: '로그아웃', onPress: () => console.log('로그아웃') },
+        {
+          text: '로그아웃',
+          onPress: async () => {
+            try {
+              await logout();
+              router.replace('/splash');
+            } catch (error) {
+              console.error('로그아웃 실패:', error);
+              Alert.alert('오류', '로그아웃에 실패했습니다. 다시 시도해주세요.');
+            }
+          },
+        },
       ]
     );
   };
@@ -79,40 +90,34 @@ export default function MyInfoScreen() {
     {
       id: 'member-id',
       label: '회원번호',
-      value: userProfile.id,
+      value: user?.id || '미설정',
       showChevron: true,
       onPress: handleMemberIdPress,
     },
     {
       id: 'phone-number',
       label: '전화번호',
-      value: userProfile.phoneNumber || '미설정',
+      value: '미설정', // TODO: user.phoneNumber 필드 추가 시 업데이트
       showChevron: false,
     },
     {
       id: 'refund-account',
       label: '환불계좌',
-      value:
-        userProfile.refundBankName && userProfile.refundAccountNumber
-          ? `${userProfile.refundBankName} ${userProfile.refundAccountNumber}`
-          : '미설정',
+      value: '미설정', // TODO: user.refundAccount 필드 추가 시 업데이트
       showChevron: true,
       onPress: handleRefundAccountPress,
     },
     {
       id: 'deposit-account',
       label: '입금계좌',
-      value:
-        userProfile.depositBankName && userProfile.depositAccountNumber
-          ? `${userProfile.depositBankName} ${userProfile.depositAccountNumber}`
-          : '미설정',
+      value: '미설정', // TODO: user.depositAccount 필드 추가 시 업데이트
       showChevron: true,
       onPress: handleDepositAccountPress,
     },
     {
       id: 'neighborhood',
       label: '동네설정',
-      value: userProfile.neighborhood || '미설정',
+      value: getNeighborhoodDisplay(user?.location?.address, '미설정'),
       showChevron: true,
       onPress: handleNeighborhoodPress,
     },
@@ -136,8 +141,8 @@ export default function MyInfoScreen() {
       >
         {/* 프로필 이미지 + 닉네임 섹션 */}
         <ProfileImageSection
-          nickname={userProfile.nickname}
-          profileImageUri={userProfile.profileImageUri}
+          nickname={user?.nickname || '사용자'}
+          profileImageUri={user?.profileImageUri}
           onImagePress={handleProfileEdit}
         />
 

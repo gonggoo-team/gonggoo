@@ -30,3 +30,6 @@ export * from './ProductProgressSlots';
 export * from './HostProfile';
 export * from './FloatingActionBar';
 export * from './FloatingActionButton';
+
+// 온보딩 및 공통 컴포넌트
+export * from './BottomBar';

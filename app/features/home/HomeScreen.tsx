@@ -14,7 +14,9 @@
 import React, { useRef, useState } from 'react';
 import { Alert, FlatList, StyleSheet, View } from 'react-native';
 
-import { useThrottledNavigation } from '@/app/shared/hooks';
+import { useAuth } from '@/app/shared/contexts';
+import { useRequireAuth, useThrottledNavigation } from '@/app/shared/hooks';
+import { getNeighborhoodDisplay } from '@/app/shared/utils';
 
 import { CategoryTabBar, FloatingActionButton, GNB, useTheme } from '@/design-system';
 import type { CategoryType } from '@/design-system/components/CategoryTabBar';
@@ -32,8 +34,16 @@ import {
  */
 export default function HomeScreen() {
   const { theme } = useTheme();
+  const { user } = useAuth();
   const { push } = useThrottledNavigation();
+  const { requireAuth } = useRequireAuth();
   const [selectedCategory, setSelectedCategory] = useState<CategoryType>('home');
+
+  // 사용자가 설정한 동네명 추출
+  const currentNeighborhood = getNeighborhoodDisplay(
+    user?.location?.address,
+    '동네 설정'
+  );
 
   // 각 탭별 FlatList ref
   const scrollRefs = useRef<{ [key in CategoryType]?: FlatList | null }>({});
@@ -62,9 +72,11 @@ export default function HomeScreen() {
     setSelectedCategory(category as CategoryType);
   };
 
-  // 상품 등록 버튼 핸들러
+  // 상품 등록 버튼 핸들러 (인증 필요)
   const handleProductRegistration = () => {
-    Alert.alert('준비중', '상품 등록 기능은 준비 중입니다');
+    requireAuth(() => {
+      Alert.alert('준비중', '상품 등록 기능은 준비 중입니다');
+    });
   };
 
   // GNB 핸들러들 (모두 쓰로틀링 적용)
@@ -90,7 +102,7 @@ export default function HomeScreen() {
     <View style={[styles.container, { backgroundColor: theme.colors.surface.normal.bg1 }]}>
       {/* GNB */}
       <GNB
-        leftSection={{ type: 'address', text: '논현동', onPress: handleAddressPress }}
+        leftSection={{ type: 'address', text: currentNeighborhood, onPress: handleAddressPress }}
         rightIcons={[
           { type: 'search', onPress: handleSearchPress },
           {

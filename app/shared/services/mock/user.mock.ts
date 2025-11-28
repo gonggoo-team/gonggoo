@@ -56,6 +56,7 @@ export const getMockParticipationStats = (): ParticipationStats => ({
  * Mock 프로필 메뉴 아이템 리스트
  * - route는 추후 실제 화면 구현 시 연결
  * - 현재는 stub 화면으로 이동
+ * - 로그아웃은 내 정보 화면(MyInfoScreen)에서 처리
  */
 export const getMockProfileMenuItems = (): ProfileMenuItem[] => [
   {
