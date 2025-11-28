@@ -14,9 +14,11 @@
 import React, { useMemo, useCallback } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
+import { useAuth } from '@/app/shared/contexts';
 import { getMockCategories, getMockRecommendedProducts } from '@/app/shared/services/mock';
 import { getMockHorizontalBanner } from '@/app/shared/services/mock/banners.mock';
 import { useThrottledNavigation } from '@/app/shared/hooks/useThrottledNavigation';
+import { getNicknameDisplay } from '@/app/shared/utils';
 import type { CategoryData } from '@/app/shared/types';
 
 import { GNB, useTheme } from '@/design-system';
@@ -30,7 +32,11 @@ import { RecommendationSection } from './sections';
  */
 export default function CategoryScreen() {
   const { theme } = useTheme();
+  const { user } = useAuth();
   const { push } = useThrottledNavigation();
+
+  // 사용자 닉네임 (없으면 "00" 표시)
+  const userName = getNicknameDisplay(user?.nickname, '00');
 
   // Mock 데이터 로드
   const categories = useMemo(() => getMockCategories(), []);
@@ -99,7 +105,7 @@ export default function CategoryScreen() {
           <RecommendationSection
             products={recommendedProducts}
             onProductPress={handleProductPress}
-            userName="만댱"
+            userName={userName}
           />
         </View>
 

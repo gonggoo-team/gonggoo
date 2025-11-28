@@ -9,15 +9,18 @@
  */
 
 import { useState, useCallback } from 'react';
+import { useAuth } from '@/app/shared/contexts';
 import { useImagePicker } from '@/app/shared/hooks';
 
 export function useProfileEdit() {
-  // 닉네임 상태
-  const [nickname, setNickname] = useState('만댱'); // 초기값: 기존 닉네임
+  const { user } = useAuth();
+
+  // 닉네임 상태 (AuthContext에서 가져온 닉네임을 초기값으로 사용)
+  const [nickname, setNickname] = useState(user?.nickname || '');
   const [hasError, setHasError] = useState(false);
 
   // 프로필 이미지 (useImagePicker 재사용)
-  const { profileImageUri, handleImagePick } = useImagePicker();
+  const { profileImageUri, handleImagePick } = useImagePicker(user?.profileImageUri);
 
   /**
    * 닉네임 변경 핸들러

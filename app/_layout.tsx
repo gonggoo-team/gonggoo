@@ -3,6 +3,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { ThemeProvider } from "@/design-system";
+import { AuthProvider } from "@/app/shared/contexts";
 
 export default function RootLayout() {
 
@@ -10,9 +11,58 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <ThemeProvider>
-          <Stack>
-            <Stack.Screen name="index" />
-            <Stack.Screen name="(tabs)" options={{headerShown: false}} />
+          <AuthProvider>
+            <Stack>
+              <Stack.Screen name="index" options={{ headerShown: false }} />
+              <Stack.Screen name="(tabs)" options={{ headerShown: false, gestureEnabled: false }} />
+
+              {/* Auth Screens */}
+              <Stack.Screen
+                name="splash"
+                options={{
+                  headerShown: false,
+                  gestureEnabled: false,
+                }}
+              />
+              <Stack.Screen
+                name="onboarding"
+                options={{
+                  headerShown: false,
+                  gestureEnabled: false,
+                }}
+              />
+              <Stack.Screen
+                name="signup"
+                options={{
+                  headerShown: false,
+                  presentation: 'card',
+                  animation: 'slide_from_right',
+                }}
+              />
+              <Stack.Screen
+                name="login"
+                options={{
+                  headerShown: false,
+                  presentation: 'card',
+                  animation: 'slide_from_right',
+                }}
+              />
+              <Stack.Screen
+                name="set-location"
+                options={{
+                  headerShown: false,
+                  presentation: 'card',
+                  animation: 'slide_from_right',
+                }}
+              />
+              <Stack.Screen
+                name="search-location"
+                options={{
+                  headerShown: false,
+                  presentation: 'card',
+                  animation: 'slide_from_right',
+                }}
+              />
 
             <Stack.Screen
               name="search"
@@ -122,12 +172,13 @@ export default function RootLayout() {
               }}
             />
 
-            <Stack.Protected guard={__DEV__}>
-              <Stack.Screen name="storybook" options={{presentation: 'modal',
-              animation: 'slide_from_right',animationDuration: 2000,
-              headerShown: false,}} />
-            </Stack.Protected>
-          </Stack>
+              <Stack.Protected guard={__DEV__}>
+                <Stack.Screen name="storybook" options={{presentation: 'modal',
+                animation: 'slide_from_right',animationDuration: 2000,
+                headerShown: false,}} />
+              </Stack.Protected>
+            </Stack>
+          </AuthProvider>
         </ThemeProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

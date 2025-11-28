@@ -10,7 +10,7 @@ import React, { useState, useEffect } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 
-import { useThrottledNavigation, useThrottledCallback } from '@/app/shared/hooks';
+import { useRequireAuth, useThrottledNavigation, useThrottledCallback } from '@/app/shared/hooks';
 import { getProductDetailById } from '@/app/shared/services/mock';
 import { addRecentProductId } from '@/app/shared/services/storage';
 
@@ -31,6 +31,7 @@ import {
 export default function ProductDetailScreen() {
   const { theme } = useTheme();
   const { back } = useThrottledNavigation();
+  const { requireAuth } = useRequireAuth();
   const { id } = useLocalSearchParams<{ id: string }>();
 
   // 상품 데이터 로드
@@ -75,16 +76,25 @@ export default function ProductDetailScreen() {
     Alert.alert('공유', '공유 기능은 준비 중입니다.');
   }, 300);
 
+  // 찜하기 (인증 필요)
   const handleLikePress = () => {
-    setIsLiked((prev) => !prev);
+    requireAuth(() => {
+      setIsLiked((prev) => !prev);
+    });
   };
 
+  // 채팅하기 (인증 필요)
   const handleChatPress = () => {
-    Alert.alert('채팅', '채팅 기능은 준비 중입니다.');
+    requireAuth(() => {
+      Alert.alert('채팅', '채팅 기능은 준비 중입니다.');
+    });
   };
 
+  // 참여하기 (인증 필요)
   const handleJoinPress = () => {
-    Alert.alert('참여하기', `${product.title}에 참여하시겠습니까?`);
+    requireAuth(() => {
+      Alert.alert('참여하기', `${product.title}에 참여하시겠습니까?`);
+    });
   };
 
   const handleReportPress = () => {

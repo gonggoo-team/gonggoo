@@ -1,5 +1,13 @@
 {
   "plugins": [
-    "expo-web-browser"
+    "expo-web-browser",
+    "expo-router",
+    [
+      "expo-location",
+      {
+        "locationAlwaysAndWhenInUsePermission": "네이버스가 사용자의 위치를 사용하도록 허용하시겠습니까?",
+        "locationWhenInUsePermission": "네이버스가 사용자의 위치를 사용하도록 허용하시겠습니까?"
+      }
+    ]
   ]
 }
