@@ -34,23 +34,30 @@ public class AuthTokenAuthenticationFilter extends OncePerRequestFilter {
         try {
             String accessToken = jwtTokenProvider.resolveToken(req);
 
-            if (redisTokenBlackListService.isContainToken(accessToken)) {
+
+            if (accessToken != null && redisTokenBlackListService.isContainToken(accessToken)) {
                 throw new NeighborsException(BLACKLISTED_TOKEN);
             }
             log.debug("AccessToken : " + accessToken);
+
+
             if (accessToken != null && jwtTokenProvider.validateToken(accessToken)) {
                 Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
+            // 정상적인 경우에만 다음 필터로 진행
+            filterChain.doFilter(req, res);
         } catch (NeighborsException e) {
-            log.debug("Auth failure: {}", e.getMessage());
+            log.warn("Auth failure: {}", e.getMessage());
             SecurityContextHolder.clearContext();
             securityErrorResponseWriter.writeError(res, e.getErrorCode());
+            return;
         } catch (Exception e) {
             log.error("Unexpected auth filter error: {}", e.getMessage(), e);
             SecurityContextHolder.clearContext();
             securityErrorResponseWriter.writeError(res, ErrorCode.SERVER_ERROR);
+            return;
         }
-        filterChain.doFilter(req, res);
+
     }
 }
