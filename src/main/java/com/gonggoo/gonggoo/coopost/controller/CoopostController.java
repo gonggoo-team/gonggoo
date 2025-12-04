@@ -88,7 +88,7 @@ public class CoopostController {
     /**
      * 공구글 전체 조회 (200 OK)
      */
-    @GetMapping
+    @GetMapping("/all")
     public ApiResponse<SliceResponse<CoopostResponse>> getAll(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime createdAtCursor,
             @RequestParam(required = false) UUID idCursor,

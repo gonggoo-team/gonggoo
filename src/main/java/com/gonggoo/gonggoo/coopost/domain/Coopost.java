@@ -4,6 +4,8 @@ import com.gonggoo.gonggoo.global.entity.BaseEntity;
 import com.gonggoo.gonggoo.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -26,8 +28,9 @@ import java.util.UUID;
 public class Coopost extends BaseEntity {
 
     @Id
-    @GeneratedValue
-    @Column(name = "coopost_id", columnDefinition = "UUID")
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "coopost_id", columnDefinition = "VARCHAR(36)")
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     private UUID coopostId;
 
     @ManyToOne(fetch = FetchType.LAZY)
