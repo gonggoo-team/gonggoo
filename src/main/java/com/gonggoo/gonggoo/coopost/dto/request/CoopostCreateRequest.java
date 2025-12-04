@@ -7,8 +7,6 @@ import org.antlr.v4.runtime.misc.NotNull;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.util.UUID;
 
 @Data
 public class CoopostCreateRequest {
@@ -35,7 +33,6 @@ public class CoopostCreateRequest {
     private Integer maxParticipants;
 
 
-    // enum으로 변경할 시, 꼭 선택되어야 함.
     @NotNull
     private CoopostCategory category;
 

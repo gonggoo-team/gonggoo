@@ -1,7 +1,9 @@
 package com.gonggoo.gonggoo.member.controller;
 
 import com.gonggoo.gonggoo.auth.jwt.JwtTokenProvider;
+import com.gonggoo.gonggoo.global.exception.NeighborsException;
 import com.gonggoo.gonggoo.global.response.ApiResponse;
+import com.gonggoo.gonggoo.global.response.ErrorCode;
 import com.gonggoo.gonggoo.member.dto.request.LocationUpdateRequest;
 import com.gonggoo.gonggoo.member.dto.request.MemberSignupRequest;
 import com.gonggoo.gonggoo.member.dto.request.MemberUpdateRequest;
@@ -52,7 +54,15 @@ public class MemberController {
     @PatchMapping("/me")
     public ApiResponse<MemberResponse> updateMember(@RequestBody MemberUpdateRequest memberUpdateRequest,
                                                        @RequestHeader("Authorization") String authorizationHeader) {
-        String accessToken = authorizationHeader.split(" ")[1];
+        String accessToken;
+
+        // 토큰 추출 방식 안전하게 변경 - (오류 의 원인을 명확하게 하기 위해서)
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            accessToken = authorizationHeader.substring(7); // "Bearer " 이후의 문자열만 추출
+        } else {
+            // 토큰 형식이 잘못되었을 때 500이 아닌 400/401 에러를 명시적으로 던져야 함
+            throw new NeighborsException(ErrorCode.INVALID_AUTH_HEADER);
+        }
         int memberId = Integer.parseInt(jwtTokenProvider.parseSubject(accessToken));
 
         MemberResponse memberResponse = memberService.update(memberId, memberUpdateRequest);
@@ -61,7 +71,13 @@ public class MemberController {
 
     @DeleteMapping("/me")
     public ApiResponse<Void> deleteMember(@RequestHeader("Authorization") String authorizationHeader) {
-        String accessToken = authorizationHeader.split(" ")[1];
+        String accessToken;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            accessToken = authorizationHeader.substring(7); // "Bearer " 이후의 문자열만 추출
+        } else {
+            // 토큰 형식이 잘못되었을 때 500이 아닌 400/401 에러를 명시적으로 던져야 함
+            throw new NeighborsException(ErrorCode.INVALID_AUTH_HEADER);
+        }
         int memberId = Integer.parseInt(jwtTokenProvider.parseSubject(accessToken));
 
         memberService.delete(memberId);
@@ -70,7 +86,13 @@ public class MemberController {
 
     @GetMapping("/location")
     public ApiResponse<LocationResponse> getLocation(@RequestHeader("Authorization") String authorizationHeader) {
-        String accessToken = authorizationHeader.split(" ")[1];
+        String accessToken;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            accessToken = authorizationHeader.substring(7); // "Bearer " 이후의 문자열만 추출
+        } else {
+            // 토큰 형식이 잘못되었을 때 500이 아닌 400/401 에러를 명시적으로 던져야 함
+            throw new NeighborsException(ErrorCode.INVALID_AUTH_HEADER);
+        }
         int memberId = Integer.parseInt(jwtTokenProvider.parseSubject(accessToken));
 
         LocationResponse locationResponse = memberService.getLocation(memberId);
@@ -80,7 +102,13 @@ public class MemberController {
     @PatchMapping("/location")
     public ApiResponse<MemberResponse> updateLocation(@RequestHeader("Authorization") String authorizationHeader,
                                                          @RequestBody LocationUpdateRequest locationUpdateRequest) {
-        String accessToken = authorizationHeader.split(" ")[1];
+        String accessToken;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            accessToken = authorizationHeader.substring(7); // "Bearer " 이후의 문자열만 추출
+        } else {
+            // 토큰 형식이 잘못되었을 때 500이 아닌 400/401 에러를 명시적으로 던져야 함
+            throw new NeighborsException(ErrorCode.INVALID_AUTH_HEADER);
+        }
         int memberId = Integer.parseInt(jwtTokenProvider.parseSubject(accessToken));
 
         MemberResponse memberResponse = memberService.updateLocation(memberId, locationUpdateRequest);

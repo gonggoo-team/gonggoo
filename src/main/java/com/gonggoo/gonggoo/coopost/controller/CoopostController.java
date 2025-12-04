@@ -7,8 +7,10 @@ import com.gonggoo.gonggoo.coopost.dto.request.CoopostUpdateRequest;
 import com.gonggoo.gonggoo.coopost.dto.response.CoopostResponse;
 import com.gonggoo.gonggoo.coopost.dto.response.PageResponse;
 import com.gonggoo.gonggoo.coopost.dto.response.SliceResponse;
+import com.gonggoo.gonggoo.global.exception.NeighborsException;
 import com.gonggoo.gonggoo.global.response.ApiResponse;
 import com.gonggoo.gonggoo.coopost.service.CoopostService;
+import com.gonggoo.gonggoo.global.response.ErrorCode;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -37,7 +39,14 @@ public class CoopostController {
             @Valid @RequestBody CoopostCreateRequest req,
             @RequestHeader("Authorization") String authorizationHeader) {
 
-        String accessToken = authorizationHeader.split(" ")[1];
+        String accessToken;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            accessToken = authorizationHeader.substring(7); // "Bearer " 이후의 문자열만 추출
+        } else {
+            // 토큰 형식이 잘못되었을 때 500이 아닌 400/401 에러를 명시적으로 던져야 함
+            throw new NeighborsException(ErrorCode.INVALID_AUTH_HEADER);
+        }
+
         int memberId = Integer.parseInt(jwtTokenProvider.parseSubject(accessToken));
 
 
@@ -110,8 +119,15 @@ public class CoopostController {
             @RequestParam(required = false) UUID idCursor,
             @RequestParam(defaultValue = "20") int size
     ) {
+        //토큰 파싱에서 오류 원인을 명확하게 하기 위해서 분류
+        String accessToken;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            accessToken = authorizationHeader.substring(7); // "Bearer " 이후의 문자열만 추출
+        } else {
+            // 토큰 형식이 잘못되었을 때 500이 아닌 400/401 에러를 명시적으로 던져야 함
+            throw new NeighborsException(ErrorCode.INVALID_AUTH_HEADER);
+        }
 
-        String accessToken = authorizationHeader.split(" ")[1];
         int memberId = Integer.parseInt(jwtTokenProvider.parseSubject(accessToken));
 
 
