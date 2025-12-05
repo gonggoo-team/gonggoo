@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: gonggoo
+
+  # 공통 JPA/Hibernate 설정
+  jpa:
+    open-in-view: false # OSIV 설정 (성능 최적화를 위해 false 권장, 필요시 true)
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+        default_batch_fetch_size: 100 # N+1 문제 완화를 위한 배치 사이즈 설정
+
+  # Jackson 공통 설정
+  jackson:
+    deserialization:
+      accept-timestamp-for-timestamps: true
+
+# 공통 로깅 레벨
+logging:
+  level:
+    root: info

@@ -3,7 +3,7 @@ version: '3.8'
 services:
   app:
     container_name: gonggoo-app
-    build: ../../Users/User/OneDrive/바탕 화면
+    build: .
     ports:
       - "8080:8080"
     depends_on:
@@ -13,8 +13,11 @@ services:
       # 혹시 모를 오타 방지를 위해 환경변수로도 주입 (선택사항이나 추천)
       - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/gonggoo_db?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
       - SPRING_DATASOURCE_PASSWORD=password1234
-      - SPRING_REDIS_HOST=redis
-
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
+      - LOGGING_LEVEL_ROOT=INFO
+      - LOGGING_LEVEL_COM_GONGGOO=DEBUG
+      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY=DEBUG
   db:
     image: mysql:8.0
     container_name: gonggoo-db
