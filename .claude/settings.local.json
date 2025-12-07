@@ -16,7 +16,9 @@
       "Bash(test:*)",
       "Bash(find:*)",
       "Bash(git log:*)",
-      "Bash(git branch:*)"
+      "Bash(git branch:*)",
+      "Bash(git ls-tree:*)",
+      "Bash(comm:*)"
     ],
     "deny": [],
     "ask": []

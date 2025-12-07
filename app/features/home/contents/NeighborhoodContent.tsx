@@ -10,12 +10,13 @@
 import React, { forwardRef, useCallback, useMemo } from 'react';
 import { FlatList, View } from 'react-native';
 
+import { useAuth } from '@/app/shared/contexts';
 import { TabContentLayout } from '@/app/shared/components/layouts';
 import { useProductCardGrid, useProductList, useTabFilters, useTabSort, useFilterNavigation } from '@/app/shared/hooks';
 import { useThrottledNavigation } from '@/app/shared/hooks/useThrottledNavigation';
 import { getAllProducts } from '@/app/shared/services/mock/products.mock';
 import type { ProductCardVerticalData } from '@/app/shared/types/product.types';
-import { convertBadges, calculatePriceRange } from '@/app/shared/utils';
+import { convertBadges, calculatePriceRange, formatNeighborhoodSubtitle } from '@/app/shared/utils';
 
 import {
   CategoryFilterBar,
@@ -29,6 +30,7 @@ import {
 
 export const NeighborhoodContent = forwardRef<FlatList>((props, ref) => {
   const { theme } = useTheme();
+  const { user } = useAuth();
   const { push } = useThrottledNavigation();
 
   // Mock 데이터 로드 - 동네 탭은 모든 상품 표시
@@ -158,10 +160,10 @@ export const NeighborhoodContent = forwardRef<FlatList>((props, ref) => {
     () => (
       <SectionHeader
         title="우리 동네에서 모집 중!"
-        subtitle="00동에서 모집 중인 팟을 한눈에 확인하세요!"
+        subtitle={formatNeighborhoodSubtitle(user?.location?.address)}
       />
     ),
-    []
+    [user?.location?.address]
   );
 
   return (

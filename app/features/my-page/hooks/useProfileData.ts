@@ -15,7 +15,6 @@ export function useProfileData() {
   // 1. 상태 관리
   const {
     userProfile,
-    setUserProfile,
     groupBuyStats,
     participationStats,
     menuItems,

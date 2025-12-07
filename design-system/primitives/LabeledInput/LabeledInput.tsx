@@ -89,10 +89,15 @@ export const LabeledInput: React.FC<LabeledInputProps> = ({
   inputStyle,
   showDivider = true,
   placeholder,
+  onFocus,
+  onBlur,
   ...textInputProps
 }) => {
   const { theme } = useTheme();
   const styles = createLabeledInputStyles(theme);
+
+  // Focus 상태 관리
+  const [isFocused, setIsFocused] = React.useState(false);
 
   // 삭제 버튼 표시 여부 결정
   const shouldShowClearButton = showClearButton !== undefined
@@ -108,16 +113,44 @@ export const LabeledInput: React.FC<LabeledInputProps> = ({
     }
   };
 
+  // Focus 핸들러
+  const handleFocus = (e: any) => {
+    setIsFocused(true);
+    if (onFocus) {
+      onFocus(e);
+    }
+  };
+
+  // Blur 핸들러
+  const handleBlur = (e: any) => {
+    setIsFocused(false);
+    if (onBlur) {
+      onBlur(e);
+    }
+  };
+
   // placeholder 기본값
   const defaultPlaceholder = variant === 'verification'
     ? '숫자를 입력해 주세요'
     : '';
 
+  // Focus 상태에 따른 label 색상
+  const labelColor = isFocused
+    ? theme.colors.surface.brand.primary
+    : theme.colors.surface.texticon.onnormal.text.lowEmp;
+
+  // Focus 상태에 따른 divider 색상
+  const dividerColor = isFocused
+    ? theme.colors.surface.brand.primary
+    : theme.colors.border.lowEmp;
+
   return (
     <View style={[styles.container, containerStyle]}>
       {/* Label */}
       <View style={styles.labelContainer}>
-        <Text style={[styles.label, labelStyle]}>{label}</Text>
+        <Text style={[styles.label, { color: labelColor }, labelStyle]}>
+          {label}
+        </Text>
       </View>
 
       {/* Input Area */}
@@ -126,6 +159,8 @@ export const LabeledInput: React.FC<LabeledInputProps> = ({
           style={[styles.input, inputStyle]}
           value={value}
           onChangeText={onChangeText}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
           placeholder={placeholder || defaultPlaceholder}
           placeholderTextColor={theme.colors.surface.texticon.onnormal.text.lowEmp}
           {...textInputProps}
@@ -147,7 +182,10 @@ export const LabeledInput: React.FC<LabeledInputProps> = ({
       {/* Divider */}
       {showDivider && (
         <View style={styles.dividerContainer}>
-          <Divider color="lowEmp" />
+          <Divider
+            color="lowEmp"
+            style={{ backgroundColor: dividerColor }}
+          />
         </View>
       )}
     </View>

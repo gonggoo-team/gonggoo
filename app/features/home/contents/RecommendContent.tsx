@@ -7,11 +7,12 @@
  * - RecommendContent는 구조가 독특하여 일부만 공통화
  */
 
+import { useAuth } from '@/app/shared/contexts';
 import { useThrottledNavigation } from '@/app/shared/hooks/useThrottledNavigation';
 import { getMockHorizontalBanner, getMockMainBanners } from '@/app/shared/services/mock';
 import { getMockRecommendedProducts } from '@/app/shared/services/mock/products.mock';
 import type { AdBannerItem, ProductCardVerticalData } from '@/app/shared/types/product.types';
-import { convertBadges } from '@/app/shared/utils';
+import { convertBadges, formatNicknameWithSuffix } from '@/app/shared/utils';
 import {
   AgeFilterBar,
   ProductCardCompact,
@@ -33,11 +34,15 @@ import { AdBannerSection } from '../sections';
 
 export const RecommendContent: React.FC = () => {
   const { theme } = useTheme();
+  const { user } = useAuth();
   const { push } = useThrottledNavigation();
   const { width: screenWidth } = useWindowDimensions();
   const [currentPage1, setCurrentPage1] = useState(0);
   const [currentPage2, setCurrentPage2] = useState(0);
   const [selectedAgeGroup, setSelectedAgeGroup] = useState('전체');
+
+  // 사용자 닉네임 (없으면 "00" 표시)
+  const userNickname = formatNicknameWithSuffix(user?.nickname, '00');
 
   // 3열 그리드 동적 카드 너비 계산 (Figma 기준)
   const horizontalPadding = 40; // 20px × 2
@@ -110,7 +115,7 @@ export const RecommendContent: React.FC = () => {
       {/* 00님을 위한 추천 섹션 */}
       <View style={styles.section}>
         <SectionHeader
-          title="00님 을 위한 추천 공구"
+          title={`${userNickname} 을 위한 추천 공구`}
           subtitle=""
         />
 

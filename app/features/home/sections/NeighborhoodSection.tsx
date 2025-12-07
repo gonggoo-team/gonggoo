@@ -4,10 +4,13 @@
  * 우리 동네에서 모집중 섹션
  */
 
-import type { ProductCardVerticalData } from '@/app/shared/types/product.types';
-import { ProductCardVertical, ProductSection, useTheme } from '@/design-system';
 import React from 'react';
 import { ScrollView } from 'react-native';
+
+import { useAuth } from '@/app/shared/contexts';
+import type { ProductCardVerticalData } from '@/app/shared/types/product.types';
+import { formatNeighborhoodSubtitle } from '@/app/shared/utils';
+import { ProductCardVertical, ProductSection, useTheme } from '@/design-system';
 
 interface NeighborhoodSectionProps {
   products: ProductCardVerticalData[];
@@ -23,11 +26,15 @@ export const NeighborhoodSection = React.memo<NeighborhoodSectionProps>(({
   onLikePress,
 }) => {
   const { theme } = useTheme();
+  const { user } = useAuth();
+
+  // 사용자 동네에 맞는 subtitle 생성
+  const subtitle = formatNeighborhoodSubtitle(user?.location?.address);
 
   return (
     <ProductSection
       title="우리 동네에서 모집 중!"
-      subtitle="00동에서 모집 중인 팟을 한눈에 확인하세요!"
+      subtitle={subtitle}
       actionLabel="전체보기"
       onActionPress={onViewAll}
     >

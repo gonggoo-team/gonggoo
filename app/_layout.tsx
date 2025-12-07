@@ -1,10 +1,10 @@
 import { Stack } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 
 import { ThemeProvider } from "@/design-system";
 import { AuthProvider } from "@/app/shared/contexts";
-import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 
 export default function RootLayout() {
 
@@ -88,6 +88,7 @@ export default function RootLayout() {
                 headerShown: false,
               }}
             />
+
             <Stack.Screen
               name="product-registration"
               options={{
