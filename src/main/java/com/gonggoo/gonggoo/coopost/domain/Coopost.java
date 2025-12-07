@@ -1,6 +1,6 @@
 package com.gonggoo.gonggoo.coopost.domain;
 
-import com.gonggoo.gonggoo.global.entity.BaseEntity;
+import com.gonggoo.gonggoo.common.domain.BaseEntity;
 import com.gonggoo.gonggoo.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.*;
@@ -29,7 +29,8 @@ public class Coopost extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "coopost_id", columnDefinition = "VARCHAR(36)")
+//    @Column(name = "coopost_id", columnDefinition = "VARCHAR(36)")
+    @Column(name = "coopost_id")
     @JdbcTypeCode(SqlTypes.VARCHAR)
     private UUID coopostId;
 
