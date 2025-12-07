@@ -64,7 +64,7 @@ export default function HomeScreen() {
 
   // 상품 등록 버튼 핸들러
   const handleProductRegistration = () => {
-    Alert.alert('준비중', '상품 등록 기능은 준비 중입니다');
+    push('/product-registration');
   };
 
   // GNB 핸들러들 (모두 쓰로틀링 적용)

@@ -13,7 +13,7 @@ export const createCheckboxStyles = (theme: Theme) =>
     container: {
       flexDirection: 'row',
       alignItems: 'center',
-      minHeight: 44, // 터치 타겟 최소 크기 보장
+      minHeight: 44, // 터치 타겟 최소 크기 보장           
     },
 
     // Container Reverse (체크박스 우측)
@@ -35,7 +35,7 @@ export const createCheckboxStyles = (theme: Theme) =>
       fontWeight: theme.typography.fontWeight.medium, // 500
       color: theme.colors.surface.texticon.onnormal.text.black, // #181A1A
       letterSpacing: theme.typography.getLetterSpacing(theme.typography.fontSize.sm), // -0.35
-      flex: 1, // 텍스트 길이에 따라 유연하게 조정
+      // flex: 1, // 텍스트 길이에 따라 유연하게 조정
     },
 
     // Disabled State

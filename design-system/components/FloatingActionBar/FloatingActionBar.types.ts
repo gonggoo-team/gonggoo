@@ -15,4 +15,13 @@ export interface FloatingActionBarProps {
   joinDisabled?: boolean;
   /** 참여하기 버튼 텍스트 */
   joinButtonText?: string;
+
+  /** 상품명 (펼쳐진 상태에서 표시) */
+  productTitle?: string;
+  /** 슬롯당 가격 (펼쳐진 상태에서 표시) */
+  pricePerSlot?: number;
+  /** 초기 수량 (기본값: 1) */
+  initialQuantity?: number;
+  /** 수량 변경 핸들러 */
+  onQuantityChange?: (quantity: number) => void;
 }

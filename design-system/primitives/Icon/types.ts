@@ -51,7 +51,9 @@ export type IconName =
   | 'group-complete'
   | 'joined'
   | 'profile-default'
-  | 'camera';
+  | 'camera'
+  | 'minus'
+  | 'close';
 
 /**
  * Icon 크기 프리셋
