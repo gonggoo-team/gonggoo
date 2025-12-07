@@ -26,6 +26,11 @@ public class CoopostCreateRequest {
     @Positive(message= "단위 가격은 0보다 커야 합니다. ")
     private BigDecimal pricePerUnit;
 
+    // [추가] 정가 입력
+    @NotNull
+    @Positive
+    private BigDecimal originalPrice;
+
     @NotNull
     @Min(value = 1, message = "최소 참여 인원은 1명 이상이어야 합니다.")
     private Integer minParticipants;
