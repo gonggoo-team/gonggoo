@@ -1,101 +1,221 @@
-/**
- * FloatingActionBar Component
- *
- * 하단에 고정된 플로팅 액션 바 컴포넌트입니다.
- * - 좋아요, 채팅 아이콘 버튼
- * - 참여하기 메인 버튼
- * - 상단 화살표 (선택적)
- *
- * Figma: Frame 6117
- */
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View, LayoutChangeEvent, Platform } from 'react-native';
+import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  interpolate,
+  Extrapolation,
+} from 'react-native-reanimated';
+import Svg, { Path } from 'react-native-svg';
 
-import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../hooks';
 import { Icon } from '../../primitives/Icon';
-import type { FloatingActionBarProps } from './FloatingActionBar.types';
+// import type { FloatingActionBarProps } from './FloatingActionBar.types';
 
-export const FloatingActionBar: React.FC<FloatingActionBarProps> = ({
+export const FloatingActionBar = ({
   onLikePress,
   onChatPress,
   onJoinPress,
   isLiked = false,
   joinDisabled = false,
   joinButtonText = '참여하기',
-}) => {
+  productTitle,
+  pricePerSlot,
+  initialQuantity = 1,
+  onQuantityChange,
+}: any) => {
   const { theme } = useTheme();
+  const [quantity, setQuantity] = useState(initialQuantity);
+  
+  // ✅ [상태] 콘텐츠의 실제 높이를 저장 (기본값 130)
+  const [contentHeight, setContentHeight] = useState(130);
+
+  const bottomSheetRef = useRef<BottomSheet>(null);
+  
+  // 0: 접힘, 1: 펼침
+  const animatedIndex = useSharedValue(0);
+
+  const isExpandable = productTitle && pricePerSlot !== undefined;
+
+  // 상수 정의
+  const COLLAPSED_HEIGHT = 247; // 접혔을 때 높이 (헤더 + 화살표 + 약간의 여유)
+
+  // ✅ [핵심 개선] 스냅 포인트를 콘텐츠 높이에 맞춰 자동 조절
+  const snapPoints = useMemo(() => {
+    if (!isExpandable) return [COLLAPSED_HEIGHT];
+    // 펼친 높이 = 접힌 높이 + 실제 콘텐츠 높이
+    return [COLLAPSED_HEIGHT, COLLAPSED_HEIGHT + contentHeight];
+  }, [isExpandable, contentHeight]);
+
+  // ✅ [애니메이션] 높이 계산 시 contentHeight 사용
+  const contentStyle = useAnimatedStyle(() => {
+    return {
+      opacity: interpolate(animatedIndex.value, [0, 0.5], [0, 1], Extrapolation.CLAMP),
+      zIndex: interpolate(animatedIndex.value, [0, 0.1], [-1, 1], Extrapolation.CLAMP),
+      transform: [
+        { 
+          // 살짝 아래에서 위로 올라오는 효과
+          translateY: interpolate(animatedIndex.value, [0, 1], [20, 0], Extrapolation.CLAMP) 
+        }
+      ],
+    };
+  });
+
+  const arrowStyle = useAnimatedStyle(() => {
+    const rotate = interpolate(animatedIndex.value, [0, 1], [0, 180], Extrapolation.CLAMP);
+    return { transform: [{ rotate: `${rotate}deg` }] };
+  });
+
+  // --- Handlers ---
+
+  // ✅ [로직] 실제 콘텐츠 크기가 결정되면 높이 업데이트
+  const handleContentLayout = useCallback((event: LayoutChangeEvent) => {
+    const { height } = event.nativeEvent.layout;
+    // 높이가 유의미하게 변했을 때만 업데이트 (불필요한 렌더링 방지)
+    if (Math.abs(height - contentHeight) > 1) {
+      setContentHeight(height);
+    }
+  }, [contentHeight]);
+
+  const handleArrowPress = useCallback(() => {
+    if (animatedIndex.value < 0.5) bottomSheetRef.current?.snapToIndex(1);
+    else bottomSheetRef.current?.snapToIndex(0);
+  }, []);
+
+  const handleMainAction = useCallback(() => {
+    if (!isExpandable) { onJoinPress?.(); return; }
+    if (animatedIndex.value < 0.5) { 
+      bottomSheetRef.current?.snapToIndex(1); 
+      return; 
+    }
+    onJoinPress?.();
+  }, [isExpandable, onJoinPress]);
+
+  const handleIncreaseQuantity = useCallback(() => {
+    const newQty = quantity + 1;
+    setQuantity(newQty);
+    onQuantityChange?.(newQty);
+  }, [quantity, onQuantityChange]);
+
+  const handleDecreaseQuantity = useCallback(() => {
+    if (quantity > 1) {
+      const newQty = quantity - 1;
+      setQuantity(newQty);
+      onQuantityChange?.(newQty);
+    }
+  }, [quantity, onQuantityChange]);
+
+  const totalPrice = (pricePerSlot || 0) * quantity;
 
   return (
-    <View
-      style={[
-        styles.container,
-        {
-          backgroundColor: theme.colors.surface.normal.bg1, // #FFFFFF
-        },
-      ]}
-    >
-      {/* 상단 화살표 (선택적) */}
-      {/* <View style={styles.arrowSection}>
-        <Icon name="arrow-up" size={44} color="#E1E1E1" />
-      </View> */}
+    // ✅ 1. 전체를 감싸는 View (pointerEvents="box-none"으로 뒤쪽 화면 터치 허용)
+    <View style={styles.container} pointerEvents="box-none">
+      
+      <BottomSheet
+        ref={bottomSheetRef}
+        index={0}
+        snapPoints={snapPoints}
+        animatedIndex={animatedIndex}
+        // backdropComponent={null}
+        enablePanDownToClose={false}
+        enableOverDrag={false}
+        handleComponent={null}
+        enableContentPanningGesture={false}
+        // ✅ Footer 뒤에 위치하도록 zIndex 설정
+        style={{ zIndex: 1 }}
+        backgroundStyle={{
+          backgroundColor: theme.colors.surface.normal.bg1,
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 10,
+          elevation: 10,
+        }}
+      >
+        <BottomSheetView style={styles.flexContainer}>
+          
+          {/* 1. 상단 화살표 (고정) */}
+          <View style={styles.headerArea}>
+            {isExpandable && (
+              <TouchableOpacity
+                style={styles.arrowSection}
+                onPress={handleArrowPress}
+                activeOpacity={0.7}
+                hitSlop={{ top: 10, bottom: 10, left: 20, right: 20 }}
+              >
+                <Animated.View style={arrowStyle}>
+                  <Svg width="44" height="18" viewBox="0 0 44 18" fill="none">
+                    <Path d="M36.5195 11.287L24.5662 6.39699C23.1545 5.81949 20.8445 5.81949 19.4328 6.39699L7.47949 11.287" stroke="#E1E1E1" strokeWidth="2" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
+                  </Svg>
+                </Animated.View>
+              </TouchableOpacity>
+            )}
+          </View>
 
-      {/* 메인 액션 영역 */}
-      <View style={styles.actionSection}>
-        {/* 좌측 아이콘 버튼들 */}
+          {/* 2. 중간 상품 정보 (Absolute + Auto Height Measure) */}
+          {isExpandable && (
+            <Animated.View style={[styles.middleContent, contentStyle]}>
+              {/* ✅ onLayout을 여기에 걸어서 내부 컨텐츠의 실제 높이를 잽니다 */}
+              <View onLayout={handleContentLayout}>
+                <View style={styles.productInfoSection}>
+                  <Text style={styles.titleText} numberOfLines={2}>
+                    {productTitle}
+                  </Text>
+
+                  <View style={styles.priceQuantityRow}>
+                    <View style={styles.priceContainer}>
+                      <Text style={[styles.priceText, { color: theme.colors.surface.brand.primary }]}>
+                        {totalPrice.toLocaleString()}
+                      </Text>
+                      <Text style={[styles.unitText, { color: theme.colors.surface.brand.primary }]}>원</Text>
+                    </View>
+
+                    <View style={styles.quantitySelector}>
+                      <TouchableOpacity onPress={handleDecreaseQuantity} style={styles.quantityButton}>
+                        <Icon name="minus" size={16} color={quantity <= 1 ? '#D1D6DA' : '#000'} />
+                      </TouchableOpacity>
+                      <Text style={styles.quantityText}>{quantity}</Text>
+                      <TouchableOpacity onPress={handleIncreaseQuantity} style={styles.quantityButton}>
+                        <Icon name="plus" size={16} color="#000" />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </View>
+                {/* 구분선까지 포함해서 높이를 잽니다 */}
+                <View style={styles.divider} />
+              </View>
+            </Animated.View>
+          )}
+          
+          {/* ✅ 하단 액션바가 가리는 만큼 여백 추가 */}
+          <View style={{ height: 80 }} /> 
+        </BottomSheetView>
+      </BottomSheet>
+
+      {/* 3. 하단 액션 버튼 (Absolute로 고정) */}
+      <View style={[styles.footerArea, { backgroundColor: theme.colors.surface.normal.bg1 }]}>
         <View style={styles.iconButtons}>
-          {/* 좋아요 버튼 */}
-          <TouchableOpacity
-            onPress={onLikePress}
-            activeOpacity={0.7}
-            accessibilityLabel="좋아요"
-          >
-            <Icon
-              name={isLiked ? 'heart-fill' : 'heart-line'}
-              size={24}
-              color={theme.colors.surface.texticon.onnormal.icon.tabBar} // #9C9DA4
-            />
+          <TouchableOpacity onPress={onLikePress}>
+            <Icon name={isLiked ? 'heart-fill' : 'heart-line'} size={24} color={theme.colors.surface.texticon.onnormal.icon.tabBar} />
           </TouchableOpacity>
-
-          {/* 채팅 버튼 */}
-          <TouchableOpacity
-            onPress={onChatPress}
-            activeOpacity={0.7}
-            accessibilityLabel="채팅"
-          >
-            <Icon
-              name="chat-line"
-              size={24}
-              color={theme.colors.surface.texticon.onnormal.icon.highEmp} // #A6A6A6
-            />
+          <TouchableOpacity onPress={onChatPress}>
+            <Icon name="chat-line" size={24} color={theme.colors.surface.texticon.onnormal.icon.highEmp} />
           </TouchableOpacity>
         </View>
 
-        {/* 참여하기 버튼 */}
         <TouchableOpacity
           style={[
             styles.joinButton,
-            {
-              backgroundColor: joinDisabled
-                ? theme.colors.surface.env.disabled
-                : theme.colors.surface.brand.primary, // #006242
-            },
+            { backgroundColor: joinDisabled ? theme.colors.surface.env.disabled : theme.colors.surface.brand.primary }
           ]}
-          onPress={onJoinPress}
-          activeOpacity={0.8}
+          onPress={handleMainAction}
           disabled={joinDisabled}
-          accessibilityLabel={joinButtonText}
+          activeOpacity={0.8}
         >
-          <Text
-            style={{
-              fontSize: theme.typography.fontSize.md, // 16px
-              fontWeight: theme.typography.fontWeight.semiBold, // 600
-              lineHeight: theme.typography.fontSize.md * 1.4,
-              letterSpacing: theme.typography.getLetterSpacing(16),
-              color: theme.colors.surface.normal.bg1, // #FFFFFF
-            }}
-          >
-            {joinButtonText}
-          </Text>
+          <Text style={styles.joinButtonText}>{joinButtonText}</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -103,46 +223,72 @@ export const FloatingActionBar: React.FC<FloatingActionBarProps> = ({
 };
 
 const styles = StyleSheet.create({
+  // ✅ [추가] 전체 화면을 덮는 컨테이너 (터치 통과)
   container: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 999, // 필요에 따라 조정
+  },
+  flexContainer: { 
+    flex: 1, 
+    justifyContent: 'space-between', 
+    paddingBottom: 0, // 기존 paddingBottom 제거 (Footer가 Absolute이므로)
+  },
+  headerArea: {
+    height: 36, 
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10,
+  },
+  arrowSection: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  middleContent: {
+    position: 'absolute',
+    top: 40, 
+    left: 0,
+    right: 0,
+    // 높이는 자동(auto)으로 설정되어 자식 View 크기에 맞춰짐
+  },
+  productInfoSection: { width: '90%', alignSelf: 'center', gap: 14 },
+  titleText: { fontSize: 16, fontWeight: '600', color: '#181A1A' },
+  priceQuantityRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  priceContainer: { flexDirection: 'row', alignItems: 'flex-end', gap: 4 },
+  priceText: { fontSize: 24, fontWeight: '600' },
+  unitText: { fontSize: 16, fontWeight: '600', marginBottom: 4 },
+  quantitySelector: { width: 100, height: 30, borderWidth: 1, borderColor: '#A6A6A6', borderRadius: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 5 },
+  quantityButton: { width: 20, height: 20, justifyContent: 'center', alignItems: 'center' },
+  quantityText: { fontSize: 14, fontWeight: '500' },
+  divider: { height: 1, backgroundColor: '#E1E1E1', marginTop: 20, width: '90%', alignSelf: 'center' },
+  
+  // ✅ [수정] Footer 스타일: Absolute 위치로 고정
+  footerArea: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: -2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    elevation: 10,
-    paddingBottom: 34, // bottom bar 공간 (iOS safe area 고려)
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    alignItems: 'center', 
+    paddingHorizontal: 20, 
+    paddingTop: 10,
+    // iPhone Safe Area 고려
+    paddingBottom: Platform.OS === 'ios' ? 34 : 20, 
+    height: Platform.OS === 'ios' ? 84 : 84, // 64 + paddingBottom
+    zIndex: 20, // BottomSheet(z:1) 위에 오도록 설정
+    
+    
   },
-  arrowSection: {
-    height: 44,
-    justifyContent: 'center',
-    alignItems: 'center',
+  iconButtons: { flexDirection: 'row', gap: 20 },
+  joinButton: { 
+    flex: 1, 
+    height: 54, 
+    borderRadius: 12, 
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    marginLeft: 15 
   },
-  actionSection: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingTop: 6, // Figma 기준
-    gap: 10,
-  },
-  iconButtons: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 20,
-  },
-  joinButton: {
-    width: 230,
-    height: 54,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+  joinButtonText: { fontSize: 16, fontWeight: '600', color: '#fff' },
 });

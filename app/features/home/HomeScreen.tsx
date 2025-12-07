@@ -75,7 +75,7 @@ export default function HomeScreen() {
   // 상품 등록 버튼 핸들러 (인증 필요)
   const handleProductRegistration = () => {
     requireAuth(() => {
-      Alert.alert('준비중', '상품 등록 기능은 준비 중입니다');
+      push('/product-registration');
     });
   };
 

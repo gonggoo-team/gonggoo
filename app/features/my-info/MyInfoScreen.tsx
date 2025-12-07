@@ -97,7 +97,7 @@ export default function MyInfoScreen() {
     {
       id: 'phone-number',
       label: '전화번호',
-      value: '미설정', // TODO: user.phoneNumber 필드 추가 시 업데이트
+      value: user?.phone || '미설정',
       showChevron: false,
     },
     {

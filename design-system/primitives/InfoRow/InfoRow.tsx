@@ -10,7 +10,7 @@
 
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import Svg, { G, Path } from 'react-native-svg';
+import Svg, { Defs, G, Mask, Path } from 'react-native-svg';
 import { useTheme } from '../../hooks';
 import { Icon } from '../Icon';
 import type { InfoRowProps } from './InfoRow.types';
@@ -19,10 +19,15 @@ import type { InfoRowProps } from './InfoRow.types';
  * 간단한 SVG 아이콘 컴포넌트들
  * (Figma의 Component 41에서 추출)
  */
+
+/**
+ * Grid-2 아이콘 (슬롯)
+ * 4개 사각형 그리드 형태
+ */
 const GridIcon: React.FC<{ color: string }> = ({ color }) => (
   <Svg width={16} height={16} viewBox="0 0 16 16">
     <Path
-      d="M1.33 1.33H7.33V7.33H1.33V1.33Z"
+      d="M6.00016 14.6663H10.0002C13.3335 14.6663 14.6668 13.333 14.6668 9.99967V5.99967C14.6668 2.66634 13.3335 1.33301 10.0002 1.33301H6.00016C2.66683 1.33301 1.3335 2.66634 1.3335 5.99967V9.99967C1.3335 13.333 2.66683 14.6663 6.00016 14.6663Z"
       stroke={color}
       strokeWidth={1.5}
       strokeLinecap="round"
@@ -30,7 +35,7 @@ const GridIcon: React.FC<{ color: string }> = ({ color }) => (
       fill="none"
     />
     <Path
-      d="M8 1.33H14V7.33H8V1.33Z"
+      d="M8 1.33301V14.6663"
       stroke={color}
       strokeWidth={1.5}
       strokeLinecap="round"
@@ -38,7 +43,7 @@ const GridIcon: React.FC<{ color: string }> = ({ color }) => (
       fill="none"
     />
     <Path
-      d="M1.33 8H7.33V14H1.33V8Z"
+      d="M1.3335 8H14.6668"
       stroke={color}
       strokeWidth={1.5}
       strokeLinecap="round"
@@ -48,42 +53,67 @@ const GridIcon: React.FC<{ color: string }> = ({ color }) => (
   </Svg>
 );
 
+/**
+ * Package 아이콘 (공구물품명)
+ * Figma: node-id=1431-14923
+ * 모서리가 둥근 사각형 형태
+ */
+const PackageIcon: React.FC<{ color: string }> = ({ color }) => (
+  <Svg width={16} height={16} viewBox="0 0 16 16" fill="none">
+    <Defs>
+      <Mask id="package-mask-inside" fill="white">
+        <Path d="M2 10C2 5.58172 5.58172 2 10 2H13C13.5523 2 14 2.44772 14 3V13C14 13.5523 13.5523 14 13 14H3C2.44772 14 2 13.5523 2 13V10Z" />
+      </Mask>
+    </Defs>
+    <Path
+      d="M2 10C2 5.58172 5.58172 2 10 2H13C13.5523 2 14 2.44772 14 3V13C14 13.5523 13.5523 14 13 14H3C2.44772 14 2 13.5523 2 13V10Z"
+      stroke={color}
+      strokeWidth={3}
+      strokeLinejoin="round"
+      mask="url(#package-mask-inside)"
+      fill="none"
+    />
+  </Svg>
+);
+
+/**
+ * Box 아이콘 (배송)
+ * 3D 박스 형태
+ */
 const BoxIcon: React.FC<{ color: string }> = ({ color }) => (
   <Svg width={16} height={16} viewBox="0 0 16 16">
-    <G>
-      <Path
-        d="M1.59 1.33H14.41L13.18 3.63H2.82L1.59 1.33Z"
-        stroke={color}
-        strokeWidth={1.5}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        fill="none"
-      />
-      <Path
-        d="M5.89 3.4V6.05"
-        stroke={color}
-        strokeWidth={1.5}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        fill="none"
-      />
-      <Path
-        d="M1.59 1.33V13.34H14.41V1.33"
-        stroke={color}
-        strokeWidth={1.5}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        fill="none"
-      />
-      <Path
-        d="M5.01 2.73H11.33V6.09H5.01V2.73Z"
-        stroke={color}
-        strokeWidth={1.5}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        fill="none"
-      />
-    </G>
+    <Path
+      d="M2.11328 4.95996L7.99994 8.36662L13.8466 4.97994"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      fill="none"
+    />
+    <Path
+      d="M8 14.407V8.36035"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      fill="none"
+    />
+    <Path
+      d="M6.6204 1.65301L3.0604 3.63303C2.25374 4.0797 1.59375 5.19968 1.59375 6.11968V9.88637C1.59375 10.8064 2.25374 11.9264 3.0604 12.373L6.6204 14.353C7.3804 14.773 8.62706 14.773 9.38706 14.353L12.9471 12.373C13.7537 11.9264 14.4137 10.8064 14.4137 9.88637V6.11968C14.4137 5.19968 13.7537 4.0797 12.9471 3.63303L9.38706 1.65301C8.6204 1.22634 7.3804 1.22634 6.6204 1.65301Z"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      fill="none"
+    />
+    <Path
+      d="M11.3335 8.82674V6.38676L5.00684 2.7334"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      fill="none"
+    />
   </Svg>
 );
 
@@ -134,8 +164,8 @@ export const InfoRow: React.FC<InfoRowProps> = ({
 }) => {
   const { theme } = useTheme();
 
-  const defaultIconColor = iconColor || theme.colors.surface.texticon.onnormal.icon.highEmp;
-  const defaultTextColor = textColor || theme.colors.surface.texticon.onnormal.text.highEmp;
+  const defaultIconColor = iconColor || theme.colors.surface.texticon.onnormal.icon.green;
+  const defaultTextColor = textColor || theme.colors.surface.texticon.onnormal.text.black;
 
   // 아이콘 렌더링
   const renderIcon = () => {
@@ -147,6 +177,8 @@ export const InfoRow: React.FC<InfoRowProps> = ({
     switch (iconName) {
       case 'grid':
         return <GridIcon color={defaultIconColor} />;
+      case 'package':
+        return <PackageIcon color={defaultIconColor} />;
       case 'box':
         return <BoxIcon color={defaultIconColor} />;
       case 'location':
@@ -183,7 +215,6 @@ export const InfoRow: React.FC<InfoRowProps> = ({
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    justifyContent: 'center',
     alignItems: 'center',
     gap: 9, // Figma 기준
   },

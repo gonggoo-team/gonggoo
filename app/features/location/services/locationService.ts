@@ -12,6 +12,7 @@ import type {
   PermissionResponse,
   PermissionStatus,
 } from '../types/location.types';
+import { reverseGeocodeWithKakao, hasKakaoApiKey } from './kakaoGeocodingService';
 
 // 개발 모드 감지
 const isDevelopment = __DEV__;
@@ -166,31 +167,48 @@ export async function reverseGeocode(
     };
   }
 
-  // Production: expo-location의 reverseGeocodeAsync 사용
+  // Production: Kakao API 우선 사용
   try {
-    const addresses = await Location.reverseGeocodeAsync({ latitude: lat, longitude: lng });
+    if (hasKakaoApiKey()) {
+      console.log('[Location] Using Kakao API for geocoding');
+      return await reverseGeocodeWithKakao(lat, lng);
+    } else {
+      console.warn('[Location] Kakao API key not found, falling back to expo-location');
+      throw new Error('KAKAO_API_KEY_MISSING');
+    }
+  } catch (kakaoError) {
+    console.warn('[Location] Kakao API failed, falling back to expo-location:', kakaoError);
 
-    if (!addresses || addresses.length === 0) {
+    // Fallback: expo-location의 reverseGeocodeAsync 사용
+    try {
+      const addresses = await Location.reverseGeocodeAsync({
+        latitude: lat,
+        longitude: lng
+      });
+
+      if (!addresses || addresses.length === 0) {
+        throw new Error('GEOCODING_FAILED');
+      }
+
+      const address = addresses[0];
+
+      // 한국 주소 형식으로 변환 (정확도 낮음)
+      const neighborhood = address.district || address.subregion || '알 수 없음';
+      const district = address.city || '';
+      const city = address.region || '서울시';
+
+      console.log('[Location] Fallback geocode result:', neighborhood);
+
+      return {
+        neighborhood,
+        fullAddress: `${city} ${district} ${neighborhood}`,
+        city,
+        district,
+      };
+    } catch (expoError) {
+      console.error('[Location] All geocoding methods failed:', expoError);
       throw new Error('GEOCODING_FAILED');
     }
-
-    const address = addresses[0];
-
-    // 한국 주소 형식으로 변환
-    // TODO: 실제 서버 API로 정확한 동네 이름 가져오기
-    const neighborhood = address.district || address.subregion || '알 수 없음';
-    const district = address.city || '';
-    const city = address.region || '서울시';
-
-    return {
-      neighborhood,
-      fullAddress: `${city} ${district} ${neighborhood}`,
-      city,
-      district,
-    };
-  } catch (error) {
-    console.error('[Location] Geocoding error:', error);
-    throw new Error('GEOCODING_FAILED');
   }
 }
 

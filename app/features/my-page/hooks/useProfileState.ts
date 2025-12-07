@@ -29,9 +29,10 @@ export function useProfileState() {
 
   // AuthContext의 user 데이터를 UserProfile 형식으로 변환
   const userProfile = useMemo<UserProfile>(() => ({
+    id: user?.id || 'guest',
     nickname: user?.nickname || '사용자',
     profileImageUri: user?.profileImageUri,
-  }), [user?.nickname, user?.profileImageUri]);
+  }), [user?.id, user?.nickname, user?.profileImageUri]);
 
   const [groupBuyStats] = useState<GroupBuyStats>(getMockGroupBuyStats());
   const [participationStats] = useState<ParticipationStats>(getMockParticipationStats());

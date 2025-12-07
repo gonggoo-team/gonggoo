@@ -17,3 +17,6 @@ export { useImagePicker } from './useImagePicker';
 
 // Auth Hooks
 export { useRequireAuth } from './useRequireAuth';
+
+// Typography Hooks
+export { useTypographyStyles } from './useTypographyStyles';

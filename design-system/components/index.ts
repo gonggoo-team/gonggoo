@@ -27,9 +27,15 @@ export * from './ProductGrid';
 // 상품 상세 페이지 컴포넌트
 export * from './ImageSlider';
 export * from './ProductProgressSlots';
+export * from './ProductProgressChart';
+export * from './ParticipantsRow';
 export * from './HostProfile';
+export * from './HostInfoSection';
+export * from './MapView';
 export * from './FloatingActionBar';
 export * from './FloatingActionButton';
+export * from './ProductOptionsMenu';
+export * from './SectionDivider';
 
 // 온보딩 및 공통 컴포넌트
 export * from './BottomBar';

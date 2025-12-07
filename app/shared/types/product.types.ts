@@ -2,8 +2,46 @@
  * Product and Banner Types
  *
  * 상품, 배너 등의 공통 타입 정의
- * 추후 백엔드 API 스펙과 일치시킬 예정
+ * 백엔드 API 스펙과 일치하는 완전한 타입 정의
  */
+
+/**
+ * 상품 이미지
+ */
+export interface ProductImage {
+  id: string;
+  uri: string;
+  order: number; // 0이 대표 이미지
+}
+
+/**
+ * 거래 장소 정보
+ */
+export interface MeetingLocation {
+  address: string;      // "서울 강남구 강남대로 지하 396"
+  placeName: string;    // "강남역 10번 출구"
+  latitude: number;
+  longitude: number;
+}
+
+/**
+ * 거래 정보
+ */
+export interface TransactionDetails {
+  meetingLocation: MeetingLocation;
+  meetingTime: string;      // "평일 저녁 18:00~21:00"
+  deliveryAvailable: boolean;
+  deliveryFee?: number;     // 택배비 (원), undefined면 무료 배송
+}
+
+/**
+ * 상품 설명
+ */
+export interface ProductDescription {
+  features: string;      // 상품 특징/스펙
+  groupBuyReason: string; // 공구 이유
+  notes: string;         // 주의사항
+}
 
 /**
  * 배지 타입
@@ -28,7 +66,7 @@ export type TargetAge = '연령대 전체' | '10대' | '20대' | '30대' | '40�
 /**
  * 모집 상태 타입
  */
-export type RecruitmentStatus = '모집 중' | '마감 임박' | '모집 완료';
+export type RecruitmentStatus = '모집 중' | '마감 임박' | '모집 완료' | '거래 완료';
 
 /**
  * 광고 배너 아이템
@@ -119,6 +157,8 @@ export interface FeaturedProductData {
  * 공구장 정보
  */
 export interface HostInfo {
+  /** 공구장 ID */
+  id: string;
   /** 공구장 닉네임 */
   nickname: string;
   /** 프로필 이미지 URI */

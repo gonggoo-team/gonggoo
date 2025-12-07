@@ -157,7 +157,7 @@ export const createGNBStyles = (theme: Theme) => {
       padding: theme.spacing.xxs, // 4px 터치 영역 확보
     },
     rightTextButtonPrimary: {
-      color: theme.colors.surface.texticon.onnormal.text.black,
+      color: theme.colors.surface.brand.primary,
     },
     rightTextButtonSecondary: {
       color: theme.colors.surface.texticon.onnormal.text.midEmp, // #A6A6A6 (회색)

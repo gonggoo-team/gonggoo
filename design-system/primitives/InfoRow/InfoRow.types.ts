@@ -4,7 +4,7 @@
 
 import type { IconName } from '../Icon';
 
-export type CustomIconName = 'grid' | 'box' | 'location' | 'clock';
+export type CustomIconName = 'grid' | 'package' | 'box' | 'location' | 'clock';
 
 export interface InfoRowProps {
   /** 아이콘 이름 (기존 Icon 컴포넌트 또는 커스텀 아이콘) */

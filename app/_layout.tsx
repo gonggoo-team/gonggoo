@@ -1,6 +1,7 @@
 import { Stack } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 
 import { ThemeProvider } from "@/design-system";
 import { AuthProvider } from "@/app/shared/contexts";
@@ -12,7 +13,8 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <ThemeProvider>
           <AuthProvider>
-            <Stack>
+            <BottomSheetModalProvider>
+              <Stack>
               <Stack.Screen name="index" options={{ headerShown: false }} />
               <Stack.Screen name="(tabs)" options={{ headerShown: false, gestureEnabled: false }} />
 
@@ -87,6 +89,20 @@ export default function RootLayout() {
               }}
             />
 
+            <Stack.Screen
+              name="product-registration"
+              options={{
+                headerShown: false,
+                gestureEnabled: false,
+              }}
+            />
+            <Stack.Screen
+              name="product-edit/[id]"
+              options={{
+                headerShown: false,
+                gestureEnabled: false,
+              }}
+            />
             <Stack.Screen
               name="product/[id]"
               options={{
@@ -178,6 +194,7 @@ export default function RootLayout() {
                 headerShown: false,}} />
               </Stack.Protected>
             </Stack>
+            </BottomSheetModalProvider>
           </AuthProvider>
         </ThemeProvider>
       </SafeAreaProvider>

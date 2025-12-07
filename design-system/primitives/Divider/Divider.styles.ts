@@ -17,7 +17,7 @@ export const createDividerStyles = (theme: Theme) =>
 
     horizontal: {
       height: theme.dimensions.borderWidth.medium, // 2px (Figma 기준)
-      width: '100%',
+      // width: '100%',
       alignSelf: 'stretch',
     },
 

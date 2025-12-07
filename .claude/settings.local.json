@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(git stash:*)",
+      "Bash(git checkout:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "mcp__ide__getDiagnostics",
+      "Bash(npx tsc:*)",
+      "Bash(git -C \"D:\\gonggoo-app\" status --short)",
+      "Bash(git -C:*)",
+      "Bash(test -f \"D:\\gonggoo-app\\app\\splash.tsx\")",
+      "Bash(xargs:*)",
+      "Bash(test:*)",
+      "Bash(find:*)",
+      "Bash(git log:*)",
+      "Bash(git branch:*)",
+      "Bash(git ls-tree:*)",
+      "Bash(comm:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

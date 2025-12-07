@@ -384,7 +384,7 @@ export const ICON_PATHS: Record<IconName, IconPathData> = {
     paths: [
       {
         d: 'M12 5V13.5M15 7L12 4L9 7M5 12V17C5 17.5304 5.21071 18.0391 5.58579 18.4142C5.96086 18.7893 6.46957 19 7 19H17C17.5304 19 18.0391 18.7893 18.4142 18.4142C18.7893 18.0391 19 17.5304 19 17V12',
-        stroke: '#181A1A',
+        stroke: 'currentColor',
         strokeWidth: 2,
         strokeLinecap: 'round',
         strokeLinejoin: 'round',
@@ -662,6 +662,32 @@ export const ICON_PATHS: Record<IconName, IconPathData> = {
       {
         d: 'M15 12C12.2385 12 10 14.2385 10 17C10 19.7615 12.2385 22 15 22C17.7615 22 20 19.7615 20 17C20 14.2385 17.7615 12 15 12Z',
         fill: 'currentColor',
+      },
+    ],
+  },
+
+  minus: {
+    viewBox: '0 0 16 16',
+    paths: [
+      {
+        d: 'M4 8H12',
+        stroke: 'currentColor',
+        strokeWidth: 1.5,
+        strokeLinecap: 'round',
+        strokeLinejoin: 'round',
+      },
+    ],
+  },
+
+  close: {
+    viewBox: '0 0 24 24',
+    paths: [
+      {
+        d: 'M7.75827 16.2426L12.0009 12M12.0009 12L16.2435 7.75736M12.0009 12L7.75827 7.75736M12.0009 12L16.2435 16.2426',
+        stroke: 'currentColor',
+        strokeWidth: 1.5,
+        strokeLinecap: 'round',
+        strokeLinejoin: 'round',
       },
     ],
   },
