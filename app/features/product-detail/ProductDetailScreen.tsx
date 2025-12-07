@@ -23,7 +23,7 @@ import {
   StatusBar,
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useRequireAuth, useThrottledNavigation, useThrottledCallback, useTypographyStyles } from '@/app/shared/hooks';
+import { useThrottledNavigation, useThrottledCallback, useTypographyStyles } from '@/app/shared/hooks';
 import { getProductDetailById } from '@/app/shared/services/mock';
 import { addRecentProductId } from '@/app/shared/services/storage';
 import { FadingIcon, ProductHeaderSection } from '@/app/features/product-detail/components';
@@ -56,7 +56,6 @@ export default function ProductDetailScreen() {
   const { theme } = useTheme();
   const typo = useTypographyStyles();
   const { back } = useThrottledNavigation();
-  const { requireAuth } = useRequireAuth();
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
 
@@ -101,22 +100,20 @@ export default function ProductDetailScreen() {
   }, 300);
 
   const handleLikePress = useCallback(() => {
-    requireAuth(() => setIsLiked((prev) => !prev));
-  }, [requireAuth]);
+    setIsLiked((prev) => !prev);
+  }, []);
 
   const handleChatPress = useCallback(() => {
-    requireAuth(() => Alert.alert('채팅', '채팅 기능은 준비 중입니다.'));
-  }, [requireAuth]);
+    Alert.alert('채팅', '채팅 기능은 준비 중입니다.');
+  }, []);
 
   const handleJoinPress = useCallback(() => {
-    requireAuth(() => {
-      const totalAmount = product.pricePerSlot * quantity;
-      Alert.alert(
-        '참여하기',
-        `${product.title}\n수량: ${quantity}개\n총 금액: ${totalAmount.toLocaleString()}원\n\n참여하시겠습니까?`
-      );
-    });
-  }, [requireAuth, product.pricePerSlot, product.title, quantity]);
+    const totalAmount = product.pricePerSlot * quantity;
+    Alert.alert(
+      '참여하기',
+      `${product.title}\n수량: ${quantity}개\n총 금액: ${totalAmount.toLocaleString()}원\n\n참여하시겠습니까?`
+    );
+  }, [product.pricePerSlot, product.title, quantity]);
 
   const handleQuantityChange = useCallback((newQuantity: number) => {
     setQuantity(newQuantity);
@@ -126,15 +123,15 @@ export default function ProductDetailScreen() {
     Alert.alert('신고하기', '신고 기능은 준비 중입니다.');
   }, []);
 
-  const handleHostPress = useThrottledCallback((hostId: string) => {
+  const handleHostPress = useCallback((hostId: string) => {
     // TODO: 공구장 프로필 페이지로 이동
     Alert.alert('공구장 프로필', `공구장 ID: ${hostId}\n\n프로필 페이지로 이동합니다.`);
-  }, 300);
+  }, []);
 
-  const handleProductPress = useThrottledCallback((productId: string) => {
+  const handleProductPress = useCallback((productId: string) => {
     // TODO: 상품 상세 페이지로 이동
     Alert.alert('상품 상세', `상품 ID: ${productId}\n\n상품 상세 페이지로 이동합니다.`);
-  }, 300);
+  }, []);
 
   const handleCancelRecruitment = useCallback(() => {
     Alert.alert(
@@ -240,7 +237,7 @@ export default function ProductDetailScreen() {
           recruitmentStatus={product.recruitmentStatus}
           statusType={getStatusType()}
           daysRemaining={product.daysRemaining}
-          reportable={product.reportable}
+          reportable={product.reportable ?? false}
           onReportPress={handleReportPress}
         />
 

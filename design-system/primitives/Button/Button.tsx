@@ -35,6 +35,7 @@ export type ButtonVariant =
   | 'square-selected'      // 사각형 - 선택됨
   | 'square-unselected'    // 사각형 - 미선택
   | 'full-primary'         // 전체 너비 - 주요 (활성)
+  | 'full-primary-rounded' // 전체 너비 - 주요 (활성) + 둥근 모서리
   | 'full-secondary'       // 전체 너비 - 보조 (비활성 검정)
   | 'full-secondary-rounded' // 전체 너비 - 보조 (비활성 검정) + 둥근 모서리
   | 'full-disabled'        // 전체 너비 - 비활성 (회색)
