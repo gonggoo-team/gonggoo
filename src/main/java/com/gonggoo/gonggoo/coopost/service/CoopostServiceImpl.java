@@ -1,6 +1,7 @@
 package com.gonggoo.gonggoo.coopost.service;
 
 import com.gonggoo.gonggoo.coopost.domain.CoopostCategory;
+import com.gonggoo.gonggoo.coopost.domain.CoopostMember;
 import com.gonggoo.gonggoo.coopost.domain.CoopostStatus;
 import com.gonggoo.gonggoo.coopost.domain.Coopost;
 import com.gonggoo.gonggoo.coopost.dto.request.CoopostCreateRequest;
@@ -9,6 +10,7 @@ import com.gonggoo.gonggoo.coopost.dto.request.CoopostUpdateRequest;
 import com.gonggoo.gonggoo.coopost.dto.response.CoopostResponse;
 import com.gonggoo.gonggoo.coopost.dto.response.PageResponse;
 import com.gonggoo.gonggoo.coopost.dto.response.SliceResponse;
+import com.gonggoo.gonggoo.coopost.repository.CoopostMemberRepository;
 import com.gonggoo.gonggoo.coopost.repository.CoopostRepository;
 import com.gonggoo.gonggoo.global.exception.NeighborsException;
 import com.gonggoo.gonggoo.global.response.ErrorCode;
@@ -34,6 +36,7 @@ public class CoopostServiceImpl implements CoopostService {
 
     private final CoopostRepository repo;
     private final MemberRepository memberRepository;
+    private final CoopostMemberRepository applyRepository;
     // 공구글 생성
     @Override
     public CoopostResponse create(CoopostCreateRequest req, int memberId) {
@@ -66,6 +69,30 @@ public class CoopostServiceImpl implements CoopostService {
             e.setViewCount(e.getViewCount() + 1);
         }
         return CoopostResponse.from(e);
+    }
+    @Override
+    @Transactional // 조회수 증가(Update) 때문에 readonly 아님
+    public CoopostResponse getDetailById(UUID coopostId, Integer memberId) {
+        Coopost e = repo.findById(coopostId)
+                .orElseThrow(() -> new NeighborsException(ErrorCode.COOPOST_NOT_FOUND));
+
+        // 1. 조회수 증가
+        e.setViewCount(e.getViewCount() + 1);
+
+        // 2. 로그인 유저라면 신청 상태 확인
+        boolean isApplied = false;
+        UUID myApplyId = null;
+
+        if (memberId != null && memberId != 0) {
+            Optional<CoopostMember> apply = applyRepository.findByCoopostCoopostIdAndMemberId(coopostId, memberId);
+            if (apply.isPresent()) {
+                isApplied = true;
+                myApplyId = apply.get().getId();
+            }
+        }
+
+        // 3. 응답 반환
+        return CoopostResponse.from(e, isApplied, myApplyId);
     }
 
     //공구글 업데이트

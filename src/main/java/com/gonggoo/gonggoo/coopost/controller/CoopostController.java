@@ -49,11 +49,28 @@ public class CoopostController {
 
     /**
      * 공구글 상세 조회 (200 OK)
+     * 로그인한 유저라면 isApplied=true, myApplyId=... 반환
+     * 비로그인 유저라면 isApplied=false, myApplyId=null 반환
      */
     @GetMapping("/{coopostId}")
-    public ApiResponse<CoopostResponse> getById(@PathVariable UUID coopostId) {
-        // ApiResponse.success(data) -> "OK" 메시지와 함께 200 상태 코드로 응답
-        return ApiResponse.success(service.getById(coopostId, true));
+    public ApiResponse<CoopostResponse> getById(
+            @PathVariable UUID coopostId,
+            @RequestHeader(value = "Authorization", required = false) String authorizationHeader
+    ) {
+        Integer memberId = null;
+
+        // 토큰이 있는 경우만 memberId 추출
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            String accessToken = authorizationHeader.split(" ")[1];
+            try {
+                memberId = Integer.parseInt(jwtTokenProvider.parseSubject(accessToken));
+            } catch (Exception e) {
+                // 토큰 파싱 실패 시 비로그인으로 처리 (혹은 에러 던지기 선택)
+                memberId = null;
+            }
+        }
+
+        return ApiResponse.success(service.getDetailById(coopostId, memberId));
     }
 
     /**

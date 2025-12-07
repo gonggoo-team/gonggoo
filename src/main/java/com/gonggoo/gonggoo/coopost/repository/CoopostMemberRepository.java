@@ -14,7 +14,9 @@ public interface CoopostMemberRepository extends JpaRepository<CoopostMember, UU
 
     // 중복 신청 확인
     boolean existsByCoopostCoopostIdAndMemberId(UUID coopostId, int memberId);
+    // 특정 글에 내가 신청한 내역 조회
 
+    Optional<CoopostMember> findByCoopostCoopostIdAndMemberId(UUID coopostId, int memberId);
     // 내가 신청한 목록 조회 (Fetch Join으로 성능 최적화)
     @Query("SELECT cm FROM CoopostMember cm " +
             "JOIN FETCH cm.coopost c " +
