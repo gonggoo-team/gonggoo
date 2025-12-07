@@ -3,6 +3,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { ThemeProvider } from "@/design-system";
+import { AuthProvider } from "@/app/shared/contexts";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 
 export default function RootLayout() {
@@ -11,8 +12,9 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <ThemeProvider>
-          <BottomSheetModalProvider>
-            <Stack>
+          <AuthProvider>
+            <BottomSheetModalProvider>
+              <Stack>
               <Stack.Screen name="index" options={{ headerShown: false }} />
               <Stack.Screen name="(tabs)" options={{ headerShown: false, gestureEnabled: false }} />
 
@@ -191,7 +193,8 @@ export default function RootLayout() {
                 headerShown: false,}} />
               </Stack.Protected>
             </Stack>
-          </BottomSheetModalProvider>
+            </BottomSheetModalProvider>
+          </AuthProvider>
         </ThemeProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

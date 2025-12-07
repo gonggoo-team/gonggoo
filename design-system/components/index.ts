@@ -36,3 +36,6 @@ export * from './FloatingActionBar';
 export * from './FloatingActionButton';
 export * from './ProductOptionsMenu';
 export * from './SectionDivider';
+
+// 온보딩 및 공통 컴포넌트
+export * from './BottomBar';

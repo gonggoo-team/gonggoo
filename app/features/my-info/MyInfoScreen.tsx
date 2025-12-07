@@ -15,11 +15,13 @@
 
 import React, { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { useRouter } from 'expo-router';
 
 import { MenuList } from '@/app/shared/components';
 import { useThrottledNavigation } from '@/app/shared/hooks';
 import { getMockUserProfile } from '@/app/shared/services/mock/user.mock';
 import type { UserProfile, ProfileMenuItem } from '@/app/shared/types';
+import { useAuth } from '@/app/shared/contexts';
 
 import { useTheme } from '@/design-system';
 import { GNB } from '@/design-system/components';
@@ -29,6 +31,8 @@ import { ProfileImageSection } from './components/ProfileImageSection';
 export default function MyInfoScreen() {
   const { theme } = useTheme();
   const { push, back } = useThrottledNavigation();
+  const { logout } = useAuth();
+  const router = useRouter();
 
   // Mock 데이터 로드
   const mockProfile = getMockUserProfile();
@@ -65,7 +69,18 @@ export default function MyInfoScreen() {
       '로그아웃 하시겠습니까?',
       [
         { text: '취소', style: 'cancel' },
-        { text: '로그아웃', onPress: () => console.log('로그아웃') },
+        {
+          text: '로그아웃',
+          onPress: async () => {
+            try {
+              await logout();
+              router.replace('/splash');
+            } catch (error) {
+              console.error('로그아웃 실패:', error);
+              Alert.alert('오류', '로그아웃에 실패했습니다. 다시 시도해주세요.');
+            }
+          },
+        },
       ]
     );
   };
