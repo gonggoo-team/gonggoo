@@ -60,6 +60,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ApplyServiceTest {
 
+    //fixture
+
     @Autowired
     private ApplyServiceImpl applyService;
 
