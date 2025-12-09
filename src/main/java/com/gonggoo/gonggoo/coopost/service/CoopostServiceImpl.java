@@ -117,7 +117,9 @@ public class CoopostServiceImpl implements CoopostService {
     public void delete(UUID coopostId) {
         Coopost coopost = repo.findById(coopostId)
                 .orElseThrow(() -> new NeighborsException(ErrorCode.COOPOST_NOT_FOUND));
+
         coopost.setDeletedAt(LocalDateTime.now());
+
     }
 
     //공구글 상태 변경

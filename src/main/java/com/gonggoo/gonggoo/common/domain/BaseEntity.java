@@ -24,7 +24,7 @@ public class BaseEntity {
     @Column(nullable = false)
     private LocalDateTime modifiedAt;
 
-    @Setter
-    private LocalDateTime deletedAt;
+
+    protected LocalDateTime deletedAt;
 
 }

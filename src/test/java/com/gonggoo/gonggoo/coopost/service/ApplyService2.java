@@ -17,20 +17,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class ApplyServiceTest2 {
+class ApplyService2 {
 
     @InjectMocks
     private ApplyServiceImpl applyService;
@@ -45,21 +42,27 @@ class ApplyServiceTest2 {
     private MemberRepository memberRepository;
 
     // --- Helper for Test Data ---
+
+    // ✅ [수정 1] leninent()를 사용하여 UnnecessaryStubbingException 방지
     private Member createMember(int id) {
         Member member = mock(Member.class);
-        given(member.getId()).willReturn(id);
+        // 이 멤버가 작성자(Author)로 쓰일 땐 getId()가 호출되지만, 신청자(Applicant)일 땐 호출 안 될 수 있음
+        // 따라서 유연하게(lenient) 설정
+        lenient().when(member.getId()).thenReturn(id);
         return member;
     }
 
     private Coopost createCoopost(Member author, int current, int max, CoopostStatus status) {
-        return Coopost.builder()
-                .coopostId(UUID.randomUUID())
-                .member(author)
-                .title("테스트 공구")
-                .status(status)
-                .currentParticipants(current)
-                .maxParticipants(max)
-                .build();
+        // 엔티티는 Mock 대신 실제 객체나 Builder를 쓰는 게 좋지만,
+        // 로직 흐름상 author.getId() 호출 등을 위해 Mock과 섞어 씀
+        Coopost coopost = new Coopost(); // 혹은 Builder
+        coopost.setCoopostId(UUID.randomUUID());
+        coopost.setMember(author);
+        coopost.setTitle("테스트 공구");
+        coopost.setStatus(status);
+        coopost.setCurrentParticipants(current);
+        coopost.setMaxParticipants(max);
+        return coopost;
     }
 
     @Nested
@@ -74,6 +77,7 @@ class ApplyServiceTest2 {
             int authorId = 2;
             UUID coopostId = UUID.randomUUID();
 
+            // ✅ [수정 2] Mock 생성을 given() 밖으로 빼서 명확하게 분리
             Member applicant = createMember(memberId);
             Member author = createMember(authorId);
             Coopost coopost = createCoopost(author, 0, 10, CoopostStatus.OPEN);
@@ -87,10 +91,10 @@ class ApplyServiceTest2 {
             given(coopostRepository.getByIdWithLock(coopostId)).willReturn(coopost);
             given(applyRepository.findByCoopostAndMember(coopost, applicant)).willReturn(Optional.empty()); // 최초 신청
 
-            // save 호출 시 객체 반환
+            // save 호출 시 객체 반환 (ArgumentCaptor 대신 간단하게 처리)
             given(applyRepository.save(any(CoopostMember.class))).willAnswer(invocation -> {
                 CoopostMember saved = invocation.getArgument(0);
-                return saved; // ID는 null이지만 테스트엔 문제 없음
+                return saved;
             });
 
             // when
@@ -108,7 +112,8 @@ class ApplyServiceTest2 {
             int memberId = 1;
             UUID coopostId = UUID.randomUUID();
             Member applicant = createMember(memberId);
-            Coopost coopost = createCoopost(createMember(2), 5, 10, CoopostStatus.OPEN);
+            Member author = createMember(2);
+            Coopost coopost = createCoopost(author, 5, 10, CoopostStatus.OPEN);
             coopost.setCoopostId(coopostId);
 
             // 이미 존재하지만 CANCELED 상태인 내역
@@ -132,7 +137,7 @@ class ApplyServiceTest2 {
             // then
             assertThat(existingApply.getStatus()).isEqualTo(ApplyStatus.ACTIVE); // 상태 변경 확인
             assertThat(response.getCurrentParticipants()).isEqualTo(6); // 5 -> 6
-            verify(applyRepository, never()).save(any(CoopostMember.class)); // save 호출 안 함 (Dirty Checking)
+            verify(applyRepository, never()).save(any(CoopostMember.class));
         }
 
         @Test
@@ -142,7 +147,6 @@ class ApplyServiceTest2 {
             int memberId = 1;
             UUID coopostId = UUID.randomUUID();
             Member applicant = createMember(memberId);
-            // 9/10명인 상태에서 신청
             Coopost coopost = createCoopost(createMember(2), 9, 10, CoopostStatus.OPEN);
             coopost.setCoopostId(coopostId);
 
@@ -159,7 +163,7 @@ class ApplyServiceTest2 {
 
             // then
             assertThat(coopost.getCurrentParticipants()).isEqualTo(10);
-            assertThat(coopost.getStatus()).isEqualTo(CoopostStatus.CLOSED); // CLOSED 확인
+            assertThat(coopost.getStatus()).isEqualTo(CoopostStatus.CLOSED);
         }
 
         @Test
@@ -220,13 +224,16 @@ class ApplyServiceTest2 {
             // given
             int memberId = 1;
             UUID coopostId = UUID.randomUUID();
-            Coopost coopost = createCoopost(createMember(2), 10, 10, CoopostStatus.CLOSED);
+            // ✅ Mock 객체 생성 분리 (UnfinishedStubbingException 방지)
+            Member applicant = createMember(memberId);
+            Member author = createMember(2);
+            Coopost coopost = createCoopost(author, 10, 10, CoopostStatus.CLOSED);
             coopost.setCoopostId(coopostId);
 
             ApplyRequest req = new ApplyRequest();
             req.setCoopostId(coopostId);
 
-            given(memberRepository.findById(memberId)).willReturn(Optional.of(createMember(memberId)));
+            given(memberRepository.findById(memberId)).willReturn(Optional.of(applicant));
             given(coopostRepository.getByIdWithLock(coopostId)).willReturn(coopost);
 
             // when & then
@@ -304,8 +311,11 @@ class ApplyServiceTest2 {
             int memberId = 1;
             UUID applyId = UUID.randomUUID();
 
+            // Mock Cooost 사용 시 주의 (여기선 그냥 Builder 사용)
+            Coopost coopost = createCoopost(createMember(2), 5, 10, CoopostStatus.OPEN);
+
             CoopostMember apply = CoopostMember.builder()
-                    .coopost(mock(Coopost.class))
+                    .coopost(coopost)
                     .member(createMember(memberId))
                     .status(ApplyStatus.CANCELED) // 이미 취소됨
                     .build();

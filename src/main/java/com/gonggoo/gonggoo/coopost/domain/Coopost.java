@@ -41,6 +41,7 @@ public class Coopost extends BaseEntity {
     @Column(nullable = false, length = 120)
     private String title;
 
+    @Setter
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private CoopostStatus status;
@@ -80,6 +81,11 @@ public class Coopost extends BaseEntity {
     // 인기/조회수 지표
     @Column(nullable = false)
     private long viewCount;
+
+
+    public void setDeletedAt(LocalDateTime now) {
+        this.deletedAt = now;
+    }
 
 }
 
