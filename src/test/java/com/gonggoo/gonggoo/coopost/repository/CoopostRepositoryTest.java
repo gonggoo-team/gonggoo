@@ -219,7 +219,7 @@ class CoopostRepositoryTest {
         Coopost active = createCoopost("정상글", CoopostCategory.ELSE, 1000);
         Coopost deleted = createCoopost("삭제된글", CoopostCategory.ELSE, 1000);
 
-        deleted.setDeletedAt(LocalDateTime.now());
+        deleted.softDelete();
         coopostRepository.save(deleted);
 
         CoopostSearchCondition cond = new CoopostSearchCondition();

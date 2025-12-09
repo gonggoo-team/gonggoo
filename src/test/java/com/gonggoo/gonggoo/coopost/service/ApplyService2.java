@@ -55,8 +55,7 @@ class ApplyService2 {
     private Coopost createCoopost(Member author, int current, int max, CoopostStatus status) {
         // 엔티티는 Mock 대신 실제 객체나 Builder를 쓰는 게 좋지만,
         // 로직 흐름상 author.getId() 호출 등을 위해 Mock과 섞어 씀
-        Coopost coopost = new Coopost(); // 혹은 Builder
-        coopost.setCoopostId(UUID.randomUUID());
+        Coopost coopost = new Coopost(coopost.setCoopostId(UUID.randomUUID());
         coopost.setMember(author);
         coopost.setTitle("테스트 공구");
         coopost.setStatus(status);
