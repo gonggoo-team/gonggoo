@@ -1,5 +1,6 @@
 package com.gonggoo.gonggoo.coopost.service;
 
+import com.gonggoo.gonggoo.coopost.domain.ApplyStatus;
 import com.gonggoo.gonggoo.coopost.domain.Coopost;
 import com.gonggoo.gonggoo.coopost.domain.CoopostMember;
 import com.gonggoo.gonggoo.coopost.domain.CoopostStatus;
@@ -35,9 +36,9 @@ public class ApplyServiceImpl {
         Member member = findMemberById(memberId);
         Coopost coopost = findCoopostWithLock(req.getCoopostId());
 
-        validateApply(coopost, memberId);
+        validatePostCondition(coopost, memberId);
 
-        CoopostMember apply = saveApply(coopost, member);
+        CoopostMember apply = handleApplyOrCreate(coopost, member);
         increaseParticipants(coopost);
 
         return ApplyResponse.builder()
@@ -52,9 +53,17 @@ public class ApplyServiceImpl {
     // 공구 신청 취소
     public ApplyResponse cancel(int memberId, UUID applyId) {
         CoopostMember apply = findApplyByIdAndMemberId(applyId, memberId);
-        Coopost coopost = findCoopostWithLock(apply.getCoopost().getCoopostId());
 
-        deleteApply(apply);
+        // 이미 취소된 상태인지 확인
+        if (apply.getStatus() == ApplyStatus.CANCELED) {
+            throw new NeighborsException(ErrorCode.ALREADY_CANCELED);
+        }
+
+        //상태 변경
+        apply.cancel();
+
+        // 인원 감소 및 공구글 상태(OPEN/CLOSED) 동기화
+        Coopost coopost = findCoopostWithLock(apply.getCoopost().getCoopostId());
         decreaseParticipants(coopost);
 
         return ApplyResponse.builder()
@@ -63,6 +72,30 @@ public class ApplyServiceImpl {
                 .currentParticipants(coopost.getCurrentParticipants())
                 .message("공구 신청이 취소되었습니다.")
                 .build();
+    }
+
+    // 신청 처리 로직(Create vs Update 분기 처리)
+    private CoopostMember handleApplyOrCreate(Coopost coopost, Member member) {
+        return applyRepository.findByCoopostAndMember(coopost, member)
+                .map(existingApply -> {
+                    // 이미 데이터가 존재함
+                    if (existingApply.isActive()) {
+                        // 이미 활동 중이면 중복 신청 에러
+                        throw new NeighborsException(ErrorCode.ALREADY_APPLIED);
+                    }
+                    // 취소 상태라면 다시 ACTIVE로 부활 (재신청)
+                    existingApply.reApply();
+                    return existingApply;
+                })
+                .orElseGet(() -> {
+                    // 데이터가 없으면 새로 생성
+                    CoopostMember newApply = CoopostMember.builder()
+                            .coopost(coopost)
+                            .member(member)
+                            .status(ApplyStatus.ACTIVE)
+                            .build();
+                    return applyRepository.save(newApply);
+                });
     }
 
     // 내가 신청한 목록 조회
@@ -98,42 +131,14 @@ public class ApplyServiceImpl {
                 .orElseThrow(() -> new NeighborsException(ErrorCode.APPLICATION_NOT_FOUND));
     }
 
-    // 2. 검증 관련 helper methods
-    private void validateApply(Coopost coopost, int memberId) {
-        // 자신이 올린 글에는 참여 불가능
-        if (coopost.getMember().getId() == memberId) {
-            throw new NeighborsException(ErrorCode.CANNOT_APPLY_OWN_POST);
-        }
 
-        //이미 마감된 글 참여 불가능
-        if (coopost.getStatus() != CoopostStatus.OPEN) {
-            throw new NeighborsException(ErrorCode.COOPOST_CLOSED);
-        }
-        // 인원이 가득 찬 글 참여 불가능
-        if (coopost.getCurrentParticipants() >= coopost.getMaxParticipants()) {
-            throw new NeighborsException(ErrorCode.COOPOST_FULL);
-        }
-        // 이미 참여한 글에는 재참여 불가능
-        if (applyRepository.existsByCoopostCoopostIdAndMemberId(coopost.getCoopostId(), memberId)) {
-            throw new NeighborsException(ErrorCode.ALREADY_APPLIED);
-        }
-
-
-    }
-    // 3. 저장 및 삭제
-    private CoopostMember saveApply(Coopost coopost, Member member) {
-        CoopostMember apply = CoopostMember.builder()
-                .coopost(coopost)
-                .member(member)
-                .build();
-        return applyRepository.save(apply);
+    // 검증 Helper
+    private void validatePostCondition(Coopost coopost, int memberId) {
+        if (coopost.getMember().getId() == memberId) throw new NeighborsException(ErrorCode.CANNOT_APPLY_OWN_POST);
+        if (coopost.getStatus() != CoopostStatus.OPEN) throw new NeighborsException(ErrorCode.COOPOST_CLOSED);
+        if (coopost.getCurrentParticipants() >= coopost.getMaxParticipants()) throw new NeighborsException(ErrorCode.COOPOST_FULL);
     }
 
-    private void deleteApply(CoopostMember apply) {
-        applyRepository.delete(apply);
-    }
-
-    // 4. 상태 변경
     private void increaseParticipants(Coopost coopost) {
         coopost.setCurrentParticipants(coopost.getCurrentParticipants() + 1);
         if (coopost.getCurrentParticipants().equals(coopost.getMaxParticipants())) {
@@ -145,7 +150,6 @@ public class ApplyServiceImpl {
         if (coopost.getCurrentParticipants() > 0) {
             coopost.setCurrentParticipants(coopost.getCurrentParticipants() - 1);
         }
-        // 마감 상태였는데 자리가 생기면 다시 OPEN
         if (coopost.getStatus() == CoopostStatus.CLOSED
                 && coopost.getCurrentParticipants() < coopost.getMaxParticipants()) {
             coopost.setStatus(CoopostStatus.OPEN);
