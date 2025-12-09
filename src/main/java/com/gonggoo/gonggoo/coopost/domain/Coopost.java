@@ -83,9 +83,9 @@ public class Coopost extends BaseEntity {
     private long viewCount;
 
 
-    public void setDeletedAt(LocalDateTime now) {
-        this.deletedAt = now;
-    }
 
+    public void softDelete() {
+        this.deletedAt = LocalDateTime.now();
+    }
 }
 
