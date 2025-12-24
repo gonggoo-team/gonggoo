@@ -86,6 +86,12 @@ public class JwtTokenProvider {
         }
     }
 
+    public void validateToken(String token) {
+        if (!token.split(" ")[0].equals("Bearer")) {
+            throw new NeighborsException(ErrorCode.INVALID_AUTH_HEADER);
+        }
+    }
+
     public Authentication getAuthentication(String accessToken) {
         Claims claim = parseClaims(accessToken);
 
