@@ -40,9 +40,19 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
   variant = 'card',
   type,
   label,
+  customBackgroundColor,
+  customTextColor,
+  customPadding,
 }) => {
   const { theme } = useTheme();
-  const styles = createStatusBadgeStyles(theme, variant, type);
+  const styles = createStatusBadgeStyles(
+    theme,
+    variant,
+    type,
+    customBackgroundColor,
+    customTextColor,
+    customPadding
+  );
 
   return (
     <View

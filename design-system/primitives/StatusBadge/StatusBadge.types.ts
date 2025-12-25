@@ -89,4 +89,25 @@ export interface StatusBadgeProps {
    * Detail variant: "모집 중", "모집 완료", "거래 완료"
    */
   label: string;
+
+  /**
+   * 커스텀 배경색 (선택적)
+   * 기본 타입 색상을 오버라이드합니다.
+   */
+  customBackgroundColor?: string;
+
+  /**
+   * 커스텀 텍스트 색상 (선택적)
+   * 기본 타입 색상을 오버라이드합니다.
+   */
+  customTextColor?: string;
+
+  /**
+   * 커스텀 패딩 (선택적)
+   * 기본 variant 패딩을 오버라이드합니다.
+   */
+  customPadding?: {
+    vertical?: number;
+    horizontal?: number;
+  };
 }

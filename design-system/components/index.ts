@@ -39,3 +39,6 @@ export * from './SectionDivider';
 
 // 온보딩 및 공통 컴포넌트
 export * from './BottomBar';
+
+// 채팅 컴포넌트
+export * from './CountBadge';

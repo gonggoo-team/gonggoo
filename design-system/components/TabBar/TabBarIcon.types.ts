@@ -26,9 +26,16 @@ export interface TabBarIconProps {
   focused: boolean;
 
   /**
-   * 라벨 텍스트
+   * 라벨 텍스트 (선택사항)
+   * - 현재 디자인에서는 사용되지 않음
    */
-  label: string;
+  label?: string;
+
+  /**
+   * 배지에 표시할 숫자 (선택사항)
+   * - 주로 채팅 탭에서 안 읽은 메시지 개수 표시
+   */
+  badgeCount?: number;
 }
 
 /**

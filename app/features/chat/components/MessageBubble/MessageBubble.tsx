@@ -9,7 +9,7 @@ import { getBorderRadiusStyle } from '@/app/features/chat/utils';
 import { createStyles } from './MessageBubble.styles';
 import type { MessageBubbleProps } from './MessageBubble.types';
 
-export default function MessageBubble({ content, sender, position }: MessageBubbleProps) {
+export const MessageBubble: React.FC<MessageBubbleProps> = ({ content, sender, position }) => {
   const { theme } = useTheme();
   const styles = createStyles(theme, sender);
   // position 정보(first, middle, last, single)를 통해 테두리 둥글기 조정

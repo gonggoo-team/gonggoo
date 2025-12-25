@@ -53,7 +53,8 @@ export type IconName =
   | 'profile-default'
   | 'camera'
   | 'minus'
-  | 'close';
+  | 'close'
+  | 'chat_send';
 
 /**
  * Icon 크기 프리셋

@@ -8,3 +8,4 @@ export * from './search';
 export * from './category.types';
 export * from './user.types';
 export * from './auth.types';
+export * from './chat.types';

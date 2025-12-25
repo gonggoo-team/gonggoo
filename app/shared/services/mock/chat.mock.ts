@@ -718,6 +718,15 @@ const MOCK_MESSAGES: Record<string, ChatMessage[]> = {
       read: true,
     },
     {
+      type: 'system',
+      id: 'system-msg-4-1',
+      chatRoomId: 'chat-2-0',
+      sender: 'system',
+      systemMessageType: 'transaction_complete_request',
+      timestamp: Date.now() - 1000 * 60 * 5, // 5분 전
+      read: true,
+    },
+    {
       type: 'text',
       id: 'msg-4-3',
       chatRoomId: 'chat-2-0',
