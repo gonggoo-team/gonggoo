@@ -4,7 +4,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 
 import { ThemeProvider } from "@/design-system";
-import { AuthProvider } from "@/app/shared/contexts";
+import { AuthProvider, ChatProvider } from "@/app/shared/contexts";
 
 export default function RootLayout() {
 
@@ -13,7 +13,8 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <ThemeProvider>
           <AuthProvider>
-            <BottomSheetModalProvider>
+            <ChatProvider>
+              <BottomSheetModalProvider>
               <Stack>
               <Stack.Screen name="index" options={{ headerShown: false }} />
               <Stack.Screen name="(tabs)" options={{ headerShown: false, gestureEnabled: false }} />
@@ -194,7 +195,8 @@ export default function RootLayout() {
                 headerShown: false,}} />
               </Stack.Protected>
             </Stack>
-            </BottomSheetModalProvider>
+              </BottomSheetModalProvider>
+            </ChatProvider>
           </AuthProvider>
         </ThemeProvider>
       </SafeAreaProvider>

@@ -11,3 +11,4 @@ export * from './user.mock';
 export * from './recentProducts.mock';
 export * from './cancelHistory.mock';
 export * from './auth.mock';
+export * from './chat.mock';
