@@ -26,7 +26,10 @@ export function groupMessages(messages: ChatMessage[]): MessageGroup[] {
   let lastTimestamp = 0;
 
   messages.forEach((message) => {
+    // 시스템 메시지는 항상 독립적인 그룹으로 처리
+    const isSystemMessage = message.type === 'system';
     const shouldStartNewGroup =
+      isSystemMessage ||
       currentSender !== message.sender ||
       message.timestamp - lastTimestamp > TIME_WINDOW;
 
@@ -39,6 +42,13 @@ export function groupMessages(messages: ChatMessage[]): MessageGroup[] {
     currentGroup.push(message);
     currentSender = message.sender;
     lastTimestamp = message.timestamp;
+
+    // 시스템 메시지는 즉시 그룹 완성
+    if (isSystemMessage) {
+      groups.push(createGroup(currentGroup, currentSender));
+      currentGroup = [];
+      currentSender = null;
+    }
   });
 
   // 마지막 그룹 추가

@@ -14,7 +14,7 @@ import React from 'react';
 import { Alert } from 'react-native';
 import { Tabs, useRouter } from 'expo-router';
 
-import { useAuth } from '@/app/shared/contexts';
+import { useAuth, useChat } from '@/app/shared/contexts';
 import { TabBarIcon, useTheme } from '@/design-system';
 
 /**
@@ -23,6 +23,7 @@ import { TabBarIcon, useTheme } from '@/design-system';
 export default function TabsLayout() {
   const { theme } = useTheme();
   const { isAuthenticated } = useAuth();
+  const { totalUnreadCount } = useChat();
   const router = useRouter();
 
   // 인증이 필요한 탭 클릭 핸들러
@@ -101,7 +102,9 @@ export default function TabsLayout() {
         name="chat"
         options={{
           title: '채팅',
-          tabBarIcon: ({ focused }) => <TabBarIcon name="chat" focused={focused} label="채팅" />,
+          tabBarIcon: ({ focused }) => (
+            <TabBarIcon name="chat" focused={focused} label="채팅" badgeCount={totalUnreadCount} />
+          ),
         }}
         listeners={{
           tabPress: handleProtectedTabPress,

@@ -53,6 +53,17 @@ export function getBorderRadiusStyle(
   borderBottomRightRadius: number;
   borderBottomLeftRadius: number;
 } {
+  // 시스템 메시지는 MessageBubble로 렌더링하지 않으므로 이 함수가 호출되지 않아야 함
+  // 방어 코드로 추가
+  if (sender === 'system') {
+    return {
+      borderTopLeftRadius: RADIUS,
+      borderTopRightRadius: RADIUS,
+      borderBottomRightRadius: RADIUS,
+      borderBottomLeftRadius: RADIUS,
+    };
+  }
+
   if (sender === 'other') {
     // 상대방 메시지 (왼쪽 정렬)
     switch (position) {

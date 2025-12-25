@@ -23,6 +23,7 @@ import React from 'react';
 import { View } from 'react-native';
 import { useTheme } from '../../hooks';
 import { Icon } from '../../primitives/Icon';
+import { CountBadge } from '../CountBadge';
 import { createTabBarIconStyles } from './TabBarIcon.styles';
 import type { TabBarIconProps } from './TabBarIcon.types';
 import { TAB_ICON_MAP } from './TabBarIcon.types';
@@ -30,7 +31,7 @@ import { TAB_ICON_MAP } from './TabBarIcon.types';
 /**
  * TabBarIcon Component
  */
-export const TabBarIcon: React.FC<TabBarIconProps> = ({ name, focused, label }) => {
+export const TabBarIcon: React.FC<TabBarIconProps> = ({ name, focused, badgeCount }) => {
   const { theme } = useTheme();
   const styles = createTabBarIconStyles(theme, focused);
 
@@ -42,9 +43,15 @@ export const TabBarIcon: React.FC<TabBarIconProps> = ({ name, focused, label }) 
     ? theme.colors.surface.texticon.onnormal.text.green // #006242 (선택됨)
     : theme.colors.surface.texticon.onnormal.icon.tabBar; // #9C9DA4 (선택 안됨)
 
+  // 배지 표시 여부
+  const showBadge = badgeCount !== undefined && badgeCount > 0;
+
   return (
     <View style={styles.container}>
-      <Icon name={iconName} size={24} color={iconColor} />
+      <View style={styles.iconWrapper}>
+        <Icon name={iconName} size={24} color={iconColor} />
+        {showBadge && <CountBadge count={badgeCount} variant="tabbar" />}
+      </View>
       {/* <Text style={styles.label}>{label}</Text> */}
     </View>
   );

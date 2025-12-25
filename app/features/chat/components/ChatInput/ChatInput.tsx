@@ -36,14 +36,12 @@ export default function ChatInput({ onSend, onAttach, disabled = false }: ChatIn
       ]}>
         {/* 첨부 버튼 */}
         <TouchableOpacity style={styles.attachButton} onPress={onAttach} disabled={disabled}>
-          <Icon name="plus" size={20} color="#FFFFFF" />
+          <Icon name="plus" size={24} color="#FFFFFF" />
         </TouchableOpacity>
 
         {/* TextInput */}
         <TextInput
-          style={[styles.input, //{ height: Math.max(56, inputHeight) }
-            
-          ]}
+          style={styles.input}
           value={message}
           onChangeText={setMessage}
           placeholder="메시지 입력"
@@ -64,7 +62,7 @@ export default function ChatInput({ onSend, onAttach, disabled = false }: ChatIn
           onPress={handleSend}
           disabled={!canSend}
         >
-          <Icon name="chat_send" size={20} color="#FFFFFF" />
+          <Icon name="chat_send" size={24} color="#FFFFFF" />
         </TouchableOpacity>
       </View>
     </View>
