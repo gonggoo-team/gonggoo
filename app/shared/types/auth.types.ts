@@ -53,6 +53,8 @@ export interface LocationData {
   detectedAt?: string;
   /** GPS accuracy in meters (optional) */
   accuracy?: number;
+  /** Neighborhood range in kilometers (2, 5, or 10) */
+  range?: number;
 }
 
 /**
