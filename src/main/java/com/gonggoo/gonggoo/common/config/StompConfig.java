@@ -42,6 +42,7 @@ public class StompConfig implements WebSocketMessageBrokerConfigurer {
         registry.enableSimpleBroker("/sub");
         //어플리케이션에 요청을 보낼 때 작성해야 하는 접두사
         registry.setApplicationDestinationPrefixes("/pub");
+        registry.setUserDestinationPrefix("/user");
     }
 
     @Override
