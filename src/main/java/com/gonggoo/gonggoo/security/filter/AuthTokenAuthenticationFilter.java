@@ -34,6 +34,11 @@ public class AuthTokenAuthenticationFilter extends OncePerRequestFilter {
         try {
             String accessToken = jwtTokenProvider.resolveToken(req);
 
+            if (accessToken == null) {
+                filterChain.doFilter(req, res);
+                return;
+            }
+
             if (redisTokenBlackListService.isContainToken(accessToken)) {
                 throw new NeighborsException(BLACKLISTED_TOKEN);
             }
