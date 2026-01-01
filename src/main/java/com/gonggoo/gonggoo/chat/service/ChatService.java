@@ -49,7 +49,7 @@ public class ChatService {
     public List<MessageResponse> findChatLog(Long chatroomId, Long cursor) {
         List<ChatLog> chatLogs = cursor == null
                 ? chatLogRepository.findTop20ByChatroomIdOrderByIdDesc(chatroomId)//cursor가 null 이면 최초 접속
-                : chatLogRepository.findTop20ByChatroomIdAndIdLessThanOrderByDesc(chatroomId, cursor);//cursor가 null이 아니면 커서값 기반 페이지네이션
+                : chatLogRepository.findTop20ByChatroomIdAndIdLessThanOrderByIdDesc(chatroomId, cursor);//cursor가 null이 아니면 커서값 기반 페이지네이션
 
         return chatLogs.stream().map(
                 chatLog -> MessageResponse.of(

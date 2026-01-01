@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 public interface ChatLogRepository extends JpaRepository<ChatLog, Long> {
 
     List<ChatLog> findTop20ByChatroomIdOrderByIdDesc(Long chatroomId);
-    List<ChatLog> findTop20ByChatroomIdAndIdLessThanOrderByDesc(Long chatroomId, Long oldestId);
+    List<ChatLog> findTop20ByChatroomIdAndIdLessThanOrderByIdDesc(Long chatroomId, Long oldestId);
 }
