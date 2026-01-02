@@ -23,7 +23,7 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private String nickname;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "phone_number", nullable = false, unique = true)
     private String phoneNumber;
 
     @Column(nullable = false, unique = true)
@@ -32,7 +32,7 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
-    @Column
+    @Column(name = "profile_image")
     private String profileImage;
 
     @Enumerated(EnumType.STRING)
