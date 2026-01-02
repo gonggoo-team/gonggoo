@@ -4,13 +4,13 @@ import com.gonggoo.gonggoo.chat.dto.MessageSendingDto;
 
 public record MessageRequest(
         int memberId,
-        String message
+        String content
 ) {
     public MessageSendingDto toMessageSendingDto(Long chatroomId) {
         return new MessageSendingDto(
                 chatroomId,
                 memberId,
-                message
+                content
         );
     }
 }
