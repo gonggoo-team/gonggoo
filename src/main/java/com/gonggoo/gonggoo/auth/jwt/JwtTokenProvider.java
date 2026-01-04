@@ -4,6 +4,7 @@ import static com.gonggoo.gonggoo.global.response.ErrorCode.NO_AUTHORITY;
 import static com.gonggoo.gonggoo.global.response.ErrorCode.TOKEN_EXPIRED;
 import static com.gonggoo.gonggoo.global.response.ErrorCode.UNAUTHORIZED_TOKEN;
 
+import com.gonggoo.gonggoo.auth.dto.CustomPrincipal;
 import com.gonggoo.gonggoo.common.domain.Role;
 import com.gonggoo.gonggoo.global.exception.NeighborsException;
 import com.gonggoo.gonggoo.global.response.ErrorCode;
@@ -94,15 +95,21 @@ public class JwtTokenProvider {
 
     public Authentication getAuthentication(String accessToken) {
         Claims claim = parseClaims(accessToken);
-
-        if (claim.get(AUTHORITIES_KEY) == null) {
+        Object authClaim = claim.get(AUTHORITIES_KEY);
+        if (authClaim == null) {
             throw new NeighborsException(NO_AUTHORITY);
         }
 
         Collection<? extends GrantedAuthority> authorities = Arrays.stream(claim.get(AUTHORITIES_KEY).toString().split(","))
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
-        return new UsernamePasswordAuthenticationToken(claim.getSubject(), "", authorities);
+
+        int memberId = Integer.parseInt(claim.getSubject());
+        String role = authClaim.toString();
+
+        CustomPrincipal customPrincipal = new CustomPrincipal(memberId, role);
+
+        return new UsernamePasswordAuthenticationToken(customPrincipal, null, authorities);
     }
 
     public String resolveToken(HttpServletRequest req) {
