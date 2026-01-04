@@ -11,11 +11,15 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "chatroom")
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Chatroom extends BaseEntity {
 
     @Id
@@ -24,11 +28,24 @@ public class Chatroom extends BaseEntity {
     private Long id;
 
     @Column(name = "coopost_id", nullable = false)
-    private int coopostId;
+    private Long coopostId;
+
+    @Column(name = "room_category", nullable = false)
+    private String roomCategory;
+
+    @Column(name = "room_ref", nullable = false)
+    private String roomRef;
 
     @OneToMany(mappedBy = "chatroom", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChatLog> chatLogs = new ArrayList<>();
 
     @OneToMany(mappedBy = "chatroom", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChatroomUser> chatroomUsers = new ArrayList<>();
+
+    @Builder
+    private Chatroom (Long coopostId, String roomCategory, String roomRef) {
+        this.coopostId = coopostId;
+        this.roomCategory = roomCategory;
+        this.roomRef = roomRef;
+    }
 }
