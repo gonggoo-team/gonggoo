@@ -36,6 +36,7 @@ export interface ProductRegistrationFormData {
     latitude?: number;
     longitude?: number;
     time?: string;
+    detailAddress?: string;
   } | null;
 
   /** 택배 가능 여부 */

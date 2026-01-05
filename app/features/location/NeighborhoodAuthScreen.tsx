@@ -165,9 +165,13 @@ function NeighborhoodAuthScreenContent() {
     try {
       const locationData: LocationData = {
         address: detectedLocation.fullAddress,
+        neighborhood: detectedLocation.neighborhood || '',
+        city: detectedLocation.city || '',
+        district: detectedLocation.district || '',
         latitude: detectedLocation.latitude,
         longitude: detectedLocation.longitude,
         verified: true,
+        range: 5,
         gpsVerified: true,
         detectedAt: new Date().toISOString(),
         accuracy: detectedLocation.accuracy,

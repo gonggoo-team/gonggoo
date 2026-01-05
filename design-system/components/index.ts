@@ -32,6 +32,7 @@ export * from './ParticipantsRow';
 export * from './HostProfile';
 export * from './HostInfoSection';
 export * from './MapView';
+export * from './StaticMapImage';
 export * from './FloatingActionBar';
 export * from './FloatingActionButton';
 export * from './ProductOptionsMenu';
@@ -39,3 +40,6 @@ export * from './SectionDivider';
 
 // 온보딩 및 공통 컴포넌트
 export * from './BottomBar';
+
+// 채팅 컴포넌트
+export * from './CountBadge';

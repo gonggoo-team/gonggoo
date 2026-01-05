@@ -20,7 +20,14 @@ export const createTabBarIconStyles = (theme: Theme, focused: boolean) =>
       alignItems: 'center',
       justifyContent: 'flex-start', // 상단 기준 정렬
       paddingTop: 17, // Figma 아이콘 y 위치 (17px from top)
-      gap: 4, // 아이콘과 텍스트 사이 간격      
+      gap: 4, // 아이콘과 텍스트 사이 간격
+    },
+    iconWrapper: {
+      position: 'relative', // CountBadge의 absolute 위치 기준
+      width: 24, // 아이콘 크기
+      height: 24,
+      justifyContent: 'center',
+      alignItems: 'center',
     },
     label: {
       fontSize: theme.typography.fontSize.xs, // 12px

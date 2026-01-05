@@ -27,7 +27,7 @@ import {
 } from 'react-native';
 import { useTheme } from '../../hooks';
 import { Icon } from '../Icon';
-import { createSearchBarStyles } from './SearchBar.styles';
+import { createSearchBarStyles, type SearchBarVariant } from './SearchBar.styles';
 
 /**
  * SearchBar Props
@@ -56,6 +56,13 @@ export interface SearchBarProps extends Omit<TextInputProps, 'style'> {
 
   /** Placeholder (기본: "검색어를 입력해주세요.") */
   placeholder?: string;
+
+  /**
+   * 검색바 스타일 variant
+   * - default: 기본 스타일 (회색 배경, 그림자 없음)
+   * - map: 지도 검색창 스타일 (흰색 배경, 그림자 있음)
+   */
+  variant?: SearchBarVariant;
 }
 
 /**
@@ -70,10 +77,11 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   containerStyle,
   inputStyle,
   placeholder = '검색어를 입력해주세요.',
+  variant = 'default',
   ...textInputProps
 }) => {
   const { theme } = useTheme();
-  const styles = createSearchBarStyles(theme);
+  const styles = createSearchBarStyles(theme, variant);
   const [isFocused, setIsFocused] = useState(false);
 
   // 포커스 핸들러
@@ -130,31 +138,59 @@ export const SearchBar: React.FC<SearchBarProps> = ({
 
         {/* Icons */}
         <View style={styles.iconContainer}>
-          {/* Clear Button (텍스트가 있을 때만 표시) */}
-          {showClearButton && (
-            <TouchableOpacity
-              onPress={handleClear}
-              activeOpacity={0.7}
-              accessibilityRole="button"
-              accessibilityLabel="검색어 삭제"
-            >
-              <Icon name="text-delete" size={24} />
-            </TouchableOpacity>
-          )}
+          {variant === 'map' ? (
+            // map variant: 검색어 있으면 close(20)만, 없으면 search(24)만 표시
+            showClearButton ? (
+              <TouchableOpacity
+                onPress={handleClear}
+                activeOpacity={0.7}
+                accessibilityRole="button"
+                accessibilityLabel="검색어 삭제"
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              >
+                <Icon
+                  name="close"
+                  size={20}
+                  color={theme.colors.surface.texticon.onnormal.icon.black}
+                />
+              </TouchableOpacity>
+            ) : (
+              <Icon
+                name="search"
+                size={24}
+                color={theme.colors.surface.texticon.onnormal.icon.black}
+              />
+            )
+          ) : (
+            // default variant: 검색어 있으면 text-delete + search, 없으면 search만
+            <>
+              {/* Clear Button (텍스트가 있을 때만 표시) */}
+              {showClearButton && (
+                <TouchableOpacity
+                  onPress={handleClear}
+                  activeOpacity={0.7}
+                  accessibilityRole="button"
+                  accessibilityLabel="검색어 삭제"
+                >
+                  <Icon name="text-delete" size={24} />
+                </TouchableOpacity>
+              )}
 
-          {/* Search Icon */}
-          <TouchableOpacity
-            onPress={handleSearch}
-            activeOpacity={0.7}
-            accessibilityRole="button"
-            accessibilityLabel="검색"
-          >
-            <Icon
-              name="search"
-              size={24}
-              color={theme.colors.surface.texticon.onnormal.icon.black}
-            />
-          </TouchableOpacity>
+              {/* Search Icon */}
+              <TouchableOpacity
+                onPress={handleSearch}
+                activeOpacity={0.7}
+                accessibilityRole="button"
+                accessibilityLabel="검색"
+              >
+                <Icon
+                  name="search"
+                  size={24}
+                  color={theme.colors.surface.texticon.onnormal.icon.black}
+                />
+              </TouchableOpacity>
+            </>
+          )}
         </View>
       </View>
     </View>

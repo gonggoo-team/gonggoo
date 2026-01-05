@@ -14,6 +14,7 @@ export { useThrottledNavigation, useThrottledCallback } from './useThrottledNavi
 
 // UI Utility Hooks
 export { useImagePicker } from './useImagePicker';
+export { useDebounce } from './useDebounce';
 
 // Auth Hooks
 export { useRequireAuth } from './useRequireAuth';

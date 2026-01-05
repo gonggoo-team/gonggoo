@@ -1,19 +1,54 @@
-import { Stack } from "expo-router";
+import { SplashScreen, Stack } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 
 import { ThemeProvider } from "@/design-system";
-import { AuthProvider } from "@/app/shared/contexts";
+import { AuthProvider, ChatProvider } from "@/app/shared/contexts";
+import { useCallback, useEffect, useState } from "react";
+import { View } from "react-native";
+import { Splash } from "./splash";
+
+SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const [appIsReady, setAppIsReady] = useState(false);
+
+  useEffect(() => {
+    async function prepare() {
+      try {
+        await new Promise(resolve => setTimeout(resolve, 2000));        
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setAppIsReady(true);
+      }
+    }
+
+    prepare();
+  }, []);
+
+  const onLayoutRootView = useCallback(async () => {
+    if (appIsReady) {
+      await SplashScreen.hideAsync();
+    }
+  }, [appIsReady]);
+
+  if (!appIsReady) {
+    return (
+      <View style={{ flex: 1 }}>
+        <Splash />
+      </View>
+    );
+  }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{ flex: 1 }} onLayout={onLayoutRootView}>
       <SafeAreaProvider>
         <ThemeProvider>
           <AuthProvider>
-            <BottomSheetModalProvider>
+            <ChatProvider>
+              <BottomSheetModalProvider>
               <Stack>
               <Stack.Screen name="index" options={{ headerShown: false }} />
               <Stack.Screen name="(tabs)" options={{ headerShown: false, gestureEnabled: false }} />
@@ -90,6 +125,13 @@ export default function RootLayout() {
             />
 
             <Stack.Screen
+              name="chat/[id]"
+              options={{
+                headerShown: false,
+              }}
+            />
+
+            <Stack.Screen
               name="product-registration"
               options={{
                 headerShown: false,
@@ -110,6 +152,35 @@ export default function RootLayout() {
                 presentation: 'card',
               }}
             />
+
+            <Stack.Screen
+              name="map-search"
+              options={{
+                headerShown: false,                
+              }}
+            />
+            
+            <Stack.Screen
+              name="neighborhood-search"
+              options={{
+                headerShown: false,                
+              }}
+            />
+
+            <Stack.Screen
+              name="location-setting"
+              options={{
+                headerShown: false,                
+              }}
+            />
+
+            <Stack.Screen
+              name="neighborhood-setting"
+              options={{
+                headerShown: false,                
+              }}
+            />
+
             <Stack.Screen
               name="my-info"
               options={{
@@ -188,13 +259,21 @@ export default function RootLayout() {
               }}
             />
 
-              <Stack.Protected guard={__DEV__}>
-                <Stack.Screen name="storybook" options={{presentation: 'modal',
-                animation: 'slide_from_right',animationDuration: 2000,
-                headerShown: false,}} />
-              </Stack.Protected>
+              {/* Storybook - Development Only */}
+              {__DEV__ && (
+                <Stack.Screen
+                  name="storybook"
+                  options={{
+                    presentation: 'modal',
+                    animation: 'slide_from_right',
+                    animationDuration: 2000,
+                    headerShown: false,
+                  }}
+                />
+              )}
             </Stack>
-            </BottomSheetModalProvider>
+              </BottomSheetModalProvider>
+            </ChatProvider>
           </AuthProvider>
         </ThemeProvider>
       </SafeAreaProvider>
