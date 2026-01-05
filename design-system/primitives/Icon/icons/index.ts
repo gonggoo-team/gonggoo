@@ -691,4 +691,26 @@ export const ICON_PATHS: Record<IconName, IconPathData> = {
       },
     ],
   },
+
+  chat_send: {
+    viewBox: '0 0 24 24',
+    paths: [
+      {
+        d: 'M18 10.2141L12 5.07129L6 10.2141',
+        stroke: 'currentColor',
+        strokeWidth: 2,
+        strokeMiterlimit: 10,
+        strokeLinecap: 'round',
+        strokeLinejoin: 'round',
+      },
+      {
+        d: 'M12 18.8569V5.14258',
+        stroke: 'currentColor',
+        strokeWidth: 2,
+        strokeMiterlimit: 10,
+        strokeLinecap: 'round',
+        strokeLinejoin: 'round',
+      },
+    ],
+  },
 };

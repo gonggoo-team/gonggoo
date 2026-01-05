@@ -176,35 +176,50 @@ const getBadgeConfig = (
  * @param theme - 테마 객체
  * @param variant - 배지 variant
  * @param type - 배지 타입
+ * @param customBackgroundColor - 커스텀 배경색 (선택적)
+ * @param customTextColor - 커스텀 텍스트 색상 (선택적)
+ * @param customPadding - 커스텀 패딩 (선택적)
  * @returns StyleSheet 객체
  */
 export const createStatusBadgeStyles = (
   theme: Theme,
   variant: StatusBadgeVariant,
-  type: StatusBadgeType
+  type: StatusBadgeType,
+  customBackgroundColor?: string,
+  customTextColor?: string,
+  customPadding?: { vertical?: number; horizontal?: number }
 ) => {
   const config = getBadgeConfig(theme, variant, type);
 
+  // Custom props로 config 오버라이드
+  const finalConfig = {
+    ...config,
+    backgroundColor: customBackgroundColor || config.backgroundColor,
+    textColor: customTextColor || config.textColor,
+    paddingVertical: customPadding?.vertical ?? config.paddingVertical,
+    paddingHorizontal: customPadding?.horizontal ?? config.paddingHorizontal,
+  };
+
   // Figma 비율: 1.193359375 (line-height / font-size)
-  const lineHeight = Math.round(config.fontSize * 1.193);
+  const lineHeight = Math.round(finalConfig.fontSize * 1.193);
 
   return StyleSheet.create({
     container: {
-      paddingVertical: config.paddingVertical,
-      paddingHorizontal: config.paddingHorizontal,
+      paddingVertical: finalConfig.paddingVertical,
+      paddingHorizontal: finalConfig.paddingHorizontal,
       borderRadius: variant == 'card' ? theme.radius.xs : 0,
-      backgroundColor: config.backgroundColor,
+      backgroundColor: finalConfig.backgroundColor,
       alignSelf: 'flex-start', // 내용 크기만큼만 차지
     },
     text: {
-      fontSize: config.fontSize,
+      fontSize: finalConfig.fontSize,
       fontWeight:
-        config.fontWeight === '600'
+        finalConfig.fontWeight === '600'
           ? theme.typography.fontWeight.semiBold // 600
           : theme.typography.fontWeight.medium, // 500
       lineHeight,
-      letterSpacing: theme.typography.getLetterSpacing(config.fontSize), // -2.5%
-      color: config.textColor,
+      letterSpacing: theme.typography.getLetterSpacing(finalConfig.fontSize), // -2.5%
+      color: finalConfig.textColor,
     },
   });
 };
