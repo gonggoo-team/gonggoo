@@ -7,6 +7,8 @@
 
 import type { ProductCardVerticalData, ProductCardHorizontalData } from '@/app/shared/types/product.types';
 import type { CommonFilters, PriceRangeBounds } from '@/app/shared/types/filter.types';
+import type { LocationData } from '../types/auth.types';
+import { extractNeighborhood } from './addressUtils';
 
 /**
  * 필터링 가능한 상품 타입 (공통 필드만 사용)
@@ -29,6 +31,39 @@ const parseSlotRange = (rangeStr: string): [number, number] => {
   }
 
   return [parseInt(numbers[0], 10), parseInt(numbers[1], 10)];
+};
+
+/**
+ * 두 좌표 간 거리 계산 (Haversine formula)
+ * @param lat1 - 첫 번째 위치의 위도
+ * @param lng1 - 첫 번째 위치의 경도
+ * @param lat2 - 두 번째 위치의 위도
+ * @param lng2 - 두 번째 위치의 경도
+ * @returns 거리 (km)
+ */
+const calculateDistance = (
+  lat1: number,
+  lng1: number,
+  lat2: number,
+  lng2: number
+): number => {
+  const R = 6371; // 지구 반지름 (km)
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRad(lat1)) *
+      Math.cos(toRad(lat2)) *
+      Math.sin(dLng / 2) *
+      Math.sin(dLng / 2);
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+};
+
+const toRad = (degrees: number): number => {
+  return degrees * (Math.PI / 180);
 };
 
 /**
@@ -215,4 +250,103 @@ export const applyFilters = <T extends FilterableProduct>(
 
     return true;
   });
+};
+
+/**
+ * 동네 정보 기반으로 상품을 필터링합니다.
+ *
+ * @param products - 필터링할 상품 목록
+ * @param userLocation - 사용자의 위치 정보
+ * @param useDistance - true이면 거리 기반, false이면 동네명 기반 (기본값: false)
+ * @returns 필터링된 상품 목록
+ *
+ * @description
+ * ## 필터링 방식
+ *
+ * ### 1. 동네명 기반 필터링 (useDistance = false, 기본값)
+ * - Mock 데이터 사용 시 추천
+ * - 상품의 주소에서 동네명을 추출하여 비교
+ * - 예: 사용자가 "역삼동"이면 "역삼동" 상품만 표시
+ *
+ * ### 2. 거리 기반 필터링 (useDistance = true)
+ * - 실제 API 연동 시 추천
+ * - Haversine 공식으로 거리 계산
+ * - 사용자의 범위(range) 내 상품만 표시
+ * - 예: 사용자 범위가 5km이면 5km 이내 상품만 표시
+ *
+ * @example
+ * // 동네명 기반 필터링 (Mock 데이터)
+ * const filtered1 = applyNeighborhoodFilter(
+ *   products,
+ *   user.location,
+ *   false
+ * );
+ *
+ * @example
+ * // 거리 기반 필터링 (실제 API)
+ * const filtered2 = applyNeighborhoodFilter(
+ *   products,
+ *   user.location,
+ *   true
+ * );
+ */
+export const applyNeighborhoodFilter = <T extends FilterableProduct>(
+  products: T[],
+  userLocation: LocationData,
+  useDistance: boolean = false
+): T[] => {
+  if (useDistance) {
+    // 거리 기반 필터링
+    return products.filter((product) => {
+      // 상품에 좌표 정보가 없으면 제외
+      if (!product.latitude || !product.longitude) {
+        return false;
+      }
+
+      const distance = calculateDistance(
+        userLocation.latitude,
+        userLocation.longitude,
+        product.latitude,
+        product.longitude
+      );
+
+      return distance <= userLocation.range;
+    });
+  }
+
+  // 동네명 기반 필터링
+  console.log('[applyNeighborhoodFilter] Using neighborhood-based filtering:', {
+    userNeighborhood: userLocation.neighborhood,
+    totalProducts: products.length,
+  });
+  
+  const filtered = products.filter((product) => {
+    // 상품에 주소 정보가 없으면 제외
+    if (!product.address) {
+      console.log('[applyNeighborhoodFilter] Product has no address:', product.id);
+      return false;
+    }
+
+    const productNeighborhood = extractNeighborhood(product.address);
+    const matches = productNeighborhood === userLocation.neighborhood;
+
+    if (__DEV__ && Math.random() < 0.1) { // 10% 샘플링으로 로그 출력
+      console.log('[applyNeighborhoodFilter] Product check:', {
+        productId: product.id,
+        productAddress: product.address,
+        productNeighborhood,
+        userNeighborhood: userLocation.neighborhood,
+        matches,
+      });
+    }
+
+    return matches;
+  });
+
+  console.log('[applyNeighborhoodFilter] Filtered result:', {
+    input: products.length,
+    output: filtered.length,
+  });
+
+  return filtered;
 };

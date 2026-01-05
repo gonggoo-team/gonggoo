@@ -20,6 +20,7 @@ import {
   getMockUserByPhone,
   updateMockUser,
 } from './mock/auth.mock';
+import { migrateLocationData } from '../utils/locationParser';
 
 /**
  * 인증코드 전송 (Mock)
@@ -317,10 +318,17 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
     // });
 
     // Mock: AsyncStorage에서 정보 조합
-    const location = await AuthStorage.getUserLocation();
+    let location = await AuthStorage.getUserLocation();
     const user = getMockUserByPhone(phone);
 
+    // 위치 정보 마이그레이션
     if (location) {
+      const migratedLocation = migrateLocationData(location);
+      if (migratedLocation && JSON.stringify(migratedLocation) !== JSON.stringify(location)) {
+        console.log('[AuthService] Migrating location data for user:', phone);
+        await AuthStorage.setUserLocation(migratedLocation);
+        location = migratedLocation;
+      }
       user.location = location;
     }
 

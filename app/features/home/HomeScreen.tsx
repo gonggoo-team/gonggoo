@@ -12,7 +12,7 @@
  */
 
 import React, { useRef, useState } from 'react';
-import { Alert, FlatList, StyleSheet, View } from 'react-native';
+import { FlatList, StyleSheet, View } from 'react-native';
 
 import { useAuth } from '@/app/shared/contexts';
 import { useRequireAuth, useThrottledNavigation } from '@/app/shared/hooks';
@@ -95,7 +95,7 @@ export default function HomeScreen() {
   };
 
   const handleAddressPress = () => {
-    Alert.alert('준비중', '동네 설정 기능은 준비 중입니다');
+    push('/location-setting');
   };
 
   return (

@@ -10,9 +10,9 @@ import { useTheme, Checkbox, Icon } from '@/design-system';
 import { LocationSelectionModal, TimeSelectionModal } from './modals';
 
 interface LocationSectionProps {
-  location: { address: string; latitude?: number; longitude?: number; time?: string } | null;
+  location: { address: string; latitude?: number; longitude?: number; time?: string; detailAddress?: string } | null;
   isDeliveryAvailable: boolean;
-  onLocationChange: (value: { address: string; latitude?: number; longitude?: number; time?: string } | null) => void;
+  onLocationChange: (value: { address: string; latitude?: number; longitude?: number; time?: string; detailAddress?: string } | null) => void;
   onDeliveryChange: (value: boolean) => void;
 }
 
@@ -30,7 +30,12 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
     setShowLocationModal(true);
   };
 
-  const handleLocationConfirm = (selectedLocation: { address: string; latitude?: number; longitude?: number }) => {
+  const handleLocationConfirm = (selectedLocation: {
+    address: string;
+    latitude?: number;
+    longitude?: number;
+    detailAddress?: string;
+  }) => {
     onLocationChange({
       ...selectedLocation,
       time: location?.time,
@@ -85,16 +90,30 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
           activeOpacity={0.7}
         >
           <View style={styles.locationRow}>
-            <Text
-              style={[
-                styles.locationText,
-                { color: theme.colors.surface.texticon.onnormal.text.highEmp },
-              ]}
-              numberOfLines={1}
-              ellipsizeMode="tail"
-            >
-              {location ? location.address : '위치 추가'}
-            </Text>
+            <View style={styles.locationTextContainer}>
+              <Text
+                style={[
+                  styles.locationText,
+                  { color: theme.colors.surface.texticon.onnormal.text.highEmp },
+                ]}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {location ? location.address : '위치 추가'}
+              </Text>
+              {location?.detailAddress && (
+                <Text
+                  style={[
+                    styles.detailAddressText,
+                    { color: theme.colors.surface.texticon.onnormal.text.midEmp },
+                  ]}
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
+                  {location.detailAddress}
+                </Text>
+              )}
+            </View>
             <View style={{ transform: [{ rotate: '180deg' }] }}>
               <Icon
                 name="back"
@@ -219,12 +238,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8, // 텍스트와 아이콘 사이 간격
   },
+  locationTextContainer: {
+    flex: 1, // 텍스트가 길어질 경우를 대비
+    gap: 4,
+  },
   locationText: {
     fontSize: 14,
     fontWeight: '600',
     fontFamily: 'Pretendard',
     letterSpacing: -0.35,
-    // flex: 1, // 텍스트가 길어질 경우를 대비
+  },
+  detailAddressText: {
+    fontSize: 12,
+    fontWeight: '400',
+    fontFamily: 'Pretendard',
+    letterSpacing: -0.3,
   },
   deliveryCheckbox: {
     width: '100%', // 컨테이너 꽉 채우기

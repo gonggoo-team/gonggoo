@@ -85,6 +85,7 @@ export interface BaseProduct {
   // ===== 기타 =====
   badges: Badge[];
   reportable: boolean;
+  address?: string;
 }
 
 /**
@@ -150,6 +151,20 @@ const createHost = (productId: number): HostData => {
     '절약왕',
   ];
 
+  // 상품 ID 1, 5, 10은 현재 로그인한 사용자가 개최한 공구로 설정
+  // (테스트용 데이터)
+  const isCurrentUserProduct = [1, 5, 10].includes(productId);
+
+  if (isCurrentUserProduct) {
+    return {
+      id: 'user_01012345678', // 현재 로그인한 사용자 ID
+      nickname: '테스트유저',
+      profileImageUri: '',
+      rating: 9.5,
+      reviewCount: 42,
+    };
+  }
+
   return {
     id: `host-${productId}`,
     nickname: hostNicknames[productId % hostNicknames.length],
@@ -185,12 +200,27 @@ const createTransaction = (
     '협의 가능',
   ];
 
+  // 세부 주소 샘플 (일부 상품만 세부 주소 있음)
+  const detailAddresses = [
+    '1층 카페 앞',
+    '엘리베이터 근처',
+    '지하 주차장',
+    '정문 입구',
+    '2층 사무실',
+    undefined, // 세부 주소 없음
+    undefined,
+    '매장 내부',
+    '야외 테라스',
+    '옥상 정원',
+  ];
+
   return {
     meetingLocation: {
       address: location.address,
       placeName: location.name,
       latitude: location.latitude,
       longitude: location.longitude,
+      detailAddress: detailAddresses[productId % detailAddresses.length],
     },
     meetingTime: meetingTimes[productId % meetingTimes.length],
     deliveryAvailable,
@@ -281,6 +311,7 @@ interface ProductConfig {
   targetGender: TargetGender;
   targetAge: TargetAge;
   quantityPerSlot?: string; // 지정하지 않으면 자동 생성
+  address?: string;
 }
 
 const createProduct = (config: ProductConfig): BaseProduct => {
@@ -296,6 +327,7 @@ const createProduct = (config: ProductConfig): BaseProduct => {
     likes,
     targetGender,
     targetAge,
+    address
   } = config;
 
   const totalSlots = 5;
@@ -318,7 +350,7 @@ const createProduct = (config: ProductConfig): BaseProduct => {
   const template = getCategoryTemplate(category);
   const quantityPerSlot = config.quantityPerSlot ||
     template.quantityExamples[id % template.quantityExamples.length];
-
+    
   return {
     id: id.toString(),
     title,
@@ -342,6 +374,7 @@ const createProduct = (config: ProductConfig): BaseProduct => {
     targetAge,
     badges,
     reportable: true,
+    address
   };
 };
 
@@ -351,7 +384,7 @@ const createProduct = (config: ProductConfig): BaseProduct => {
   const PRODUCT_CONFIGS: ProductConfig[] = [
     // ID 1-10: 가전 제품
     { id: 1, title: '삼성 갤럭시 버즈2 프로', category: '가전', price: 189000, pricePerSlot:        
-  37800, discountRate: 15, imageCount: 3, currentParticipants: 4, likes: 42, targetGender: '성별 전체', targetAge: '연령대 전체', quantityPerSlot: '이어폰 1개' },
+  37800, discountRate: 15, imageCount: 3, currentParticipants: 4, likes: 42, targetGender: '성별 전체', targetAge: '연령대 전체', quantityPerSlot: '이어폰 1개', address: '서울 강남구 역삼동 강남대로 지하 396' },
     { id: 2, title: '에어팟 프로 2세대', category: '가전', price: 359000, pricePerSlot: 71800,      
   discountRate: 20, imageCount: 4, currentParticipants: 5, likes: 87, targetGender: '남성',
   targetAge: '20대', quantityPerSlot: '이어폰 1개' },
@@ -510,7 +543,7 @@ const createProduct = (config: ProductConfig): BaseProduct => {
    * 모든 상품 데이터 생성
    */
   const ALL_PRODUCTS: BaseProduct[] = PRODUCT_CONFIGS.map(createProduct);
-
+  
   /**
    * 헬퍼 함수: ProductDescription을 전체 문자열로 변환
    * toDetailData, toFormData 내부에서 사용
@@ -542,6 +575,12 @@ const createProduct = (config: ProductConfig): BaseProduct => {
     recruitmentStatus: product.recruitmentStatus,
     targetGender: product.targetGender,
     targetAge: product.targetAge,
+    // 동네 필터링을 위한 위치 정보 추가
+    address: product.transaction.meetingLocation.address,
+    latitude: product.transaction.meetingLocation.latitude,
+    longitude: product.transaction.meetingLocation.longitude,
+    // 개최중 탭 필터링을 위한 공구장 ID 추가
+    hostId: product.host.id,
   });
 
   /**
@@ -563,6 +602,12 @@ const createProduct = (config: ProductConfig): BaseProduct => {
     isReservationAvailable: product.transaction.deliveryAvailable,
     slotCount: product.totalSlots,
     recruitmentStatus: product.recruitmentStatus,
+    // 동네 필터링을 위한 위치 정보 추가
+    address: product.transaction.meetingLocation.address,
+    latitude: product.transaction.meetingLocation.latitude,
+    longitude: product.transaction.meetingLocation.longitude,
+    // 개최중 탭 필터링을 위한 공구장 ID 추가
+    hostId: product.host.id,
   });
 
   /**
@@ -623,7 +668,11 @@ const createProduct = (config: ProductConfig): BaseProduct => {
       },
       participants,
       transaction: {
-        location: product.transaction.meetingLocation.address,
+        location: product.transaction.meetingLocation.detailAddress
+          ? `${product.transaction.meetingLocation.address} (${product.transaction.meetingLocation.detailAddress})`
+          : product.transaction.meetingLocation.address,
+        latitude: product.transaction.meetingLocation.latitude,
+        longitude: product.transaction.meetingLocation.longitude,
         timeDescription: product.transaction.meetingTime,
         deliveryAvailable: product.transaction.deliveryAvailable,
       },
@@ -736,6 +785,7 @@ const createProduct = (config: ProductConfig): BaseProduct => {
         latitude: product.transaction.meetingLocation.latitude,
         longitude: product.transaction.meetingLocation.longitude,
         time: product.transaction.meetingTime,
+        detailAddress: product.transaction.meetingLocation.detailAddress,
       },
       isDeliveryAvailable: product.transaction.deliveryAvailable,
     };

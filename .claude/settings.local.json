@@ -18,7 +18,19 @@
       "Bash(git log:*)",
       "Bash(git branch:*)",
       "Bash(git ls-tree:*)",
-      "Bash(comm:*)"
+      "Bash(comm:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run typecheck:*)",
+      "Bash(cat:*)",
+      "WebFetch(domain:www.figma.com)",
+      "Bash(node:*)",
+      "mcp__filesystem__read_text_file",
+      "mcp__Figma_MCP__get_figma_data",
+      "Bash(env)",
+      "Bash(tree:*)",
+      "Bash(grep:*)",
+      "WebSearch",
+      "Bash(npx react-native log-android:*)"
     ],
     "deny": [],
     "ask": []
