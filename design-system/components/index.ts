@@ -32,6 +32,7 @@ export * from './ParticipantsRow';
 export * from './HostProfile';
 export * from './HostInfoSection';
 export * from './MapView';
+export * from './StaticMapImage';
 export * from './FloatingActionBar';
 export * from './FloatingActionButton';
 export * from './ProductOptionsMenu';

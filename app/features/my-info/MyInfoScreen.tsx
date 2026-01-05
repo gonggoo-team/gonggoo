@@ -56,7 +56,7 @@ export default function MyInfoScreen() {
   };
 
   const handleNeighborhoodPress = () => {
-    Alert.alert('동네설정', '동네 설정 화면으로 이동합니다. (구현 예정)');
+    push('/location-setting');
   };
 
   const handleLogout = () => {
@@ -70,7 +70,7 @@ export default function MyInfoScreen() {
           onPress: async () => {
             try {
               await logout();
-              router.replace('/splash');
+              router.replace('/onboarding');
             } catch (error) {
               console.error('로그아웃 실패:', error);
               Alert.alert('오류', '로그아웃에 실패했습니다. 다시 시도해주세요.');

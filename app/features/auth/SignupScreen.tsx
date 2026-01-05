@@ -21,7 +21,7 @@ export default function SignupScreen() {
   const handleSignupSuccess = async (phone: string) => {
     await AuthStorage.setHasLaunched(true);
     router.push({
-      pathname: '/set-location',
+      pathname: '/location-setting',
       params: { phone, fromSignup: 'true' },
     });
   };

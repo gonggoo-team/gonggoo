@@ -4,9 +4,12 @@
  * 거래 정보 섹션
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { InfoRow, MapView, useTheme } from '@/design-system';
+import { InfoRow, MapView, useTheme, StaticMapImage } from '@/design-system';
+import { STATIC_MAP_CONFIG } from '@/app/shared/config/staticMap.config';
+import { generateNaverStaticMapUrl, getNaverStaticMapSource } from '@/app/shared/utils/staticMapUtils';
+import { showMapAppSelector } from '@/app/shared/utils/mapDeepLinks';
 
 export interface TransactionInfoSectionProps {
   location: string;
@@ -24,6 +27,17 @@ export const TransactionInfoSection: React.FC<TransactionInfoSectionProps> = ({
   deliveryAvailable,
 }) => {
   const { theme } = useTheme();
+  
+  const staticMapSource = useMemo(() => {
+    return getNaverStaticMapSource({
+      latitude,
+      longitude,
+      width: STATIC_MAP_CONFIG.width,
+      height: STATIC_MAP_CONFIG.height,
+      zoom: STATIC_MAP_CONFIG.zoom,
+      markerSize: STATIC_MAP_CONFIG.markerSize,
+    });
+  }, [latitude, longitude]);
 
   return (
     <View style={styles.section}>
@@ -31,7 +45,23 @@ export const TransactionInfoSection: React.FC<TransactionInfoSectionProps> = ({
         거래 정보
       </Text>
       <View style={{ marginTop: 15 }}>
-        <MapView latitude={latitude} longitude={longitude} address={location} height={200} />
+        {STATIC_MAP_CONFIG.enabled ? (
+          /* Static Map */
+          <StaticMapImage
+            source={staticMapSource}
+            height={200}
+            onPress={() =>
+              showMapAppSelector({
+                latitude,
+                longitude,
+                address: location,
+              })
+            }
+          />
+        ) : (
+          /* Dynamic Map (기존 방식) */
+          <MapView latitude={latitude} longitude={longitude} address={location} height={200} />
+        )}
       </View>
       <View style={{ gap: 9, marginTop: 15 }}>
         <InfoRow iconName="location" text={location} />

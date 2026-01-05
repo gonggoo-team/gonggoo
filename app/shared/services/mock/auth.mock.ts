@@ -46,9 +46,13 @@ const MOCK_USERS: Record<string, AuthUser> = {
     profileImageUri: undefined,
     location: {
       address: '서울시 강남구 역삼동',
+      neighborhood: '역삼동',
+      city: '서울시',
+      district: '강남구',
       latitude: 37.5012767241426,
       longitude: 127.03958123605,
       verified: true,
+      range: 5,
     },
   },
   '010-9999-8888': {
@@ -58,9 +62,13 @@ const MOCK_USERS: Record<string, AuthUser> = {
     profileImageUri: undefined,
     location: {
       address: '서울시 서초구 서초동',
+      neighborhood: '서초동',
+      city: '서울시',
+      district: '서초구',
       latitude: 37.4838,
       longitude: 127.0323,
       verified: true,
+      range: 5,
     },
   },
 };
@@ -92,27 +100,43 @@ export const getMockUserByPhone = (phone: string): AuthUser => {
 export const MOCK_LOCATIONS: LocationData[] = [
   {
     address: '서울시 강남구 역삼동',
+    neighborhood: '역삼동',
+    city: '서울시',
+    district: '강남구',
     latitude: 37.5012767241426,
     longitude: 127.03958123605,
     verified: false,
+    range: 5,
   },
   {
     address: '서울시 서초구 서초동',
+    neighborhood: '서초동',
+    city: '서울시',
+    district: '서초구',
     latitude: 37.4838,
     longitude: 127.0323,
     verified: false,
+    range: 5,
   },
   {
     address: '서울시 송파구 잠실동',
+    neighborhood: '잠실동',
+    city: '서울시',
+    district: '송파구',
     latitude: 37.5133,
     longitude: 127.1028,
     verified: false,
+    range: 5,
   },
   {
     address: '서울시 마포구 상암동',
+    neighborhood: '상암동',
+    city: '서울시',
+    district: '마포구',
     latitude: 37.5791,
     longitude: 126.8895,
     verified: false,
+    range: 5,
   },
 ];
 

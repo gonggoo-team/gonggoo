@@ -9,13 +9,13 @@
  * Figma: node-id=1066-17087
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   View,
   Text,
   StyleSheet,
-  Dimensions,
   TouchableOpacity,
+  useWindowDimensions,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import * as Location from 'expo-location';
@@ -24,9 +24,6 @@ import { MapView } from '@/design-system/components/MapView';
 import { useAuth } from '@/app/shared/contexts';
 import type { LocationData } from '@/app/shared/types/auth.types';
 import { geocodeAddress, reverseGeocode } from '@/app/shared/utils/geocoding';
-
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-const MAP_HEIGHT = SCREEN_HEIGHT - 290; // 상단 GNB + 하단 컨트롤 영역 제외
 
 type RangeOption = 2 | 5 | 10;
 
@@ -43,8 +40,29 @@ function NeighborhoodSettingScreenContent() {
   const { theme } = useTheme();
   const { user, updateLocation } = useAuth();
   const params = useLocalSearchParams();
+  const { height: windowHeight } = useWindowDimensions();
+
+  // 화면 크기에 따라 지도 높이 계산 (GNB + 컨트롤 영역 제외)
+  const mapHeight = windowHeight - 290;
 
   const [selectedRange, setSelectedRange] = useState<RangeOption>(5);
+
+  /**
+   * 범위에 따른 줌 레벨 계산
+   * 2km: zoom 14, 5km: zoom 13, 10km: zoom 12
+   */
+  const getZoomLevel = (range: RangeOption): number => {
+    switch (range) {
+      case 2:
+        return 14;
+      case 5:
+        return 13;
+      case 10:
+        return 12;
+      default:
+        return 13;
+    }
+  };
   const [currentLocation, setCurrentLocation] = useState<{
     latitude: number;
     longitude: number;
@@ -53,6 +71,7 @@ function NeighborhoodSettingScreenContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const isFromSignup = params.fromSignup === 'true';
 
@@ -73,12 +92,20 @@ function NeighborhoodSettingScreenContent() {
           // 새로운 위치 가져오기
           const { status } = await Location.requestForegroundPermissionsAsync();
           if (status === 'granted') {
-            const location = await Location.getCurrentPositionAsync({});
-            // 임시 주소 (실제로는 역지오코딩 필요)
+            const location = await Location.getCurrentPositionAsync({
+              accuracy: Location.Accuracy.Balanced,
+            });
+
+            // 역지오코딩으로 실제 주소 가져오기
+            const address = await reverseGeocode(
+              location.coords.latitude,
+              location.coords.longitude
+            );
+
             setCurrentLocation({
               latitude: location.coords.latitude,
               longitude: location.coords.longitude,
-              address: '서울시 강남구',
+              address: address || '주소를 가져올 수 없습니다',
             });
           }
         }
@@ -128,8 +155,17 @@ function NeighborhoodSettingScreenContent() {
     setIsLoading(true);
 
     try {
+      // 주소에서 동네명, 시, 구 추출
+      const addressParts = currentLocation.address.split(' ');
+      const city = addressParts.length >= 1 ? addressParts[0] : '';
+      const district = addressParts.length >= 2 ? addressParts[1] : '';
+      const neighborhood = addressParts.length >= 3 ? addressParts[2] : '';
+
       const locationData: LocationData = {
         address: currentLocation.address,
+        neighborhood,
+        city,
+        district,
         latitude: currentLocation.latitude,
         longitude: currentLocation.longitude,
         verified: true,
@@ -156,7 +192,7 @@ function NeighborhoodSettingScreenContent() {
   };
 
   /**
-   * 주소 검색 핸들러
+   * 주소 검색 핸들러 (디바운싱 적용)
    */
   const handleAddressSearch = async (query: string) => {
     if (!query.trim()) {
@@ -184,6 +220,40 @@ function NeighborhoodSettingScreenContent() {
       setIsSearching(false);
     }
   };
+
+  /**
+   * 검색어 변경 핸들러 (디바운싱)
+   */
+  const handleSearchQueryChange = useCallback((text: string) => {
+    setSearchQuery(text);
+
+    // 기존 타이머 취소
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    // 검색어가 비어있으면 검색하지 않음
+    if (!text.trim()) {
+      return;
+    }
+
+    // 500ms 후 검색 실행
+    searchTimeoutRef.current = setTimeout(() => {
+      // 자동 검색은 비활성화하고 사용자가 Enter를 누를 때만 검색
+      // handleAddressSearch(text);
+    }, 500);
+  }, []);
+
+  /**
+   * 컴포넌트 언마운트 시 타이머 정리
+   */
+  useEffect(() => {
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, []);
 
   /**
    * 내 위치 버튼 핸들러
@@ -264,19 +334,20 @@ function NeighborhoodSettingScreenContent() {
           latitude={currentLocation.latitude}
           longitude={currentLocation.longitude}
           address={currentLocation.address}
-          height={MAP_HEIGHT}
+          height={mapHeight}
           showMarker={true}
           rangeCircleRadius={selectedRange}
           showLocationButton={true}
           onLocationButtonPress={handleMyLocation}
           interactive={false}
+          zoom={getZoomLevel(selectedRange)}
         />
 
         {/* Search Bar Overlay */}
         <View style={styles.searchOverlay}>
           <SearchBar
             value={searchQuery}
-            onChangeText={setSearchQuery}
+            onChangeText={handleSearchQueryChange}
             onSearch={handleAddressSearch}
             placeholder="주소 또는 장소명 검색"
             containerStyle={styles.searchBarContainer}
@@ -472,7 +543,7 @@ const styles = StyleSheet.create({
   },
   searchOverlay: {
     position: 'absolute',
-    bottom: 20,
+    top: 20,
     left: 20,
     right: 20,
     zIndex: 5,

@@ -16,7 +16,8 @@ import { useProductCardGrid, useProductList, useTabFilters, useTabSort, useFilte
 import { useThrottledNavigation } from '@/app/shared/hooks/useThrottledNavigation';
 import { getAllProducts } from '@/app/shared/services/mock/products.mock';
 import type { ProductCardVerticalData } from '@/app/shared/types/product.types';
-import { convertBadges, calculatePriceRange, formatNeighborhoodSubtitle } from '@/app/shared/utils';
+import { convertBadges, calculatePriceRange, formatNeighborhoodSubtitle, applyNeighborhoodFilter } from '@/app/shared/utils';
+import { useNeighborhoodFilter } from '../hooks/useNeighborhoodFilter';
 
 import {
   CategoryFilterBar,
@@ -55,13 +56,48 @@ export const NeighborhoodContent = forwardRef<FlatList>((props, ref) => {
     recruitmentStatus: p.recruitmentStatus,
     targetGender: p.targetGender,
     targetAge: p.targetAge,
+    address: p.address
   })), [allProductsRaw]);
+
+  // 동네 필터링 훅
+  const { neighborhoodInfo } = useNeighborhoodFilter();
+
+  // 동네 기반 필터링 적용 (Mock 데이터이므로 동네명 기반)
+  const neighborhoodProducts = useMemo(() => {
+    if (!neighborhoodInfo || !user?.location) {
+      console.log('[NeighborhoodContent] No location info, showing all products');
+      return allProducts;
+    }
+
+    console.log('[NeighborhoodContent] Filtering by neighborhood:', {
+      neighborhood: user.location.neighborhood,
+      range: user.location.range,
+      totalProducts: allProducts.length,
+    });
+
+    const filtered = applyNeighborhoodFilter(
+      allProducts,
+      user.location,
+      false // Mock 데이터이므로 동네명 기반 필터링 사용
+    );
+
+    console.log('[NeighborhoodContent] Filtered products:', {
+      count: filtered.length,
+      samples: filtered.slice(0, 3).map(p => ({
+        id: p.id,
+        title: p.title,
+        address: p.address,
+      })),
+    });
+
+    return filtered;
+  }, [allProducts, neighborhoodInfo, user?.location]);
 
   // 동적 가격 범위 계산
   const priceRange = useMemo(() => {
-    const range = calculatePriceRange(allProducts);
+    const range = calculatePriceRange(neighborhoodProducts);
     return [range.min, range.max] as [number, number];
-  }, [allProducts]);
+  }, [neighborhoodProducts]);
 
   // 공통 훅 사용
   const { selectedCategory, setSelectedCategory, filters } = useTabFilters('전체', priceRange);
@@ -74,8 +110,8 @@ export const NeighborhoodContent = forwardRef<FlatList>((props, ref) => {
     applySorting,
   } = useTabSort();
 
-  // 최종 상품 목록 (필터링 + 정렬)
-  const products = useProductList(allProducts, selectedCategory, filters, applySorting);
+  // 최종 상품 목록 (동네 필터링 + 카테고리 필터링 + 정렬)
+  const products = useProductList(neighborhoodProducts, selectedCategory, filters, applySorting);
 
   // 필터 네비게이션 훅
   const { handleFilterPress } = useFilterNavigation(products, filters);

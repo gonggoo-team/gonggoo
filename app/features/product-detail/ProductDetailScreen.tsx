@@ -258,8 +258,8 @@ export default function ProductDetailScreen() {
         <SectionDivider />
         <TransactionInfoSection
           location={product.transaction.location}
-          latitude={37.5665}
-          longitude={126.9780}
+          latitude={product.transaction.latitude}
+          longitude={product.transaction.longitude}
           timeDescription={product.transaction.timeDescription}
           deliveryAvailable={product.transaction.deliveryAvailable}
         />

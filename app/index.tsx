@@ -11,12 +11,10 @@
 import React, { useEffect } from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { useRouter, Redirect } from 'expo-router';
-import { useTheme } from '@/design-system';
 import { useAuth } from '@/app/shared/contexts';
 import * as AuthStorage from '@/app/shared/services/storage/authStorage';
 
 export default function Index() {
-  const { theme } = useTheme();
   const router = useRouter();
   const { isAuthenticated, isGuest, isLoading } = useAuth();
   const [hasLaunched, setHasLaunched] = React.useState<boolean | null>(null);
@@ -38,16 +36,8 @@ export default function Index() {
    */
   if (isLoading || hasLaunched === null) {
     return (
-      <View
-        style={[
-          styles.container,
-          { backgroundColor: theme.colors.surface.normal.bg1 },
-        ]}
-      >
-        <ActivityIndicator
-          size="large"
-          color={theme.colors.surface.brand.primary}
-        />
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#006242" />
       </View>
     );
   }
@@ -55,9 +45,9 @@ export default function Index() {
   /**
    * 리다이렉트 로직
    */
-  // 최초 실행 → 스플래시 화면
+  // 최초 실행 → 온보딩 화면
   if (!hasLaunched) {
-    return <Redirect href="/splash" />;
+    return <Redirect href="/onboarding" />;
   }
 
   // 로그인됨 또는 게스트 → 홈
@@ -65,8 +55,8 @@ export default function Index() {
     return <Redirect href="/(tabs)" />;
   }
 
-  // 기본: 홈 (로그인 안 됨 상태로도 진입 가능)
-  return <Redirect href="/(tabs)" />;
+  // 기본: 온보딩 화면 (로그인 안 됨 상태)
+  return <Redirect href="/onboarding" />;
 }
 
 const styles = StyleSheet.create({
@@ -74,5 +64,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#FFFFFF',
   },
 });

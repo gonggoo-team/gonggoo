@@ -39,20 +39,30 @@ export interface AuthUser {
  * Location data
  */
 export interface LocationData {
-  /** Location address */
+  /** Full address (e.g., "서울시 강남구 역삼동") */
   address: string;
+  /** Neighborhood name (e.g., "역삼동") */
+  neighborhood: string;
+  /** City/province name (e.g., "서울시") */
+  city: string;
+  /** District name (e.g., "강남구") */
+  district: string;
   /** Latitude coordinate */
   latitude: number;
   /** Longitude coordinate */
   longitude: number;
   /** Whether location is verified */
   verified: boolean;
+  /** Neighborhood range in kilometers (2, 5, or 10) - required */
+  range: 2 | 5 | 10;
   /** Whether location was detected via GPS (optional) */
   gpsVerified?: boolean;
   /** Timestamp when location was detected (ISO format, optional) */
   detectedAt?: string;
   /** GPS accuracy in meters (optional) */
   accuracy?: number;
+  /** Neighborhood range in kilometers (2, 5, or 10) */
+  range?: number;
 }
 
 /**

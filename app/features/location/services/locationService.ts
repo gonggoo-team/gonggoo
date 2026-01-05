@@ -12,10 +12,11 @@ import type {
   PermissionResponse,
   PermissionStatus,
 } from '../types/location.types';
-import { reverseGeocodeWithKakao, hasKakaoApiKey } from './kakaoGeocodingService';
+import { reverseGeocodeWithNaver, hasNaverApiKey } from './naverGeocodingService';
+import { ENV } from '@/app/shared/config/env';
 
-// 개발 모드 감지
-const isDevelopment = __DEV__;
+// Mock 모드 감지 (환경 변수로 제어)
+const useMockLocation = ENV.USE_MOCK_LOCATION;
 
 // Mock GPS 좌표 (서울시 주요 동네)
 export const MOCK_GPS_LOCATIONS = [
@@ -107,10 +108,15 @@ function convertPermissionStatus(
 
 /**
  * 현재 GPS 위치 가져오기
+ *
+ * @description
+ * - 기본: 실제 GPS 사용 (에뮬레이터/실제 기기 모두)
+ * - EXPO_PUBLIC_USE_MOCK_LOCATION=true 설정 시: Mock 데이터 사용
  */
 export async function getCurrentLocation(): Promise<GPSCoordinates> {
-  if (isDevelopment) {
-    // Mock: 랜덤 위치 반환
+  // Mock 모드가 명시적으로 활성화된 경우에만 Mock 사용
+  if (useMockLocation) {
+    console.log('[Location] Using MOCK location (USE_MOCK_LOCATION=true)');
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
     const randomLocation =
@@ -127,11 +133,18 @@ export async function getCurrentLocation(): Promise<GPSCoordinates> {
     };
   }
 
-  // Production: 실제 GPS 사용
+  // 기본: 실제 GPS 사용 (에뮬레이터 및 실제 기기)
   try {
+    console.log('[Location] Getting REAL GPS location...');
     const location = await Location.getCurrentPositionAsync({
       accuracy: Location.Accuracy.High,
       timeInterval: 10000,
+    });
+
+    console.log('[Location] Real GPS success:', {
+      lat: location.coords.latitude,
+      lng: location.coords.longitude,
+      accuracy: location.coords.accuracy,
     });
 
     return {
@@ -147,13 +160,18 @@ export async function getCurrentLocation(): Promise<GPSCoordinates> {
 
 /**
  * 역지오코딩: 좌표 → 주소
+ *
+ * @description
+ * - Mock 모드: 가장 가까운 Mock 데이터 반환
+ * - 기본 모드: Naver API 시도 → expo-location fallback
  */
 export async function reverseGeocode(
   lat: number,
   lng: number
 ): Promise<NeighborhoodData> {
-  if (isDevelopment) {
-    // Mock: 가장 가까운 위치 찾기
+  // Mock 모드가 명시적으로 활성화된 경우에만 Mock 사용
+  if (useMockLocation) {
+    console.log('[Location] Using MOCK geocoding (USE_MOCK_LOCATION=true)');
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     const nearest = findNearestMockLocation(lat, lng);
@@ -167,19 +185,20 @@ export async function reverseGeocode(
     };
   }
 
-  // Production: Kakao API 우선 사용
+  // 기본: 실제 API 사용
+  // 1순위: Naver API (정확도 높음)
   try {
-    if (hasKakaoApiKey()) {
-      console.log('[Location] Using Kakao API for geocoding');
-      return await reverseGeocodeWithKakao(lat, lng);
+    if (hasNaverApiKey()) {
+      console.log('[Location] Using Naver API for geocoding');
+      return await reverseGeocodeWithNaver(lat, lng);
     } else {
-      console.warn('[Location] Kakao API key not found, falling back to expo-location');
-      throw new Error('KAKAO_API_KEY_MISSING');
+      console.warn('[Location] Naver API key not found, falling back to expo-location');
+      throw new Error('NAVER_API_KEY_MISSING');
     }
-  } catch (kakaoError) {
-    console.warn('[Location] Kakao API failed, falling back to expo-location:', kakaoError);
+  } catch (naverError) {
+    console.warn('[Location] Naver API failed, trying expo-location fallback:', naverError);
 
-    // Fallback: expo-location의 reverseGeocodeAsync 사용
+    // 2순위: expo-location fallback (정확도 낮음)
     try {
       const addresses = await Location.reverseGeocodeAsync({
         latitude: lat,
@@ -197,7 +216,7 @@ export async function reverseGeocode(
       const district = address.city || '';
       const city = address.region || '서울시';
 
-      console.log('[Location] Fallback geocode result:', neighborhood);
+      console.log('[Location] Expo fallback geocode result:', neighborhood);
 
       return {
         neighborhood,

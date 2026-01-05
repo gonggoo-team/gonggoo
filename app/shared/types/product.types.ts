@@ -22,6 +22,7 @@ export interface MeetingLocation {
   placeName: string;    // "강남역 10번 출구"
   latitude: number;
   longitude: number;
+  detailAddress?: string; // "1층 엘리베이터 근처", "카페 안" 등 세부 위치
 }
 
 /**
@@ -109,6 +110,14 @@ export interface ProductCardVerticalData {
   targetGender: TargetGender;
   /** 타겟 연령대 (인기 탭 필터링용) */
   targetAge: TargetAge;
+  /** 주소 (동네 필터링용) */
+  address?: string;
+  /** 위도 (거리 기반 필터링용) */
+  latitude?: number;
+  /** 경도 (거리 기반 필터링용) */
+  longitude?: number;
+  /** 공구장 ID (개최중 탭 필터링용) */
+  hostId?: string;
 }
 
 /**
@@ -136,6 +145,14 @@ export interface ProductCardHorizontalData {
   slotCount?: number;
   /** 모집 상태 (필터링용) */
   recruitmentStatus?: RecruitmentStatus;
+  /** 주소 (동네 필터링용) */
+  address?: string;
+  /** 위도 (거리 기반 필터링용) */
+  latitude?: number;
+  /** 경도 (거리 기반 필터링용) */
+  longitude?: number;
+  /** 공구장 ID (개최중 탭 필터링용) */
+  hostId?: string;
 }
 
 /**
@@ -187,6 +204,10 @@ export interface Participant {
 export interface TransactionInfo {
   /** 거래 장소 */
   location: string;
+  /** 위도 */
+  latitude: number;
+  /** 경도 */
+  longitude: number;
   /** 거래 시간 */
   timeDescription: string;
   /** 택배 가능 여부 */
