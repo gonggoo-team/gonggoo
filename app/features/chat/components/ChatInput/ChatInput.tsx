@@ -9,13 +9,15 @@
 
 import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme, Icon } from '@/design-system';
 import { createStyles } from './ChatInput.styles';
 import type { ChatInputProps } from './ChatInput.types';
 
 export default function ChatInput({ onSend, onAttach, disabled = false }: ChatInputProps) {
   const { theme } = useTheme();
-  const styles = createStyles(theme);
+  const insets = useSafeAreaInsets();
+  const styles = createStyles(theme, insets.bottom);
   const [message, setMessage] = useState('');
   const [inputHeight, setInputHeight] = useState(20);
 
