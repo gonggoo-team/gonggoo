@@ -9,7 +9,7 @@
  */
 
 import React, { useEffect } from 'react';
-import { View, FlatList, ActivityIndicator, StyleSheet, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, FlatList, ActivityIndicator, StyleSheet, Alert, Platform, KeyboardAvoidingView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Divider, GNB, useTheme } from '@/design-system';
 import { useThrottledNavigation } from '@/app/shared/hooks';
@@ -27,7 +27,6 @@ export default function ChatDetailScreen({ chatId }: ChatDetailScreenProps) {
   const { back } = useThrottledNavigation();
   const { refreshUnreadCount } = useChat();
   const { chatRoom, messageSections, loading, sending, sendMessage, handleAttach, refresh } = useChatDetail(chatId);
-
   /**
    * 컴포넌트 unmount 시 안 읽은 메시지 개수 갱신
    * (채팅을 읽었으므로 탭바 배지를 업데이트)
@@ -124,33 +123,31 @@ export default function ChatDetailScreen({ chatId }: ChatDetailScreenProps) {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.surface.normal.bg1 }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.surface.normal.bg1 }]} edges={['top']}>
       {/* GNB */}
-      <SafeAreaView edges={[]}>
-        <GNB
-          leftSection={{
-            type: 'back',
-            onPress: back,
-          }}
-          centerSection={{
-            type: 'title',
-            text: chatRoom.participant.nickname.length > 15 ? chatRoom.participant.nickname.substring(0, 15) + '...' : chatRoom.participant.nickname,
-          }}
-          rightIcons={[
-            {
-              type: 'menu',
-              onPress: handleOptionsPress,
-            },
-          ]}
-        />
-        <Divider />
-      </SafeAreaView>
+      <GNB
+        leftSection={{
+          type: 'back',
+          onPress: back,
+        }}
+        centerSection={{
+          type: 'title',
+          text: chatRoom.participant.nickname.length > 15 ? chatRoom.participant.nickname.substring(0, 15) + '...' : chatRoom.participant.nickname,
+        }}
+        rightIcons={[
+          {
+            type: 'menu',
+            onPress: handleOptionsPress,
+          },
+        ]}
+      />
+      <Divider />
 
       {/* 키보드 처리 래퍼 */}
       <KeyboardAvoidingView
         style={styles.keyboardAvoidingView}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={0}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
       >
         {/* 메시지 리스트 (inverted) */}
         <FlatList
@@ -162,12 +159,14 @@ export default function ChatDetailScreen({ chatId }: ChatDetailScreenProps) {
           onRefresh={refresh}
           refreshing={false}
           showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          style={styles.flatList}
         />
 
         {/* 입력창 */}
         <ChatInput onSend={sendMessage} onAttach={handleAttach} disabled={sending} />
       </KeyboardAvoidingView>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -184,6 +183,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   keyboardAvoidingView: {
+    flex: 1,
+  },
+  flatList: {
     flex: 1,
   },
   messageList: {

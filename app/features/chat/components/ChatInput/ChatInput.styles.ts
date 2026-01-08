@@ -5,10 +5,11 @@
 import { StyleSheet, Platform } from 'react-native';
 import type { Theme } from '@/design-system';
 
-export const createStyles = (theme: Theme) =>
+export const createStyles = (theme: Theme, bottomInset: number = 0) =>
   StyleSheet.create({
     container: {
-      paddingVertical: 12,
+      paddingTop: 12,
+      paddingBottom: Math.max(12, bottomInset),
       paddingHorizontal: 16,
       backgroundColor: theme.colors.surface.normal.bg1,
       borderTopWidth: 1,
