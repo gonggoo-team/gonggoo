@@ -3,12 +3,6 @@
  *
  * 주소 검색 결과를 표시하는 컴포넌트입니다.
  * LocationSelectionModal에서 사용됩니다.
- *
- * Features:
- * - 검색 결과를 FlatList로 표시
- * - 각 결과 클릭 시 지도 이동 + 결과 목록 닫기
- * - 도로명 주소 + 지번 주소 표시
- * - 검색 중일 때 "검색 중..." 표시
  */
 
 import React from 'react';
@@ -31,24 +25,26 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
   isSearching,
 }) => {
   const { theme } = useTheme();
-  console.log(results)
+
   // 검색 중일 때
   if (isSearching) {
     return (
-      <View style={styles.emptyContainer}>
-        <Text
-          style={[
-            styles.emptyText,
-            { color: theme.colors.surface.texticon.onnormal.text.midEmp },
-          ]}
-        >
-          검색 중...
-        </Text>
+      <View style={[styles.container, { backgroundColor: theme.colors.surface.normal.bg1 }]}>
+        <View style={styles.loadingWrapper}>
+          <Text
+            style={[
+              styles.emptyText,
+              { color: theme.colors.surface.texticon.onnormal.text.midEmp },
+            ]}
+          >
+            검색 중...
+          </Text>
+        </View>
       </View>
     );
   }
 
-  // 결과가 없을 때 (검색 전 또는 결과 없음)
+  // 결과가 없을 때
   if (results.length === 0) {
     return null;
   }
@@ -62,7 +58,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
     >
       <FlatList
         data={results}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item, index) => `${item.id}-${index}`}
         renderItem={({ item }) => (
           <TouchableOpacity
             style={[
@@ -72,7 +68,6 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
             onPress={() => onSelectResult(item)}
             activeOpacity={0.7}
           >
-            {/* 도로명 주소 (메인) */}
             <Text
               style={[
                 styles.mainAddress,
@@ -83,7 +78,6 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
               {item.roadAddress || item.jibunAddress}
             </Text>
 
-            {/* 지번 주소 (서브, 도로명과 다를 경우만 표시) */}
             {item.jibunAddress && item.roadAddress !== item.jibunAddress && (
               <Text
                 style={[
@@ -97,8 +91,14 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
             )}
           </TouchableOpacity>
         )}
-        style={styles.list}
+
+        style={styles.list} 
+        contentContainerStyle={styles.listContent}
+        
         keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={true}        
+        nestedScrollEnabled={true} 
+        bounces={false}
       />
     </View>
   );
@@ -106,39 +106,50 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    maxHeight: 200,
+    width: '100%',
     borderRadius: 8,
     overflow: 'hidden',
+    
+    // Shadow
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,    
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 5,
+    
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.05)',
   },
   list: {
-    // flex: 1,
+    maxHeight: 275, 
+    flexGrow: 0, // 250보다 작을 땐 내용물만큼만 차지
+  },
+  listContent: {
+    paddingBottom: 4,
+  },
+  loadingWrapper: {
+    padding: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 50,
   },
   resultItem: {
-    paddingVertical: 12,
+    paddingVertical: 14,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
   },
   mainAddress: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: '600',
     fontFamily: 'Pretendard',
     letterSpacing: -0.35,
     marginBottom: 4,
   },
   subAddress: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '400',
     fontFamily: 'Pretendard',
     letterSpacing: -0.3,
-  },
-  emptyContainer: {
-    padding: 16,
-    alignItems: 'center',
   },
   emptyText: {
     fontSize: 14,

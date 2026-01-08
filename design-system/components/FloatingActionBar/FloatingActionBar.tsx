@@ -51,12 +51,14 @@ export const FloatingActionBar = ({
   // ✅ [애니메이션] 높이 계산 시 contentHeight 사용
   const contentStyle = useAnimatedStyle(() => {
     return {
-      opacity: interpolate(animatedIndex.value, [0, 0.5], [0, 1], Extrapolation.CLAMP),
-      zIndex: interpolate(animatedIndex.value, [0, 0.1], [-1, 1], Extrapolation.CLAMP),
+      // 안드로이드 실제 기기 호환성을 위해 opacity 최소값을 0.01로 설정 (완전 투명 방지)
+      opacity: interpolate(animatedIndex.value, [0, 0.5], [0.01, 1], Extrapolation.CLAMP),
+      // zIndex를 항상 양수로 유지 (안드로이드에서 음수 zIndex는 렌더링 문제 발생 가능)
+      zIndex: 15,
       transform: [
-        { 
+        {
           // 살짝 아래에서 위로 올라오는 효과
-          translateY: interpolate(animatedIndex.value, [0, 1], [20, 0], Extrapolation.CLAMP) 
+          translateY: interpolate(animatedIndex.value, [0, 1], [20, 0], Extrapolation.CLAMP)
         }
       ],
     };
@@ -157,7 +159,11 @@ export const FloatingActionBar = ({
 
           {/* 2. 중간 상품 정보 (Absolute + Auto Height Measure) */}
           {isExpandable && (
-            <Animated.View style={[styles.middleContent, contentStyle]}>
+            <Animated.View
+              style={[styles.middleContent, contentStyle]}
+              needsOffscreenAlphaCompositing={Platform.OS === 'android'}
+              renderToHardwareTextureAndroid={true}
+            >
               {/* ✅ onLayout을 여기에 걸어서 내부 컨텐츠의 실제 높이를 잽니다 */}
               <View onLayout={handleContentLayout}>
                 <View style={styles.productInfoSection}>
@@ -247,10 +253,12 @@ const styles = StyleSheet.create({
   },
   middleContent: {
     position: 'absolute',
-    top: 40, 
+    top: 40,
     left: 0,
     right: 0,
     // 높이는 자동(auto)으로 설정되어 자식 View 크기에 맞춰짐
+    // 안드로이드에서 zIndex를 보완하기 위한 elevation 추가
+    elevation: 15,
   },
   productInfoSection: { width: '90%', alignSelf: 'center', gap: 14 },
   titleText: { fontSize: 16, fontWeight: '600', color: '#181A1A' },
