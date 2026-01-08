@@ -231,7 +231,7 @@ function MapScreenContent() {
     'worklet';
     const bottomSheetTop = animatedPosition.value;
     const floatingButtonBottomTop = bottomSheetTop - 20;
-    const bottom = windowHeight - floatingButtonBottomTop - 80;
+    const bottom = windowHeight - floatingButtonBottomTop - 40;
     const bottomSheetHeight = windowHeight - bottomSheetTop;
     const opacity = bottomSheetHeight >= maxSnapPoint * 0.95 ? 0 : 1;
     return { opacity, bottom };

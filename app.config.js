@@ -9,12 +9,15 @@ module.exports = {
       backgroundColor: "#006242",
       barStyle: "light-content"
     },
+    runtimeVersion: {"policy": "sdkVersion"},
     android: {
       permissions: [
         "android.permission.ACCESS_COARSE_LOCATION",
         "android.permission.ACCESS_FINE_LOCATION"
       ],
-      package: "com.gonggoo.neighbors"
+      package: "com.gonggoo.neighbors",
+      runtimeVersion: "1.0.0",
+      softwareKeyboardLayoutMode: "pan"
     },
     plugins: [
       "expo-web-browser",
@@ -55,6 +58,9 @@ module.exports = {
       eas: {
         projectId: "03f4bdbd-de95-4da4-8620-a86bf75896be"
       }
-    }
+    },
+    updates: {
+      url: "https://u.expo.dev/03f4bdbd-de95-4da4-8620-a86bf75896be"
+    },
   }
 };
