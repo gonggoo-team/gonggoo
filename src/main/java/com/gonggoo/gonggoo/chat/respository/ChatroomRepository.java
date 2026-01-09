@@ -16,7 +16,7 @@ public interface ChatroomRepository extends JpaRepository<Chatroom, Long> {
             where c.coopostId = :coopostId
             and c.roomCategory = :roomCategory
             and c.roomRef = : roomRef
-            and deleted_at is null
+            and deletedAt is null
             """)
     Optional<Chatroom> lockActiveBySemantic(@Param("coopostId") Long coopostId,
                                             @Param("roomCategory") String roomCategory,
