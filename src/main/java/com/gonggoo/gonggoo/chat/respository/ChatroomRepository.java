@@ -3,6 +3,7 @@ package com.gonggoo.gonggoo.chat.respository;
 import com.gonggoo.gonggoo.chat.domain.Chatroom;
 import jakarta.persistence.LockModeType;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
@@ -18,7 +19,7 @@ public interface ChatroomRepository extends JpaRepository<Chatroom, Long> {
             and c.roomRef = : roomRef
             and deletedAt is null
             """)
-    Optional<Chatroom> lockActiveBySemantic(@Param("coopostId") Long coopostId,
+    Optional<Chatroom> lockActiveBySemantic(@Param("coopostId") UUID coopostId,
                                             @Param("roomCategory") String roomCategory,
                                             @Param("roomRef") String roomRef);
 }

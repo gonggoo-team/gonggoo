@@ -11,6 +11,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,7 +29,7 @@ public class Chatroom extends BaseEntity {
     private Long id;
 
     @Column(name = "coopost_id", nullable = false)
-    private Long coopostId;
+    private UUID coopostId;
 
     @Column(name = "room_category", nullable = false)
     private String roomCategory;
@@ -43,7 +44,7 @@ public class Chatroom extends BaseEntity {
     private List<ChatroomUser> chatroomUsers = new ArrayList<>();
 
     @Builder
-    private Chatroom (Long coopostId, String roomCategory, String roomRef) {
+    private Chatroom (UUID coopostId, String roomCategory, String roomRef) {
         this.coopostId = coopostId;
         this.roomCategory = roomCategory;
         this.roomRef = roomRef;
