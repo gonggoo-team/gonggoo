@@ -21,11 +21,7 @@ public class ScrapController {
     private final ScrapServiceImpl scrapService;
     private final JwtTokenProvider jwtTokenProvider;
 
-    /**
-     * 스크랩 토글 (Toggle)
-     * - 스크랩 안 되어 있으면 -> 생성 (return true)
-     * - 이미 스크랩 되어 있으면 -> 삭제 (return false)
-     */
+    // 스크랩 토글
     @PostMapping
     public ApiResponse<Boolean> toggleScrap(@RequestHeader("Authorization") String authorizationHeader,
                                             @RequestBody ScrapCreateRequest req) {
@@ -36,9 +32,7 @@ public class ScrapController {
         return ApiResponse.success(HttpStatus.OK, message, isScrapped);
     }
 
-    /**
-     * 내 스크랩 목록 조회
-     */
+    // 내 스크랩 조회
     @GetMapping("/myscrap")
     public ApiResponse<SliceResponse<ScrapResponse>> getMyScraps(
             @RequestHeader("Authorization") String authorizationHeader,

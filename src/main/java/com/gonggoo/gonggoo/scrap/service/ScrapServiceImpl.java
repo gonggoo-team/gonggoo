@@ -28,17 +28,15 @@ public class ScrapServiceImpl {
     private final MemberRepository memberRepository;
     private final CoopostRepository coopostRepository;
 
-    // 스크랩 토글 (생성 or 삭제)
+    // 스크랩 토글
     public boolean toggleScrap(int memberId, ScrapCreateRequest req) {
-        // 1. 이미 스크랩 되어 있는지 확인
+
         Optional<Scrap> existingScrap = scrapRepository.findByMemberIdAndCoopostCoopostId(memberId, req.getCoopostId());
 
         if (existingScrap.isPresent()) {
-            // [Case 1] 이미 있으면 -> 삭제 (Un-scrap)
             scrapRepository.delete(existingScrap.get());
-            return false; // 현재 상태: 스크랩 안됨
+            return false;
         } else {
-            // [Case 2] 없으면 -> 생성 (Scrap)
             Member member = memberRepository.findById(memberId)
                     .orElseThrow(() -> new NeighborsException(ErrorCode.MEMBER_NOT_FOUND));
 
@@ -51,7 +49,7 @@ public class ScrapServiceImpl {
                     .build();
 
             scrapRepository.save(scrap);
-            return true; // 현재 상태: 스크랩 됨
+            return true;
         }
     }
 
