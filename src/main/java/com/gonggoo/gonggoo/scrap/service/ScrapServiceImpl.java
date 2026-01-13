@@ -31,8 +31,7 @@ public class ScrapServiceImpl {
     // 스크랩 토글
     public boolean toggleScrap(int memberId, ScrapCreateRequest req) {
 
-        Optional<Scrap> existingScrap = scrapRepository.findByMemberIdAndCoopostCoopostId(memberId, req.getCoopostId());
-
+        Optional<Scrap> existingScrap = scrapRepository.findByMemberIdAndCoopostCoopostId(memberId, req.coopostId());
         if (existingScrap.isPresent()) {
             scrapRepository.delete(existingScrap.get());
             return false;
@@ -40,9 +39,8 @@ public class ScrapServiceImpl {
             Member member = memberRepository.findById(memberId)
                     .orElseThrow(() -> new NeighborsException(ErrorCode.MEMBER_NOT_FOUND));
 
-            Coopost coopost = coopostRepository.findById(req.getCoopostId())
+            Coopost coopost = coopostRepository.findById(req.coopostId())
                     .orElseThrow(() -> new NeighborsException(ErrorCode.COOPOST_NOT_FOUND));
-
             Scrap scrap = Scrap.builder()
                     .member(member)
                     .coopost(coopost)
