@@ -144,7 +144,7 @@ export default function SearchResultsScreen() {
 
   // 좋아요 클릭
   const handleLikePress = useCallback((id: string) => {
-    console.log('Like pressed:', id);
+    // TODO: 좋아요 기능 구현
   }, []);
 
   // 2열 그리드 레이아웃 계산

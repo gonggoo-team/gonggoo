@@ -15,6 +15,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
+  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -29,11 +30,13 @@ import { getMockCategories } from '@/app/shared/services/mock';
 import type { ProductCardVerticalData } from '@/app/shared/types/product.types';
 import { convertBadges, calculatePriceRange } from '@/app/shared/utils';
 import { getDefaultFilters } from '@/app/shared/types/filter.types';
+import { CONTENT_PADDING } from '@/app/shared/constants/layout';
 
 import {
   DEFAULT_SORT_OPTIONS,
   Icon,
   ProductCardVertical,
+  ScreenWrapper,
   SortFilterBar,
   useTheme
 } from '@/design-system';
@@ -46,6 +49,9 @@ export default function CategoryResultsScreen() {
   const { push, back } = useThrottledNavigation();
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ category?: string }>();
+
+  // 탭바 높이 + 여유 공간: Galaxy S8=80px, iPhone=114px
+  const contentPaddingBottom = CONTENT_PADDING.getTabScreenPadding(insets.bottom);
 
   // 카테고리 정보 조회
   const categoryInfo = useMemo(() => {
@@ -133,7 +139,6 @@ export default function CategoryResultsScreen() {
 
   // 장바구니 클릭
   const handleCartPress = useCallback(() => {
-    console.log('[CategoryResultsScreen] 장바구니 클릭');
     // TODO: 장바구니 화면으로 이동
   }, []);
 
@@ -144,7 +149,7 @@ export default function CategoryResultsScreen() {
 
   // 좋아요 클릭
   const handleLikePress = useCallback((id: string) => {
-    console.log('Like pressed:', id);
+    // TODO: 좋아요 기능 구현
   }, []);
 
   // 2열 그리드 레이아웃 계산
@@ -243,7 +248,8 @@ export default function CategoryResultsScreen() {
   }, [isLoading, categoryInfo, theme]);
 
   return (
-    <View
+    <ScreenWrapper
+      preset='fullscreen'
       style={[
         styles.container,
         { backgroundColor: theme.colors.surface.normal.bg1 },
@@ -260,9 +266,9 @@ export default function CategoryResultsScreen() {
         style={[
           styles.header,
           {
-            paddingTop: insets.top + theme.spacing.md, // Status bar + 16px
+            // paddingTop: insets.top + theme.spacing.md, // Status bar + 16px
             paddingHorizontal: theme.spacing.lg, // 20px
-            paddingBottom: theme.spacing.xs, // 8px
+            // paddingBottom: theme.spacing.xs, // 8px
             borderBottomWidth: theme.dimensions.borderWidth.thin, // 1px
             borderBottomColor: theme.colors.border.lowEmp, // Figma 기준
           },
@@ -318,7 +324,7 @@ export default function CategoryResultsScreen() {
         </View>
       </View>
 
-      {/* 콘텐츠 영역 - 2열 그리드 레이아웃 */}
+      {/* 콘텐츠 영역 - 2열 그리드 레이아웃 (성능 최적화 적용) */}
       <FlatList
         data={filteredProducts}
         renderItem={renderProduct}
@@ -331,15 +337,21 @@ export default function CategoryResultsScreen() {
           {
             paddingHorizontal: theme.spacing.lg, // 20px
             paddingTop: theme.spacing.xs, // 8px
-            paddingBottom: theme.spacing.xxl, // 32px
+            // paddingBottom: contentPaddingBottom, // 동적 계산: Galaxy S8=80px, iPhone=114px
           },
           filteredProducts.length === 0 && styles.emptyListContent,
         ]}
         columnWrapperStyle={filteredProducts.length > 0 ? styles.columnWrapper : undefined}
         showsVerticalScrollIndicator={false}
         scrollEnabled={!isDropdownVisible}
+        // 성능 최적화 props
+        initialNumToRender={8}
+        maxToRenderPerBatch={8}
+        windowSize={5}
+        removeClippedSubviews={true}
+        updateCellsBatchingPeriod={50}
       />
-    </View>
+    </ScreenWrapper>
   );
 }
 

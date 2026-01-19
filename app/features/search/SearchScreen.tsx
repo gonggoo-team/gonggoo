@@ -36,6 +36,7 @@ import type {
 
 import {
   Icon,
+  ScreenWrapper,
   SearchBar,
   useTheme,
 } from '@/design-system';
@@ -109,7 +110,6 @@ export default function SearchScreen() {
   const handleSearch = useCallback(async (query: string) => {
     if (!query.trim()) return;
 
-    console.log('[SearchScreen] 검색 실행:', query);
     await SearchService.addRecentSearch(query);
 
     // 검색 결과 페이지로 이동
@@ -241,7 +241,8 @@ export default function SearchScreen() {
   }, [theme, currentTime]);
 
   return (
-    <View
+    <ScreenWrapper
+      preset='fullscreen'
       style={[
         styles.container,
         { backgroundColor: theme.colors.surface.normal.bg1 },
@@ -252,7 +253,7 @@ export default function SearchScreen() {
         style={[
           styles.header,
           {
-            paddingTop: insets.top + theme.spacing.md, // 16px (Status Bar 제거)
+            paddingTop: theme.spacing.md, // 16px (Status Bar 제거)
             paddingHorizontal: theme.spacing.lg, // 20px
             paddingBottom: theme.spacing.xs, // 8px
           },
@@ -292,7 +293,7 @@ export default function SearchScreen() {
         contentContainerStyle={[
           styles.contentContainer,
           {
-            paddingBottom: theme.spacing.xxl, // 32px
+            // paddingBottom: theme.spacing.xxl, // 32px
             gap: theme.spacing.xl, // 24px - 섹션 간격
           },
         ]}
@@ -323,7 +324,7 @@ export default function SearchScreen() {
         {!isLoading && recommendedSearches.length > 0 && (
           <SearchSection
             title="추천 검색어"
-            style={{ paddingHorizontal: 0, paddingTop: 20 }}
+            style={{ paddingHorizontal: 0, }}
             accessibilityLabel="추천 검색어 섹션"
             testID="recommended-searches-section"
           >
@@ -341,7 +342,7 @@ export default function SearchScreen() {
             title="" // 제목은 커스텀 헤더에 포함
             rightAction={renderPopularSearchHeader}
             hideHeader={true} // 기본 헤더 숨김
-            style={{ paddingHorizontal: 0, paddingTop: 20 }}
+            style={{ paddingHorizontal: 0, }}
             accessibilityLabel="인기 검색어 섹션"
             testID="popular-searches-section"
           >
@@ -357,7 +358,7 @@ export default function SearchScreen() {
           </SearchSection>
         )}
       </ScrollView>
-    </View>
+    </ScreenWrapper>
   );
 }
 
