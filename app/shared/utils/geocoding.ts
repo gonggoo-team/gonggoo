@@ -95,7 +95,7 @@ export async function geocodeAddress(
   const cacheKey = `geocode:${address.toLowerCase()}`;
   const cached = getCachedValue(geocodingCache, cacheKey);
   if (cached) {
-    console.log('[Geocoding] Cache hit:', address);
+    if (__DEV__) console.log('[Geocoding] Cache hit:', address);
     return cached;
   }
 
@@ -103,7 +103,7 @@ export async function geocodeAddress(
     const result = await geocodeWithNaver(address);
 
     if (!result) {
-      console.log('[Geocoding] No results found for:', address);
+      if (__DEV__) console.log('[Geocoding] No results found for:', address);
       return null;
     }
 
@@ -143,7 +143,7 @@ export async function reverseGeocode(
   // 캐시 확인
   const cached = getCachedValue(reverseGeocodingCache, cacheKey);
   if (cached) {
-    console.log('[Geocoding] Reverse cache hit:', { lat, lng });
+    if (__DEV__) console.log('[Geocoding] Reverse cache hit:', { lat, lng });
     return cached;
   }
 
@@ -168,7 +168,7 @@ export async function reverseGeocode(
 export function clearGeocodingCache(): void {
   geocodingCache.clear();
   reverseGeocodingCache.clear();
-  console.log('[Geocoding] Cache cleared');
+  if (__DEV__) console.log('[Geocoding] Cache cleared');
 }
 
 /**

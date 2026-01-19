@@ -19,7 +19,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 
-import { ThemeProvider, useTheme, GNB, Button, SearchBar, Icon } from '@/design-system';
+import { ThemeProvider, useTheme, GNB, Button, SearchBar, Icon, ScreenWrapper } from '@/design-system';
 import { useThrottledNavigation } from '@/app/shared/hooks';
 import { searchNeighborhoods, type NeighborhoodSearchResult } from './services/naverGeocodingService';
 
@@ -184,7 +184,7 @@ function NeighborhoodSearchScreenContent() {
   }, [selectedNeighborhood, theme, handleSelectNeighborhood]);
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.surface.normal.bg2 }]}>
+    <ScreenWrapper preset='fullscreen' style={[styles.container, { backgroundColor: theme.colors.surface.normal.bg2 }]}>
       {/* GNB */}
       <GNB
         leftSection={{
@@ -258,7 +258,7 @@ function NeighborhoodSearchScreenContent() {
           다음
         </Button>
       </View>
-    </View>
+    </ScreenWrapper>
   );
 }
 

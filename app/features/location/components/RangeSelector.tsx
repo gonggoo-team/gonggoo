@@ -53,7 +53,6 @@ export function RangeSelector({ selectedRange, onRangeSelect }: RangeSelectorPro
                 },
               ]}
               onPress={() => {
-                console.log('[RangeSelector] Range button clicked:', range);
                 onRangeSelect(range);
               }}
               activeOpacity={0.7}

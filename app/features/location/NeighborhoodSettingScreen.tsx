@@ -17,9 +17,11 @@ import {
   TouchableOpacity,
   useWindowDimensions,
 } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
+import { useRouter } from 'expo-router';
+import { useThrottledNavigation } from '@/app/shared/hooks/useThrottledNavigation';
 import * as Location from 'expo-location';
-import { ThemeProvider, useTheme, GNB, Button, SearchBar } from '@/design-system';
+import { ThemeProvider, useTheme, GNB, Button, SearchBar, ScreenWrapper } from '@/design-system';
 import { MapView } from '@/design-system/components/MapView';
 import { useAuth } from '@/app/shared/contexts';
 import type { LocationData } from '@/app/shared/types/auth.types';
@@ -37,6 +39,7 @@ export default function NeighborhoodSettingScreen() {
 
 function NeighborhoodSettingScreenContent() {
   const router = useRouter();
+  const { push, back } = useThrottledNavigation();
   const { theme } = useTheme();
   const { user, updateLocation } = useAuth();
   const params = useLocalSearchParams();
@@ -135,7 +138,7 @@ function NeighborhoodSettingScreenContent() {
    * 동네 변경하기 핸들러
    */
   const handleChangeNeighborhood = () => {
-    router.push({
+    push({
       pathname: '/neighborhood-auth',
       params: {
         fromSignup: params.fromSignup,
@@ -311,7 +314,8 @@ function NeighborhoodSettingScreenContent() {
   }
 
   return (
-    <View
+    <ScreenWrapper
+      preset='fullscreen'
       style={[
         styles.container,
         { backgroundColor: theme.colors.surface.normal.bg1 },
@@ -521,13 +525,13 @@ function NeighborhoodSettingScreenContent() {
           {isLoading ? '적용 중...' : '적용하기'}
         </Button>
       </View>
-    </View>
+    </ScreenWrapper>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 1,    
   },
   header: {
     zIndex: 10,

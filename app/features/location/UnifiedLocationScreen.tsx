@@ -15,7 +15,7 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { ThemeProvider, useTheme, GNB, Button } from '@/design-system';
+import { ThemeProvider, useTheme, GNB, Button, ScreenWrapper } from '@/design-system';
 import { MapView } from '@/design-system/components/MapView';
 import { useUnifiedLocation } from './hooks/useUnifiedLocation';
 import { PermissionRequestView } from './components/PermissionRequestView';
@@ -60,7 +60,7 @@ function UnifiedLocationScreenContent() {
 
   // 디버그: selectedRange 변경 감지
   React.useEffect(() => {
-    console.log('[UnifiedLocationScreen] selectedRange changed:', selectedRange);
+    if (__DEV__) console.log('[UnifiedLocationScreen] selectedRange changed:', selectedRange);
   }, [selectedRange]);
   
   /**
@@ -105,7 +105,8 @@ function UnifiedLocationScreenContent() {
   }, [router]);
 
   return (
-    <View
+    <ScreenWrapper
+      preset='fullscreen'
       style={[
         styles.container,
         { backgroundColor: theme.colors.surface.normal.bg1 },
@@ -190,7 +191,7 @@ function UnifiedLocationScreenContent() {
           />
         </View>
       )}
-    </View>
+    </ScreenWrapper>
   );
 }
 

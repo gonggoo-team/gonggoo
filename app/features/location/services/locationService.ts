@@ -116,7 +116,7 @@ function convertPermissionStatus(
 export async function getCurrentLocation(): Promise<GPSCoordinates> {
   // Mock 모드가 명시적으로 활성화된 경우에만 Mock 사용
   if (useMockLocation) {
-    console.log('[Location] Using MOCK location (USE_MOCK_LOCATION=true)');
+    if (__DEV__) console.log('[Location] Using MOCK location (USE_MOCK_LOCATION=true)');
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
     const randomLocation =
@@ -124,7 +124,7 @@ export async function getCurrentLocation(): Promise<GPSCoordinates> {
         Math.floor(Math.random() * MOCK_GPS_LOCATIONS.length)
       ];
 
-    console.log('[Location] Mock GPS location:', randomLocation.neighborhood);
+    if (__DEV__) console.log('[Location] Mock GPS location:', randomLocation.neighborhood);
 
     return {
       latitude: randomLocation.latitude,
@@ -135,13 +135,13 @@ export async function getCurrentLocation(): Promise<GPSCoordinates> {
 
   // 기본: 실제 GPS 사용 (에뮬레이터 및 실제 기기)
   try {
-    console.log('[Location] Getting REAL GPS location...');
+    if (__DEV__) console.log('[Location] Getting REAL GPS location...');
     const location = await Location.getCurrentPositionAsync({
       accuracy: Location.Accuracy.High,
       timeInterval: 10000,
     });
 
-    console.log('[Location] Real GPS success:', {
+    if (__DEV__) console.log('[Location] Real GPS success:', {
       lat: location.coords.latitude,
       lng: location.coords.longitude,
       accuracy: location.coords.accuracy,
@@ -171,11 +171,11 @@ export async function reverseGeocode(
 ): Promise<NeighborhoodData> {
   // Mock 모드가 명시적으로 활성화된 경우에만 Mock 사용
   if (useMockLocation) {
-    console.log('[Location] Using MOCK geocoding (USE_MOCK_LOCATION=true)');
+    if (__DEV__) console.log('[Location] Using MOCK geocoding (USE_MOCK_LOCATION=true)');
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     const nearest = findNearestMockLocation(lat, lng);
-    console.log('[Location] Mock geocode result:', nearest.neighborhood);
+    if (__DEV__) console.log('[Location] Mock geocode result:', nearest.neighborhood);
 
     return {
       neighborhood: nearest.neighborhood,
@@ -189,7 +189,7 @@ export async function reverseGeocode(
   // 1순위: Naver API (정확도 높음)
   try {
     if (hasNaverApiKey()) {
-      console.log('[Location] Using Naver API for geocoding');
+      if (__DEV__) console.log('[Location] Using Naver API for geocoding');
       return await reverseGeocodeWithNaver(lat, lng);
     } else {
       console.warn('[Location] Naver API key not found, falling back to expo-location');
@@ -216,7 +216,7 @@ export async function reverseGeocode(
       const district = address.city || '';
       const city = address.region || '서울시';
 
-      console.log('[Location] Expo fallback geocode result:', neighborhood);
+      if (__DEV__) console.log('[Location] Expo fallback geocode result:', neighborhood);
 
       return {
         neighborhood,
@@ -295,7 +295,7 @@ export async function isLocationSupported(neighborhood: string): Promise<boolean
   const supportedNeighborhoods = MOCK_GPS_LOCATIONS.map((loc) => loc.neighborhood);
 
   const isSupported = supportedNeighborhoods.includes(neighborhood);
-  console.log('[Location] Location supported:', neighborhood, isSupported);
+  if (__DEV__) console.log('[Location] Location supported:', neighborhood, isSupported);
 
   return isSupported;
 }

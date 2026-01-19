@@ -23,20 +23,22 @@ const debugWarn = (...args: any[]) => {
   if (__DEV__) console.warn(...args);
 };
 
-import { 
-  StyleSheet, 
-  View, 
-  TouchableOpacity, 
-  Text, 
-  useWindowDimensions, 
-  ScrollView, 
-  Alert, 
-  Dimensions, 
+import {
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  Text,
+  useWindowDimensions,
+  ScrollView,
+  Alert,
+  Dimensions,
   InteractionManager,
   ActivityIndicator
 } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
+import { useThrottledNavigation } from '@/app/shared/hooks/useThrottledNavigation';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ScreenWrapper } from '@/design-system';
 import Reanimated, { useSharedValue, useAnimatedStyle } from 'react-native-reanimated';
 import * as Location from 'expo-location';
 import type BottomSheet from '@gorhom/bottom-sheet';
@@ -155,7 +157,7 @@ const cleanupCameraAnimation = (
 
 function MapScreenContent() {
   const { theme } = useTheme();
-  const router = useRouter();
+  const { push } = useThrottledNavigation();
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
   const { height: windowHeight } = useWindowDimensions();
@@ -230,7 +232,8 @@ function MapScreenContent() {
   const floatingButtonAnimatedStyle = useAnimatedStyle(() => {
     'worklet';
     const bottomSheetTop = animatedPosition.value;
-    const floatingButtonBottomTop = bottomSheetTop - 20;
+    // bottomsheet와 더 가깝게 위치하도록 간격을 12px로 조정
+    const floatingButtonBottomTop = bottomSheetTop - 12;
     const bottom = windowHeight - floatingButtonBottomTop - 40;
     const bottomSheetHeight = windowHeight - bottomSheetTop;
     const opacity = bottomSheetHeight >= maxSnapPoint * 0.95 ? 0 : 1;
@@ -438,8 +441,8 @@ function MapScreenContent() {
     return markers.map(marker => ({ ...marker, displayMode: 'simple' as const }));
   }, [markers, mapCenter.zoom, selectedMarkerId, gridIndex]);
 
-  const handleSearchPress = useCallback(() => router.push('/map-search'), [router]);
-  const handleClearSearch = useCallback(() => router.push('/(tabs)/map'), [router]);
+  const handleSearchPress = useCallback(() => push('/map-search'), [push]);
+  const handleClearSearch = useCallback(() => push('/(tabs)/map'), [push]);
 
   /**
    * 🔥 [핵심 튜닝] 마커 클릭 핸들러 (빠릿함 + 안전성)
@@ -601,7 +604,7 @@ function MapScreenContent() {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <ScreenWrapper preset="modal" style={styles.container}>
       <MapView
         ref={mapRef}
         latitude={mapCenter.latitude}
@@ -625,8 +628,8 @@ function MapScreenContent() {
           longitude: neighborhoodLocation.longitude,
         }}
       />
-
-      <View style={[styles.topControls, { paddingTop: insets.top + 16, backgroundColor: 'transparent' }]}>
+      
+      <View style={[styles.topControls, { paddingTop: insets.top + theme.spacing.md, paddingBottom: theme.spacing.xs, backgroundColor: 'transparent' }]} pointerEvents="box-none">
         <TouchableOpacity
           style={[styles.searchBar, { backgroundColor: theme.colors.surface.normal.bg1, shadowColor: theme.colors.surface.texticon.onnormal.text.black }]}
           onPress={handleSearchPress}
@@ -648,8 +651,8 @@ function MapScreenContent() {
           </View>
         </TouchableOpacity>
       </View>
-
-      <Reanimated.View style={[styles.rangeControls, { top: insets.top + 16 + 46 + 12 }, rangeButtonAnimatedStyle]} pointerEvents={bottomSheetIndex === 2 ? 'none' : 'auto'}>
+  
+      <Reanimated.View style={[styles.rangeControls, { top: insets.top + theme.spacing.md + 46 + theme.spacing.xs }, rangeButtonAnimatedStyle]} pointerEvents={bottomSheetIndex === 2 ? 'none' : 'auto'}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.rangeScrollContainer} style={styles.rangeScrollView} bounces={false}>
           <NeighborhoodButton neighborhood={user?.location?.neighborhood || '동네 미설정'} isSelected={selectedRange === 'neighborhood'} onPress={handleNeighborhoodSelect} />
           {RANGE_OPTIONS.map((range) => {
@@ -691,7 +694,7 @@ function MapScreenContent() {
         ref={bottomSheetRef}
         products={filteredProducts}
         initialIndex={1}
-        searchBarBottom={insets.top + 16 + 46}
+        searchBarBottom={16 + 46}
         onSheetChange={handleBottomSheetChange}
         animatedPosition={animatedPosition}
         selectedProductId={selectedMarkerId}
@@ -700,7 +703,7 @@ function MapScreenContent() {
         onTabChange={setActiveTab}
         onCategoryChange={setSelectedCategory}
       />
-    </View>
+    </ScreenWrapper>
   );
 }
 

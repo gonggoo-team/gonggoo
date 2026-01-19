@@ -7,8 +7,10 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
 import { View, StyleSheet, ActivityIndicator, Text } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import { ThemeProvider, useTheme, GNB } from '@/design-system';
+import { useLocalSearchParams } from 'expo-router';
+import { useRouter } from 'expo-router';
+import { useThrottledNavigation } from '@/app/shared/hooks/useThrottledNavigation';
+import { ThemeProvider, useTheme, GNB, ScreenWrapper } from '@/design-system';
 import { useAuth } from '@/app/shared/contexts';
 import type { LocationData } from '@/app/shared/types/auth.types';
 import type { DetectedLocation, GPSError } from './types/location.types';
@@ -34,6 +36,7 @@ export default function NeighborhoodAuthScreen() {
 
 function NeighborhoodAuthScreenContent() {
   const router = useRouter();
+  const { push, back } = useThrottledNavigation();
   const params = useLocalSearchParams();
   const { theme } = useTheme();
   const { signup, updateLocation } = useAuth();
@@ -144,7 +147,7 @@ function NeighborhoodAuthScreenContent() {
    * 직접 검색 핸들러
    */
   const handleManualSearch = useCallback(() => {
-    router.push({
+    push({
       pathname: '/search-location',
       params: {
         fromSignup: params.fromSignup,
@@ -152,7 +155,7 @@ function NeighborhoodAuthScreenContent() {
         mode: 'manual',
       },
     });
-  }, [router, params]);
+  }, [push, params]);
 
   /**
    * 동네 확인 핸들러
@@ -237,7 +240,8 @@ function NeighborhoodAuthScreenContent() {
     : 'LOCATION_UNAVAILABLE';
 
   return (
-    <View
+    <ScreenWrapper
+      preset='fullscreen'
       style={[
         styles.container,
         { backgroundColor: theme.colors.surface.normal.bg1 },
@@ -304,7 +308,7 @@ function NeighborhoodAuthScreenContent() {
           />
         </View>
       )}
-    </View>
+    </ScreenWrapper>
   );
 }
 

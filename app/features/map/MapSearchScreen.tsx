@@ -21,6 +21,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useThrottledNavigation } from '@/app/shared/hooks/useThrottledNavigation';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { SearchService } from '@/app/shared/services/searchService';
@@ -42,7 +43,7 @@ import {
  */
 export default function MapSearchScreen() {
   const { theme } = useTheme();
-  const router = useRouter();
+  const { push, back } = useThrottledNavigation();
   const insets = useSafeAreaInsets();
 
   // 상태 관리
@@ -75,14 +76,12 @@ export default function MapSearchScreen() {
   const handleSearch = useCallback(async (query: string) => {
     if (!query.trim()) return;
 
-    console.log('[MapSearchScreen] 검색 실행:', query);
-
     // 최근 검색어에 추가
     await SearchService.addRecentSearch(query);
 
     // MapScreen으로 돌아가면서 검색어 전달
-    router.push(`/(tabs)/map?searchQuery=${encodeURIComponent(query)}`);
-  }, [router]);
+    push(`/(tabs)/map?searchQuery=${encodeURIComponent(query)}`);
+  }, [push]);
 
   /**
    * 검색어 제출
@@ -121,8 +120,8 @@ export default function MapSearchScreen() {
    * 뒤로가기
    */
   const handleGoBack = useCallback(() => {
-    router.back();
-  }, [router]);
+    back();
+  }, [back]);
 
   return (
     <View

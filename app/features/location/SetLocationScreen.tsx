@@ -16,7 +16,7 @@ import {
   FlatList,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { ThemeProvider, useTheme, Button, GNB } from '@/design-system';
+import { ThemeProvider, useTheme, Button, GNB, ScreenWrapper } from '@/design-system';
 import { useAuth } from '@/app/shared/contexts';
 import type { LocationData } from '@/app/shared/types';
 import { MOCK_LOCATIONS } from '@/app/shared/services/mock/auth.mock';
@@ -183,12 +183,7 @@ function SetLocationScreenContent() {
       : '동네를 변경하면 주변의 공동구매 정보가 업데이트됩니다';
 
   return (
-    <View
-      style={[
-        styles.container,
-        { backgroundColor: theme.colors.surface.normal.bg1 },
-      ]}
-    >
+    <ScreenWrapper preset="modal" style={styles.container}>
       {/* GNB Header */}
       <GNB leftSection={{ type: 'back', onPress: handleGoBack }} />
 
@@ -239,7 +234,7 @@ function SetLocationScreenContent() {
           {isLoading ? '설정 중...' : '완료'}
         </Button>
       </View>
-    </View>
+    </ScreenWrapper>
   );
 }
 
