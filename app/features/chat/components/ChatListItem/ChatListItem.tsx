@@ -21,8 +21,12 @@ import type { ChatListItemProps } from './ChatListItem.types';
 
 /**
  * ChatListItem Component
+ *
+ * React.memo로 감싸서 불필요한 리렌더링 방지
+ * - props가 변경되지 않으면 리렌더링하지 않음
+ * - 성능 최적화를 위해 적용
  */
-export const ChatListItem: React.FC<ChatListItemProps> = ({
+export const ChatListItem = React.memo<ChatListItemProps>(({
   participant,
   product,
   lastMessage,
@@ -140,4 +144,6 @@ export const ChatListItem: React.FC<ChatListItemProps> = ({
       </View>
     </TouchableOpacity>
   );
-};
+});
+
+ChatListItem.displayName = 'ChatListItem';

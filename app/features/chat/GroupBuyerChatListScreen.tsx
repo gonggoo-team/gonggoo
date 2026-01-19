@@ -11,9 +11,8 @@
 
 import React, { useCallback, useState, useEffect } from 'react';
 import { View, StyleSheet, ActivityIndicator, FlatList, Text, Image } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
-import { GNB, useTheme, Divider, Button, StatusBadge, ProgressBar } from '@/design-system';
+import { GNB, useTheme, Divider, Button, StatusBadge, ProgressBar, ScreenWrapper } from '@/design-system';
 import { useThrottledNavigation } from '@/app/shared/hooks';
 import { getMockGroupBuyerChats, sendMockSystemMessage } from '@/app/shared/services/mock';
 import type { ChatRoomItem } from '@/app/shared/types';
@@ -137,7 +136,7 @@ export default function GroupBuyerChatListScreen({ productId }: GroupBuyerChatLi
       sendMockSystemMessage(chatId, 'transaction_complete_request');
     });
 
-    console.log('거래 완료 요청 전송:', Array.from(selectedChats));
+    if (__DEV__) console.log('거래 완료 요청 전송:', Array.from(selectedChats));
     setShowConfirmModal(false);
     setIsRequestMode(false);
     setSelectedChats(new Set());
@@ -252,14 +251,14 @@ export default function GroupBuyerChatListScreen({ productId }: GroupBuyerChatLi
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.loadingContainer} edges={['top', 'bottom']}>
+      <ScreenWrapper preset="fullscreen" style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={theme.colors.surface.brand.primary} />
-      </SafeAreaView>
+      </ScreenWrapper>
     );
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.surface.normal.bg1 }]} edges={['bottom']}>
+    <ScreenWrapper preset="fullscreen" style={styles.container}>
       {/* GNB */}
       <GNB
         leftSection={{
@@ -287,7 +286,6 @@ export default function GroupBuyerChatListScreen({ productId }: GroupBuyerChatLi
                   type: 'menu',
                   onPress: () => {
                     // TODO: 메뉴 액션 구현
-                    console.log('메뉴 클릭');
                   },
                 },
               ]
@@ -361,7 +359,7 @@ export default function GroupBuyerChatListScreen({ productId }: GroupBuyerChatLi
         onCancel={() => setShowConfirmModal(false)}
         onConfirm={handleConfirmRequest}
       />
-    </SafeAreaView>
+    </ScreenWrapper>
   );
 }
 
