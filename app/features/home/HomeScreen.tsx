@@ -14,11 +14,11 @@
 import React, { useRef, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 
-import { useAuth } from '@/app/shared/contexts';
+import { useAuth, FABProvider, useFAB } from '@/app/shared/contexts';
 import { useRequireAuth, useThrottledNavigation } from '@/app/shared/hooks';
 import { getNeighborhoodDisplay } from '@/app/shared/utils';
 
-import { CategoryTabBar, FloatingActionButton, GNB, useTheme } from '@/design-system';
+import { CategoryTabBar, FloatingActionButton, GNB, ScreenWrapper } from '@/design-system';
 import type { CategoryType } from '@/design-system/components/CategoryTabBar';
 
 import {
@@ -30,13 +30,24 @@ import {
 } from './contents';
 
 /**
- * HomeScreen Component
+ * HomeScreen Component (FABProvider 포함)
  */
 export default function HomeScreen() {
-  const { theme } = useTheme();
+  return (
+    <FABProvider>
+      <HomeScreenContent />
+    </FABProvider>
+  );
+}
+
+/**
+ * HomeScreenContent Component (실제 콘텐츠)
+ */
+function HomeScreenContent() {
   const { user } = useAuth();
   const { push } = useThrottledNavigation();
   const { requireAuth } = useRequireAuth();
+  const { isFABVisible } = useFAB();
   const [selectedCategory, setSelectedCategory] = useState<CategoryType>('home');
 
   // 사용자가 설정한 동네명 추출
@@ -63,7 +74,6 @@ export default function HomeScreen() {
       }
     } else {
       setSelectedCategory(category);
-      console.log('Category changed to:', category);
     }
   };
 
@@ -85,12 +95,10 @@ export default function HomeScreen() {
   };
 
   const handleCartPress = () => {
-    console.log('[HomeScreen] Cart pressed');
     // TODO: 장바구니 화면으로 이동
   };
 
   const handleNotificationPress = () => {
-    console.log('[HomeScreen] Notification pressed');
     // TODO: 알림 화면으로 이동
   };
 
@@ -99,7 +107,7 @@ export default function HomeScreen() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.surface.normal.bg1 }]}>
+    <ScreenWrapper preset="default" style={styles.container}>
       {/* GNB */}
       <GNB
         leftSection={{ type: 'address', text: currentNeighborhood, onPress: handleAddressPress }}
@@ -138,14 +146,16 @@ export default function HomeScreen() {
         </View>
       )}
 
-      {/* 플로팅 액션 버튼 */}
+      {/* 플로팅 액션 버튼 - 드롭다운 등 열리면 숨김 */}
       <FloatingActionButton
+        bottom={20}
+        right={30}
         onPress={handleProductRegistration}
         icon="plus"
         accessibilityLabel="상품 등록"
-        bottom={25}
+        visible={isFABVisible}
       />
-    </View>
+    </ScreenWrapper>
   );
 }
 

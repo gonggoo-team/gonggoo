@@ -8,8 +8,9 @@
  * - 고유 기능: 성별/연령/기간 필터, 랭킹 배지, FilterBottomSheet
  */
 
-import React, { forwardRef, useCallback, useState, useMemo } from 'react';
+import React, { forwardRef, useCallback, useEffect, useState, useMemo } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { useFAB } from '@/app/shared/contexts';
 import { getMockPopularProductsVertical } from '@/app/shared/services/mock/products.mock';
 import { useThrottledNavigation } from '@/app/shared/hooks/useThrottledNavigation';
 import type { ProductCardVerticalData } from '@/app/shared/types/product.types';
@@ -41,6 +42,16 @@ export const PopularContent = forwardRef<FlatList>((props, ref) => {
     age: '연령대 전체',
     period: '실시간 랭킹',
   });
+
+  // FAB 가시성 제어 (필터 바텀시트 열릴 때 숨김)
+  const { hideFAB, showFAB } = useFAB();
+  useEffect(() => {
+    if (isFilterVisible) {
+      hideFAB();
+    } else {
+      showFAB();
+    }
+  }, [isFilterVisible, hideFAB, showFAB]);
 
   // Mock 데이터 로드 - 인기 상품 (좋아요 50개 이상, 좋아요 순 정렬)
   const allProducts: ProductCardVerticalData[] = useMemo(() => getMockPopularProductsVertical(), []);

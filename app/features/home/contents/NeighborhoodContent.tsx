@@ -7,10 +7,10 @@
  * - TabContentLayout 기반
  */
 
-import React, { forwardRef, useCallback, useMemo } from 'react';
+import React, { forwardRef, useCallback, useEffect, useMemo } from 'react';
 import { FlatList, View } from 'react-native';
 
-import { useAuth } from '@/app/shared/contexts';
+import { useAuth, useFAB } from '@/app/shared/contexts';
 import { TabContentLayout } from '@/app/shared/components/layouts';
 import { useProductCardGrid, useProductList, useTabFilters, useTabSort, useFilterNavigation } from '@/app/shared/hooks';
 import { useThrottledNavigation } from '@/app/shared/hooks/useThrottledNavigation';
@@ -65,11 +65,11 @@ export const NeighborhoodContent = forwardRef<FlatList>((props, ref) => {
   // 동네 기반 필터링 적용 (Mock 데이터이므로 동네명 기반)
   const neighborhoodProducts = useMemo(() => {
     if (!neighborhoodInfo || !user?.location) {
-      console.log('[NeighborhoodContent] No location info, showing all products');
+      if (__DEV__) console.log('[NeighborhoodContent] No location info, showing all products');
       return allProducts;
     }
 
-    console.log('[NeighborhoodContent] Filtering by neighborhood:', {
+    if (__DEV__) console.log('[NeighborhoodContent] Filtering by neighborhood:', {
       neighborhood: user.location.neighborhood,
       range: user.location.range,
       totalProducts: allProducts.length,
@@ -81,7 +81,7 @@ export const NeighborhoodContent = forwardRef<FlatList>((props, ref) => {
       false // Mock 데이터이므로 동네명 기반 필터링 사용
     );
 
-    console.log('[NeighborhoodContent] Filtered products:', {
+    if (__DEV__) console.log('[NeighborhoodContent] Filtered products:', {
       count: filtered.length,
       samples: filtered.slice(0, 3).map(p => ({
         id: p.id,
@@ -109,6 +109,16 @@ export const NeighborhoodContent = forwardRef<FlatList>((props, ref) => {
     handleDropdownClose,
     applySorting,
   } = useTabSort();
+
+  // FAB 가시성 제어 (드롭다운 열릴 때 숨김)
+  const { hideFAB, showFAB } = useFAB();
+  useEffect(() => {
+    if (isDropdownVisible) {
+      hideFAB();
+    } else {
+      showFAB();
+    }
+  }, [isDropdownVisible, hideFAB, showFAB]);
 
   // 최종 상품 목록 (동네 필터링 + 카테고리 필터링 + 정렬)
   const products = useProductList(neighborhoodProducts, selectedCategory, filters, applySorting);
