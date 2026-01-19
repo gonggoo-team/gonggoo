@@ -86,7 +86,6 @@ export const useProductRegistration = () => {
 
     try {
       // TODO: API 호출
-      console.log('Submit form:', formData);
 
       // 임시: 2초 대기
       await new Promise((resolve) => setTimeout(resolve, 2000));

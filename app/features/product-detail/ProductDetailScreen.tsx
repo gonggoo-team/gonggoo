@@ -11,7 +11,7 @@
  * - Floating Action Bar (좋아요, 채팅, 참여하기)
  */
 
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Alert,
   Animated,
@@ -22,10 +22,12 @@ import {
   Platform,
   StatusBar,
 } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThrottledNavigation, useThrottledCallback, useTypographyStyles } from '@/app/shared/hooks';
 import { getProductDetailById } from '@/app/shared/services/mock';
 import { addRecentProductId } from '@/app/shared/services/storage';
+import { FLOATING_ACTION_BAR } from '@/app/shared/constants/layout';
 import { FadingIcon, ProductHeaderSection } from '@/app/features/product-detail/components';
 import { useHeaderScrollAnimation } from '@/app/features/product-detail/hooks';
 import {
@@ -41,8 +43,10 @@ import {
   SectionDivider,
   useTheme,
   Icon,
+  ScreenWrapper,
 } from '@/design-system';
 import type { StatusBadgeType } from '@/design-system';
+import type { ProductDetail } from '@/app/shared/types';
 
 /**
  * 레이아웃 상수
@@ -50,48 +54,64 @@ import type { StatusBadgeType } from '@/design-system';
 const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? 44 : StatusBar.currentHeight || 24;
 const IMAGE_HEIGHT = 390;
 const HEADER_THRESHOLD = IMAGE_HEIGHT - 60;
-const BOTTOM_BAR_HEIGHT = 143;
+
+/**
+ * 스켈레톤 로딩 컴포넌트
+ * 당근마켓 패턴: 화면 전환 즉시 → 스켈레톤 표시 → 컨텐츠 로드
+ */
+const SkeletonLoading: React.FC<{ theme: ReturnType<typeof useTheme>['theme'] }> = ({ theme }) => {
+  const skeletonColor = theme.colors.surface.normal.container05;
+  const shimmerColor = theme.colors.surface.normal.container10;
+
+  return (
+    <View style={[styles.container, { backgroundColor: theme.colors.surface.normal.bg1 }]}>
+      {/* 이미지 스켈레톤 */}
+      <View style={[styles.skeletonImage, { backgroundColor: skeletonColor }]} />
+
+      {/* 헤더 영역 스켈레톤 */}
+      <View style={styles.skeletonContent}>
+        {/* 카테고리 배지 */}
+        <View style={[styles.skeletonBadge, { backgroundColor: skeletonColor }]} />
+
+        {/* 제목 */}
+        <View style={[styles.skeletonTitle, { backgroundColor: skeletonColor }]} />
+        <View style={[styles.skeletonTitleShort, { backgroundColor: skeletonColor }]} />
+
+        {/* 가격 */}
+        <View style={[styles.skeletonPrice, { backgroundColor: skeletonColor }]} />
+
+        {/* 구분선 */}
+        <View style={[styles.skeletonDivider, { backgroundColor: skeletonColor }]} />
+
+        {/* 섹션 스켈레톤 */}
+        <View style={[styles.skeletonSection, { backgroundColor: skeletonColor }]} />
+        <View style={[styles.skeletonSectionShort, { backgroundColor: skeletonColor }]} />
+      </View>
+    </View>
+  );
+};
 
 export default function ProductDetailScreen() {
   const { theme } = useTheme();
   const typo = useTypographyStyles();
-  const { back } = useThrottledNavigation();
+  const { push, back } = useThrottledNavigation();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const router = useRouter();
+  const insets = useSafeAreaInsets();
+
+  // ScrollView paddingBottom: FloatingActionBar 높이 + 여유 20px + SafeArea bottom
+  const scrollPaddingBottom = FLOATING_ACTION_BAR.getScrollPadding(insets.bottom);
 
   // 스크롤 애니메이션
   const { scrollY, headerBackgroundColor, whiteIconOpacity, blackIconOpacity } = useHeaderScrollAnimation();
 
-  // 상태 관리
-  const product = id ? getProductDetailById(id) : null;
+  // 상태 관리 - 비동기 로딩 패턴
+  const [product, setProduct] = useState<ProductDetail | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [isLiked, setIsLiked] = useState(false);
   const [quantity, setQuantity] = useState(1);
 
-  // 최근 본 상품에 추가
-  useEffect(() => {
-    if (id) addRecentProductId(id);
-  }, [id]);
-
-  // 에러 상태 처리
-  if (!product) {
-    return (
-      <View style={[styles.errorContainer, { backgroundColor: theme.colors.surface.normal.bg1 }]}>
-        <Text style={[styles.errorText, { color: theme.colors.surface.texticon.onnormal.text.midEmp }]}>
-          상품을 찾을 수 없습니다.
-        </Text>
-      </View>
-    );
-  }
-
   /**
-   * 현재 사용자가 상품 소유자인지 판별
-   * TODO: 실제 인증 시스템 구현 후 현재 사용자 ID와 비교
-   * 임시로 특정 상품 ID를 소유자로 설정 (테스트용)
-   */
-  const isOwner = product.id === '1' || product.id === '2'; // 임시: ID가 1 또는 2인 경우 소유자로 간주
-
-  /**
-   * 이벤트 핸들러
+   * 이벤트 핸들러 - 모든 훅은 조건부 return 전에 호출되어야 함
    */
   const handleBackPress = useCallback(() => back(), [back]);
 
@@ -108,12 +128,10 @@ export default function ProductDetailScreen() {
   }, []);
 
   const handleJoinPress = useCallback(() => {
-    const totalAmount = product.pricePerSlot * quantity;
-    Alert.alert(
-      '참여하기',
-      `${product.title}\n수량: ${quantity}개\n총 금액: ${totalAmount.toLocaleString()}원\n\n참여하시겠습니까?`
-    );
-  }, [product.pricePerSlot, product.title, quantity]);
+    if (!product) return;
+    // 결제 페이지로 이동
+    push(`/payment/${product.id}?quantity=${quantity}` as any);
+  }, [push, product, quantity]);
 
   const handleQuantityChange = useCallback((newQuantity: number) => {
     setQuantity(newQuantity);
@@ -152,13 +170,15 @@ export default function ProductDetailScreen() {
   }, []);
 
   const handleEditProduct = useCallback(() => {
-    router.push(`/product-edit/${product.id}` as any);
-  }, [router, product.id]);
+    if (!product) return;
+    push(`/product-edit/${product.id}` as any);
+  }, [push, product]);
 
   /**
    * 상품 상태에 따른 배지 타입 반환
    */
   const getStatusType = useCallback((): StatusBadgeType => {
+    if (!product) return 'recruiting';
     switch (product.recruitmentStatus) {
       case '모집 중':
         return 'recruiting';
@@ -169,10 +189,49 @@ export default function ProductDetailScreen() {
       default:
         return 'recruiting';
     }
-  }, [product.recruitmentStatus]);
+  }, [product]);
+
+  // 데이터 로딩 - 화면 전환 후 비동기로 처리
+  useEffect(() => {
+    if (!id) {
+      setIsLoading(false);
+      return;
+    }
+
+    // 비동기 데이터 로딩 (현재는 mock이지만, 실제 API 대응 가능)
+    const loadProduct = async () => {
+      const data = getProductDetailById(id);
+      setProduct(data);
+      setIsLoading(false);
+    };
+
+    loadProduct();
+    addRecentProductId(id);
+  }, [id]);
+
+  // 로딩 중: 스켈레톤 UI 표시 (당근마켓 패턴)
+  if (isLoading) {
+    return <SkeletonLoading theme={theme} />;
+  }
+
+  // 에러 상태 처리
+  if (!product) {
+    return (
+      <View style={[styles.errorContainer, { backgroundColor: theme.colors.surface.normal.bg1 }]}>
+        <Text style={[styles.errorText, { color: theme.colors.surface.texticon.onnormal.text.midEmp }]}>
+          상품을 찾을 수 없습니다.
+        </Text>
+      </View>
+    );
+  }
+
+  /**
+   * 현재 사용자가 상품 소유자인지 판별
+   */
+  const isOwner = product.id === '1' || product.id === '2';
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.surface.normal.bg1 }]}>
+    <ScreenWrapper preset='none' style={[styles.container, { backgroundColor: theme.colors.surface.normal.bg1 }]}>
       {/* 고정 헤더 - 스크롤에 따라 배경색 변경 */}
       <Animated.View style={[styles.fixedHeader, { backgroundColor: headerBackgroundColor }]}>
         <TouchableOpacity style={styles.iconButton} onPress={handleBackPress} activeOpacity={0.8}>
@@ -210,9 +269,9 @@ export default function ProductDetailScreen() {
         style={{ flex: 1 }}
         contentContainerStyle={[
           styles.scrollContent,
-          { 
+          {
             backgroundColor: theme.colors.surface.normal.bg1,
-            paddingBottom: BOTTOM_BAR_HEIGHT + 20,
+            paddingBottom: scrollPaddingBottom,
           },
         ]}
         showsVerticalScrollIndicator={false}
@@ -290,7 +349,7 @@ export default function ProductDetailScreen() {
           onQuantityChange={handleQuantityChange}
         />
       </View>
-    </View>
+    </ScreenWrapper>
   );
 }
 
@@ -348,6 +407,54 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    zIndex: 50,
+    zIndex: 150,
+    marginVertical: 10,
+  },
+
+  // 스켈레톤 로딩 스타일
+  skeletonImage: {
+    width: '100%',
+    height: IMAGE_HEIGHT,
+  },
+  skeletonContent: {
+    padding: 20,
+    gap: 12,
+  },
+  skeletonBadge: {
+    width: 60,
+    height: 24,
+    borderRadius: 4,
+  },
+  skeletonTitle: {
+    width: '100%',
+    height: 20,
+    borderRadius: 4,
+  },
+  skeletonTitleShort: {
+    width: '70%',
+    height: 20,
+    borderRadius: 4,
+  },
+  skeletonPrice: {
+    width: 120,
+    height: 28,
+    borderRadius: 4,
+    marginTop: 8,
+  },
+  skeletonDivider: {
+    width: '100%',
+    height: 8,
+    marginTop: 16,
+  },
+  skeletonSection: {
+    width: '100%',
+    height: 60,
+    borderRadius: 8,
+    marginTop: 8,
+  },
+  skeletonSectionShort: {
+    width: '80%',
+    height: 40,
+    borderRadius: 8,
   },
 });

@@ -124,7 +124,7 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
           </View>
         </TouchableOpacity>
 
-        {/* [수정] 시간 설정 & 택배 가능 (한 행에 배치) */}
+        {/* 시간 설정 & 택배 가능 (한 행에 배치) */}
         <View style={styles.rowContainer}>
           {/* 1. 시간 설정 (왼쪽) */}
           <TouchableOpacity
