@@ -110,7 +110,7 @@ export const useMapProducts = ({
       return distance <= radius;
     });
 
-    console.log('[useMapProducts] 상품 필터링 결과:', {
+    if (__DEV__) console.log('[useMapProducts] 상품 필터링 결과:', {
       mode: useViewportMode ? 'viewport' : 'range',
       totalProducts: allProducts.length,
       filteredProducts: result.length,
@@ -170,7 +170,7 @@ export const useMapProducts = ({
       return acc;
     }, {} as Record<string, number>);
 
-    console.log('[useMapProducts] 마커 타입 분포:', markerTypeCounts);
+    if (__DEV__) console.log('[useMapProducts] 마커 타입 분포:', markerTypeCounts);
 
     return productMarkers;
   }, [filteredProducts, likedProductIds]);

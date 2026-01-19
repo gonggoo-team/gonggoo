@@ -84,9 +84,11 @@ export async function reverseGeocodeWithNaver(
     }
 
     const data: NaverReverseGeocodeResponse = await response.json();
-    console.log(url)
-    console.log(coords)
-    console.log(data)
+    if (__DEV__) {
+      console.log('[Naver] URL:', url);
+      console.log('[Naver] Coords:', coords);
+      console.log('[Naver] Response:', data);
+    }
     if (data.status.code !== 0) {
       console.error('[Naver] API status error:', data.status);
       throw new Error('NAVER_API_STATUS_ERROR');
@@ -107,7 +109,7 @@ export async function reverseGeocodeWithNaver(
 
     const fullAddress = `${city} ${district} ${neighborhood}`.trim();
 
-    console.log('[Naver] Reverse geocoding success:', {
+    if (__DEV__) console.log('[Naver] Reverse geocoding success:', {
       city,
       district,
       neighborhood,
@@ -162,7 +164,7 @@ export async function geocodeWithNaver(
     const data = await response.json();
 
     if (data.status !== 'OK' || !data.addresses || data.addresses.length === 0) {
-      console.log('[Naver] No geocode results found for:', query);
+      if (__DEV__) console.log('[Naver] No geocode results found for:', query);
       return null;
     }
 
@@ -171,7 +173,7 @@ export async function geocodeWithNaver(
     const longitude = parseFloat(result.x);
     const address = result.roadAddress || result.jibunAddress || query;
 
-    console.log('[Naver] Geocoding success:', { latitude, longitude, address });
+    if (__DEV__) console.log('[Naver] Geocoding success:', { latitude, longitude, address });
 
     return {
       latitude,
@@ -235,7 +237,7 @@ export async function searchNeighborhoods(
     const data = await response.json();
 
     if (data.status !== 'OK' || !data.addresses || data.addresses.length === 0) {
-      console.log('[Naver] No search results found for:', query);
+      if (__DEV__) console.log('[Naver] No search results found for:', query);
       return [];
     }
 
@@ -281,7 +283,7 @@ export async function searchNeighborhoods(
       })
     );
 
-    console.log('[Naver] Search success:', results.length, 'results');
+    if (__DEV__) console.log('[Naver] Search success:', results.length, 'results');
     return results;
   } catch (error) {
     console.error('[Naver] Search failed:', error);

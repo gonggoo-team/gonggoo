@@ -8,11 +8,14 @@
  * - 빈 상태: EmptyState 컴포넌트
  */
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { View, StyleSheet, ActivityIndicator, FlatList } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import type { ChatRoomItem } from '@/app/shared/types/chat.types';
+
+// ChatListItem의 고정 높이 (paddingVertical 10 * 2 + avatar 48 = 68px)
+const CHAT_ITEM_HEIGHT = 68;
 import { useFocusEffect } from 'expo-router';
-import { GNB, useTheme, CategoryFilterBar, Divider } from '@/design-system';
+import { GNB, useTheme, CategoryFilterBar, Divider, ScreenWrapper } from '@/design-system';
 import { EmptyState } from '@/app/shared/components';
 import { useThrottledNavigation } from '@/app/shared/hooks';
 import { useChat } from '@/app/shared/contexts';
@@ -150,11 +153,33 @@ export default function ChatListScreen() {
     [theme]
   );
 
+  /**
+   * FlatList 성능 최적화 함수들
+   */
+  const keyExtractor = useCallback((item: ChatRoomItem) => item.id, []);
+
+  const getItemLayout = useCallback(
+    (_: unknown, index: number) => ({
+      length: CHAT_ITEM_HEIGHT,
+      offset: CHAT_ITEM_HEIGHT * index,
+      index,
+    }),
+    []
+  );
+
+  const renderChatItem = useCallback(
+    ({ item }: { item: ChatRoomItem }) => (
+      <ChatListItem
+        {...item}
+        userRole={item.userRole}
+        onPress={() => handleChatPress(item.id, item.userRole, item.product.id)}
+      />
+    ),
+    [handleChatPress]
+  );
+
   return (
-    <SafeAreaView
-      style={[styles.container, { backgroundColor: theme.colors.surface.normal.bg1 }]}
-      edges={['bottom']}
-    >
+    <ScreenWrapper preset="default" style={styles.container}>
       {/* GNB */}
       <GNB
         leftSection={
@@ -182,21 +207,38 @@ export default function ChatListScreen() {
               }
             : undefined
         }
-        rightIcons={[
-          {
-            type: 'search',
-            onPress: handleSearchPress,
-          },
-          {
-            type: 'notification',
-            badge: { dot: notificationEnabled },
-            onPress: handleNotificationPress,
-          },
-          {
-            type: 'settings',
-            onPress: handleSettingsPress,
-          },
-        ]}
+        rightIcons={
+          isSearchMode
+            ? []
+            : [
+                {
+                  type: 'search',
+                  onPress: handleSearchPress,
+                },
+                {
+                  type: 'notification',
+                  badge: { dot: notificationEnabled },
+                  onPress: handleNotificationPress,
+                },
+                {
+                  type: 'settings',
+                  onPress: handleSettingsPress,
+                },
+              ]
+        }
+        rightTextButton={
+          isSearchMode
+            ? {
+                type: 'text-button',
+                text: '취소',
+                variant: 'secondary',
+                onPress: () => {
+                  setIsSearchMode(false);
+                  clearSearch();
+                },
+              }
+            : undefined
+        }
       />
       <Divider />
       {/* 필터 탭 */}
@@ -212,25 +254,26 @@ export default function ChatListScreen() {
           <ActivityIndicator size="large" color={theme.colors.surface.brand.primary} />
         </View>
       ) : (
-        /* 채팅 목록 */
+        /* 채팅 목록 - 성능 최적화 적용 */
         <FlatList
           data={chatRooms}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <ChatListItem
-              {...item}
-              userRole={item.userRole}
-              onPress={() => handleChatPress(item.id, item.userRole, item.product.id)}
-            />
-          )}
+          keyExtractor={keyExtractor}
+          renderItem={renderChatItem}
           ItemSeparatorComponent={renderSeparator}
           ListEmptyComponent={renderEmptyState}
           refreshing={refreshing}
           onRefresh={handleRefresh}
           contentContainerStyle={chatRooms.length === 0 ? styles.emptyList : undefined}
+          // 성능 최적화 props
+          getItemLayout={getItemLayout}
+          initialNumToRender={10}
+          maxToRenderPerBatch={10}
+          windowSize={5}
+          removeClippedSubviews={true}
+          updateCellsBatchingPeriod={50}
         />
       )}
-    </SafeAreaView>
+    </ScreenWrapper>
   );
 }
 

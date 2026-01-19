@@ -84,7 +84,7 @@ export async function reverseGeocodeWithKakao(
     const district = address.region_2depth_name;
     const city = address.region_1depth_name;
 
-    console.log('[Kakao] Geocoding success:', { city, district, neighborhood });
+    if (__DEV__) console.log('[Kakao] Geocoding success:', { city, district, neighborhood });
 
     return {
       neighborhood,

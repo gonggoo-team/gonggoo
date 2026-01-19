@@ -6,7 +6,7 @@
  * - 하단 탭바 배지 표시용
  */
 
-import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
+import React, { createContext, useContext, useState, useCallback, useMemo, ReactNode, useEffect } from 'react';
 import { getTotalUnreadCount } from '../services/mock';
 
 /**
@@ -52,10 +52,14 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
     refreshUnreadCount();
   }, [refreshUnreadCount]);
 
-  const value: ChatContextValue = {
-    totalUnreadCount,
-    refreshUnreadCount,
-  };
+  // useMemo로 value 객체를 메모이제이션하여 불필요한 리렌더링 방지
+  const value = useMemo<ChatContextValue>(
+    () => ({
+      totalUnreadCount,
+      refreshUnreadCount,
+    }),
+    [totalUnreadCount, refreshUnreadCount]
+  );
 
   return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
 };

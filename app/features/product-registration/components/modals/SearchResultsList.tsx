@@ -7,7 +7,7 @@
 
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
-import { useTheme } from '@/design-system';
+import { ScreenWrapper, useTheme } from '@/design-system';
 import type { NeighborhoodSearchResult } from '@/app/features/location/services/naverGeocodingService';
 
 interface SearchResultsListProps {
@@ -50,7 +50,8 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
   }
 
   return (
-    <View
+    <ScreenWrapper
+      preset='fullscreen'
       style={[
         styles.container,
         { backgroundColor: theme.colors.surface.normal.bg1 },
@@ -100,7 +101,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
         nestedScrollEnabled={true} 
         bounces={false}
       />
-    </View>
+    </ScreenWrapper>
   );
 };
 

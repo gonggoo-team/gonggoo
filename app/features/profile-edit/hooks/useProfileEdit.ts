@@ -57,10 +57,6 @@ export function useProfileEdit() {
     }
 
     // TODO: API 호출하여 프로필 저장
-    console.log('[useProfileEdit] 프로필 저장:', {
-      nickname: trimmedNickname,
-      profileImageUri,
-    });
 
     // 저장 성공
     setHasError(false);

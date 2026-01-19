@@ -30,18 +30,18 @@ export function useGPSLocation() {
 
     try {
       // Step 1: GPS 좌표 가져오기
-      console.log('[useGPSLocation] Getting GPS coordinates...');
+      if (__DEV__) console.log('[useGPSLocation] Getting GPS coordinates...');
       const coords = await getCurrentLocation();
 
       // Step 2: 역지오코딩 (좌표 → 주소)
-      console.log('[useGPSLocation] Reverse geocoding...');
+      if (__DEV__) console.log('[useGPSLocation] Reverse geocoding...');
       const neighborhood = await reverseGeocode(
         coords.latitude,
         coords.longitude
       );
 
       // Step 3: 지원 지역 확인
-      console.log('[useGPSLocation] Checking if location is supported...');
+      if (__DEV__) console.log('[useGPSLocation] Checking if location is supported...');
       const supported = await isLocationSupported(neighborhood.neighborhood);
 
       if (!supported) {
@@ -58,7 +58,7 @@ export function useGPSLocation() {
       };
 
       setDetectedLocation(location);
-      console.log('[useGPSLocation] Location detected:', location.neighborhood);
+      if (__DEV__) console.log('[useGPSLocation] Location detected:', location.neighborhood);
 
       return location;
     } catch (err: any) {

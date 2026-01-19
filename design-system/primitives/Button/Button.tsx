@@ -10,19 +10,22 @@
  * </Button>
  */
 
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
   ActivityIndicator,
+  Pressable,
   StyleProp,
   Text,
   TextStyle,
-  TouchableOpacity,
   ViewStyle,
 } from 'react-native';
 
 import { useTheme } from '../../hooks';
 
 import { createButtonStyles } from './Button.styles';
+
+/** 터치 영역 확대를 위한 hitSlop */
+const HIT_SLOP = { top: 4, right: 4, bottom: 4, left: 4 };
 
 /**
  * Button Variant (Figma 기반)
@@ -84,9 +87,9 @@ export interface ButtonProps {
 }
 
 /**
- * Button Component
+ * Button Component (React.memo로 최적화)
  */
-export const Button: React.FC<ButtonProps> = ({
+export const Button = React.memo<ButtonProps>(({
   children,
   variant = 'category-selected',
   size,
@@ -99,38 +102,50 @@ export const Button: React.FC<ButtonProps> = ({
   icon,
 }) => {
   const { theme } = useTheme();
-  const styles = createButtonStyles(theme);
+  const styles = useMemo(() => createButtonStyles(theme), [theme]);
 
   const isDisabled = disabled || loading;
 
-  // 컨테이너 스타일 구성
-  const containerStyle = [
+  // 컨테이너 스타일 구성 (메모이제이션)
+  const containerStyle = useMemo(() => [
     styles.base,
     styles[variant],
-    size && styles[size], // square variant에만 size 적용
+    size && styles[size],
     isDisabled && styles.disabled,
     style,
-  ];
+  ], [styles, variant, size, isDisabled, style]);
 
-  // 텍스트 스타일 구성
-  const textStyleCombined = [
+  // 텍스트 스타일 구성 (메모이제이션)
+  const textStyleCombined = useMemo(() => [
     styles.text,
     styles[`${variant}-text` as keyof typeof styles],
     textStyle,
-  ];
+  ], [styles, variant, textStyle]);
 
   // 로딩 스피너 색상 결정
-  const spinnerColor =
+  const spinnerColor = useMemo(() =>
     variant.includes('selected') || variant === 'full-primary'
       ? theme.colors.surface.texticon.onnormal.text.white
-      : theme.colors.surface.texticon.onnormal.text.midEmp;
+      : theme.colors.surface.texticon.onnormal.text.midEmp,
+    [variant, theme.colors.surface.texticon.onnormal.text]
+  );
+
+  // Pressable 스타일 헬퍼
+  const getPressedStyle = useCallback(
+    ({ pressed }: { pressed: boolean }): StyleProp<ViewStyle> => [
+      containerStyle,
+      pressed && !isDisabled && { opacity: 0.7 },
+    ],
+    [containerStyle, isDisabled]
+  );
 
   return (
-    <TouchableOpacity
-      style={containerStyle}
+    <Pressable
+      style={getPressedStyle}
       onPress={onPress}
       disabled={isDisabled}
-      activeOpacity={0.7}
+      delayPressIn={0}
+      hitSlop={HIT_SLOP}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel || children}
       accessibilityState={{ disabled: isDisabled }}
@@ -143,6 +158,8 @@ export const Button: React.FC<ButtonProps> = ({
           <Text style={textStyleCombined}>{children}</Text>
         </>
       )}
-    </TouchableOpacity>
+    </Pressable>
   );
-};
+});
+
+Button.displayName = 'Button';

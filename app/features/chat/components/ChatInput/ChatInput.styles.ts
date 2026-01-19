@@ -4,12 +4,16 @@
 
 import { StyleSheet, Platform } from 'react-native';
 import type { Theme } from '@/design-system';
+import { CHAT_INPUT } from '@/app/shared/constants/layout';
 
 export const createStyles = (theme: Theme, bottomInset: number = 0) =>
   StyleSheet.create({
     container: {
-      paddingTop: 12,
-      paddingBottom: Math.max(12, bottomInset),
+      paddingVertical: 8,
+      // 동적 paddingBottom: 기본 8px + SafeArea bottom (키보드 상태에 따라 변경)
+      // - 키보드 올라옴: 8px (bottomInset = 0)
+      // - 키보드 내려감: 8px + insets.bottom (iPhone: ~42px)
+      // paddingBottom: 8 + bottomInset,
       paddingHorizontal: 16,
       backgroundColor: theme.colors.surface.normal.bg1,
       borderTopWidth: 1,
@@ -31,8 +35,10 @@ export const createStyles = (theme: Theme, bottomInset: number = 0) =>
       backgroundColor: theme.colors.surface.normal.bg2,
       borderRadius: 20,
       paddingHorizontal: 16,
-      paddingVertical: 8, 
-      // minHeight: 44, // 최소 높이 보장
+      paddingBottom: 8,
+      // paddingVertical: 8, 
+      minHeight: 44, // 최소 높이 보장
+      
     },
     input: {
       flex: 1,
@@ -41,7 +47,7 @@ export const createStyles = (theme: Theme, bottomInset: number = 0) =>
       fontWeight: '400',
       color: theme.colors.surface.texticon.onnormal.text.black,
       marginHorizontal: theme.spacing.xs,      
-      paddingBottom: 4,
+      paddingBottom: 4,      
     },
     sendButton: {
       width: 28,

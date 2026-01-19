@@ -126,6 +126,7 @@ export const ProductCardHorizontal = React.memo<ProductCardHorizontalProps>(({
         },
       ]}
       onPress={onPress}
+      delayPressIn={0}
       delayLongPress={300}
       android_ripple={{
         color: theme.colors.surface.normal.container10,

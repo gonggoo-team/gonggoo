@@ -97,12 +97,12 @@ export function PermissionRequestView({
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    paddingHorizontal: 20,
+    flex: 1,    
   },
   titleContainer: {
-    paddingVertical: 10,
-    marginTop: 7,
+    paddingVertical: 20,
+    // marginTop: 7,
+    paddingHorizontal: 20
   },
   title: {
     fontSize: 25,
@@ -133,13 +133,12 @@ const styles = StyleSheet.create({
   spacer: {
     flex: 1,
   },
-  buttonContainer: {
-    paddingBottom: 64,
+  buttonContainer: {    
     gap: 16,
   },
   skipButton: {
     paddingVertical: 12,
-    alignItems: 'center',
+    alignItems: 'center',    
   },
   skipText: {
     fontSize: 16,

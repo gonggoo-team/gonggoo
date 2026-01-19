@@ -20,11 +20,11 @@
  * ```
  */
 
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { ScrollView, View } from 'react-native';
 import { useTheme } from '../../hooks';
 import { createCategoryTabBarStyles } from './CategoryTabBar.styles';
-import type { CategoryTabBarProps } from './CategoryTabBar.types';
+import type { CategoryTabBarProps, CategoryType } from './CategoryTabBar.types';
 import { CATEGORY_ORDER } from './CategoryTabBar.types';
 import { CategoryTabItem } from './components/CategoryTabItem';
 
@@ -36,7 +36,15 @@ export const CategoryTabBar: React.FC<CategoryTabBarProps> = ({
   onCategoryChange,
 }) => {
   const { theme } = useTheme();
-  const styles = createCategoryTabBarStyles(theme);
+  const styles = useMemo(() => createCategoryTabBarStyles(theme), [theme]);
+
+  // 메모이제이션된 핸들러 생성
+  const handleCategoryPress = useCallback(
+    (category: CategoryType) => {
+      onCategoryChange(category);
+    },
+    [onCategoryChange]
+  );
 
   return (
     <View style={styles.container}>
@@ -51,7 +59,7 @@ export const CategoryTabBar: React.FC<CategoryTabBarProps> = ({
             key={category}
             category={category}
             isSelected={selectedCategory === category}
-            onPress={() => onCategoryChange(category)}
+            onPress={handleCategoryPress}
           />
         ))}
       </ScrollView>

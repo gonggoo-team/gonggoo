@@ -9,6 +9,7 @@
  */
 
 import { TabContentLayout } from '@/app/shared/components/layouts';
+import { useFAB } from '@/app/shared/contexts';
 import { useProductList, useTabFilters, useTabSort, useFilterNavigation } from '@/app/shared/hooks';
 import { useThrottledNavigation } from '@/app/shared/hooks/useThrottledNavigation';
 import { getMockDeadlineProducts } from '@/app/shared/services/mock';
@@ -24,7 +25,7 @@ import {
   SortFilterBar,
   useTheme,
 } from '@/design-system';
-import React, { forwardRef, useCallback, useMemo } from 'react';
+import React, { forwardRef, useCallback, useEffect, useMemo } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 
 export const TodayContent = forwardRef<FlatList>((props, ref) => {
@@ -50,6 +51,16 @@ export const TodayContent = forwardRef<FlatList>((props, ref) => {
     handleDropdownClose,
     applySorting,
   } = useTabSort();
+
+  // FAB 가시성 제어 (드롭다운 열릴 때 숨김)
+  const { hideFAB, showFAB } = useFAB();
+  useEffect(() => {
+    if (isDropdownVisible) {
+      hideFAB();
+    } else {
+      showFAB();
+    }
+  }, [isDropdownVisible, hideFAB, showFAB]);
 
   // 최종 상품 목록 (필터링 + 정렬)
   const products = useProductList(allProducts, selectedCategory, filters, applySorting);

@@ -38,17 +38,21 @@
  * ```
  */
 
-import React from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useMemo } from 'react';
+import { Pressable, StyleProp, Text, View, ViewStyle } from 'react-native';
 import { useTheme } from '../../hooks';
 import { Icon } from '../Icon';
 import { createSearchTagStyles } from './SearchTag.styles';
 import type { SearchTagProps } from './SearchTag.types';
 
+/** 터치 영역 확대를 위한 hitSlop */
+const HIT_SLOP = { top: 4, right: 4, bottom: 4, left: 4 };
+const ICON_HIT_SLOP = { top: 8, bottom: 8, left: 8, right: 8 };
+
 /**
- * SearchTag Component
+ * SearchTag Component (React.memo로 최적화)
  */
-export const SearchTag: React.FC<SearchTagProps> = ({
+export const SearchTag = React.memo<SearchTagProps>(({
   text,
   variant,
   onPress,
@@ -58,31 +62,56 @@ export const SearchTag: React.FC<SearchTagProps> = ({
   testID,
 }) => {
   const { theme } = useTheme();
-  const styles = createSearchTagStyles(theme);
+  const styles = useMemo(() => createSearchTagStyles(theme), [theme]);
 
-  // 클릭 핸들러
-  const handlePress = () => {
+  // 컨테이너 스타일 (메모이제이션)
+  const containerStyle = useMemo(() => [
+    styles.container,
+    styles[variant],
+    style,
+  ], [styles, variant, style]);
+
+  // 클릭 핸들러 (메모이제이션)
+  const handlePress = useCallback(() => {
     onPress?.(text);
-  };
+  }, [onPress, text]);
 
-  // 삭제 핸들러 (recent variant만)
-  const handleDelete = (e: { stopPropagation?: () => void }) => {
-    // 이벤트 전파 방지 (태그 클릭과 구분)
-    e?.stopPropagation?.();
+  // 삭제 핸들러 (메모이제이션)
+  const handleDelete = useCallback(() => {
     onDelete?.(text);
-  };
+  }, [onDelete, text]);
 
   // 접근성 라벨 생성
-  const defaultAccessibilityLabel =
+  const defaultAccessibilityLabel = useMemo(() =>
     variant === 'recent'
       ? `최근 검색어 ${text}, 삭제하려면 X 버튼 클릭`
-      : `추천 검색어 ${text}`;
+      : `추천 검색어 ${text}`,
+    [variant, text]
+  );
+
+  // Pressable 스타일 헬퍼
+  const getPressedStyle = useCallback(
+    ({ pressed }: { pressed: boolean }): StyleProp<ViewStyle> => [
+      containerStyle,
+      pressed && { opacity: 0.7 },
+    ],
+    [containerStyle]
+  );
+
+  const getDeletePressedStyle = useCallback(
+    ({ pressed }: { pressed: boolean }): StyleProp<ViewStyle> => [
+      styles.iconContainer,
+      pressed && { opacity: 0.7 },
+    ],
+    [styles.iconContainer]
+  );
 
   return (
-    <TouchableOpacity
-      style={[styles.container, styles[variant], style]}
+    <Pressable
+      style={getPressedStyle}
       onPress={handlePress}
-      activeOpacity={0.7}
+      delayPressIn={0}
+      hitSlop={HIT_SLOP}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel || defaultAccessibilityLabel}
       testID={testID || `search-tag-${variant}-${text}`}
@@ -100,21 +129,23 @@ export const SearchTag: React.FC<SearchTagProps> = ({
 
       {/* X 버튼 (recent variant만) */}
       {variant === 'recent' && onDelete && (
-        <TouchableOpacity
+        <Pressable
           onPress={handleDelete}
-          style={styles.iconContainer}
-          activeOpacity={0.7}
+          style={getDeletePressedStyle}
+          delayPressIn={0}
+          hitSlop={ICON_HIT_SLOP}
           accessibilityRole="button"
           accessibilityLabel={`${text} 삭제`}
-          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
           <Icon
             name="small-x"
             size={13}
             color={theme.colors.surface.texticon.onnormal.icon.black}
           />
-        </TouchableOpacity>
+        </Pressable>
       )}
-    </TouchableOpacity>
+    </Pressable>
   );
-};
+});
+
+SearchTag.displayName = 'SearchTag';

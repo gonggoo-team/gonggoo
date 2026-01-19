@@ -27,12 +27,14 @@ import { useThrottledNavigation } from '@/app/shared/hooks';
 import { getProductPriceRange } from '@/app/shared/services/mock/products.mock';
 import type { CommonFilters } from '@/app/shared/types/filter.types';
 import { getDefaultFilters } from '@/app/shared/types/filter.types';
+import { FILTER_SCREEN } from '@/app/shared/constants/layout';
 
 import {
   Button,
   Checkbox,
   Divider,
   Icon,
+  ScreenWrapper,
   Tooltip,
   useTheme,
 } from '@/design-system';
@@ -50,6 +52,10 @@ export default function FilterScreen() {
   const { back } = useThrottledNavigation();
   const params = useLocalSearchParams();
   const insets = useSafeAreaInsets();
+
+  // ScrollView paddingBottom: 액션바 높이 + 여유 10px + SafeArea bottom
+  // Galaxy S8: 100px, iPhone: 134px
+  const scrollPaddingBottom = FILTER_SCREEN.getScrollPadding(insets.bottom);
 
   // params에서 가격 범위 추출 (검색 결과 또는 필터링된 데이터 기준)
   const paramMinPrice = params.minPrice ? parseInt(params.minPrice as string) : undefined;
@@ -135,10 +141,12 @@ export default function FilterScreen() {
   const styles = createStyles(theme);
 
   return (
-    <View style={[
+    <ScreenWrapper
+      preset='fullscreen'
+      style={[
         styles.container,
         {
-          paddingTop: insets.top + theme.spacing.md, // Safe Area + 16px
+          // paddingTop: insets.top + theme.spacing.md, // Safe Area + 16px
         }
       ,]}>
       {/* Stack Screen 헤더 숨김 */}
@@ -156,7 +164,10 @@ export default function FilterScreen() {
       <ScrollView
         style={styles.scrollContent}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContentContainer}
+        contentContainerStyle={[
+          styles.scrollContentContainer,
+          // { paddingBottom: scrollPaddingBottom }
+        ]}
         scrollEnabled={!isSliderActive}
       >
         {/* 예약가능 공구만 보기 */}
@@ -258,7 +269,7 @@ export default function FilterScreen() {
           </View>
 
         {/* 하단 여백 */}
-        <View style={styles.bottomSpacing} />
+        {/* <View style={styles.bottomSpacing} /> */}
       </ScrollView>
 
       {/* 하단 액션 바 (고정) */}
@@ -293,7 +304,7 @@ export default function FilterScreen() {
         example="예: 티슈 8개를 4슬롯으로 나누면, &#10;1슬롯 = 티슈 2개, 2슬롯을 구매하면 총 티슈 4개를 구매할 수 있어요."
         onClose={() => setIsTooltipVisible(false)}
       />
-    </View>
+    </ScreenWrapper>
   );
 }
 
@@ -307,7 +318,7 @@ const createStyles = (theme: Theme) =>
       flex: 1,
     },
     scrollContentContainer: {
-      paddingBottom: 100,
+      // paddingBottom은 동적으로 계산되어 inline style로 적용됨
     },
     section: {
       paddingHorizontal: theme.spacing.lg,
@@ -344,16 +355,16 @@ const createStyles = (theme: Theme) =>
       height: 20,
     },
     actionBar: {
-      position: 'absolute',
-      bottom: 0,
-      left: 0,
-      right: 0,
+      // position: 'absolute',
+      // bottom: 0,
+      // left: 0,
+      // right: 0,
       flexDirection: 'row',
       alignItems: 'center',
       gap: 23,
       paddingHorizontal: theme.spacing.lg,
       paddingTop: 13,
-      paddingBottom: 23,
+      paddingBottom: 13,
       borderTopWidth: 1,
       borderTopColor: theme.colors.border.lowEmp,
       backgroundColor: theme.colors.surface.normal.bg1,

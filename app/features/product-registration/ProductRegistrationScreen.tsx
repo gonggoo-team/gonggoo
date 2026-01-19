@@ -16,7 +16,7 @@ import {
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { GNB, Button, useTheme, Divider } from '@/design-system';
+import { GNB, Button, useTheme, Divider, ScreenWrapper } from '@/design-system';
 import {
   ImageUploadSection,
   TitleSection,
@@ -46,10 +46,10 @@ export default function ProductRegistrationScreen() {
 
   const handleSave = () => {
     // TODO: 임시 저장 기능
-    console.log('Save draft:', formData);
   };
 
   return (
+    <ScreenWrapper preset='fullscreen'>
     <KeyboardAvoidingView
       style={[styles.container, { backgroundColor: theme.colors.surface.normal.bg1 }]}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -121,8 +121,7 @@ export default function ProductRegistrationScreen() {
       <View
         style={[
           styles.bottomButtonContainer,
-          {
-            paddingBottom: insets.bottom + theme.spacing.sm,
+          {            
             backgroundColor: theme.colors.surface.normal.bg1,
           },
         ]}
@@ -137,6 +136,7 @@ export default function ProductRegistrationScreen() {
         </Button>
       </View>
     </KeyboardAvoidingView>
+    </ScreenWrapper>
   );
 }
 

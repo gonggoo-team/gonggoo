@@ -114,7 +114,6 @@ export const useProductEdit = (productId: string) => {
 
     try {
       // TODO: API 호출 (수정)
-      console.log('Update product:', productId, formData);
 
       // 임시: 2초 대기
       await new Promise((resolve) => setTimeout(resolve, 2000));

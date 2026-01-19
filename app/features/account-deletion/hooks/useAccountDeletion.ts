@@ -68,8 +68,6 @@ export function useAccountDeletion(): UseAccountDeletionReturn {
     setShowConfirmModal(false);
 
     // TODO: 실제 회원 탈퇴 API 호출
-    console.log('회원 탈퇴 처리');
-    console.log('탈퇴 사유:', feedbackText);
 
     // 탈퇴 완료 후 처리
     // - 로그아웃

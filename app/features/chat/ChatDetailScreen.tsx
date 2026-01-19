@@ -1,17 +1,9 @@
-/**
- * ChatDetailScreen
- *
- * 채팅 상세 화면 (1:1 메시징)입니다.
- * - GNB 타이틀: 상대방 닉네임
- * - 메시지 그룹화: 5분 이내 같은 발신자
- * - Instagram DM 스타일 border radius
- * - Inverted FlatList로 최신 메시지가 아래
- */
-
-import React, { useEffect } from 'react';
-import { View, FlatList, ActivityIndicator, StyleSheet, Alert, Platform, KeyboardAvoidingView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Divider, GNB, useTheme } from '@/design-system';
+import React, { useEffect, useCallback } from 'react';
+import { View, FlatList, ActivityIndicator, StyleSheet, Alert, Platform } from 'react-native';
+import { KeyboardProvider, KeyboardStickyView, useReanimatedKeyboardAnimation } from 'react-native-keyboard-controller';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Divider, GNB, ScreenWrapper, useTheme } from '@/design-system';
 import { useThrottledNavigation } from '@/app/shared/hooks';
 import { useChat } from '@/app/shared/contexts';
 import type { MessageSection } from '@/app/shared/types';
@@ -22,15 +14,41 @@ export interface ChatDetailScreenProps {
   chatId: string;
 }
 
-export default function ChatDetailScreen({ chatId }: ChatDetailScreenProps) {
+// 채팅 입력창 기본 높이 (패딩 포함)
+const INPUT_MIN_HEIGHT = 60;
+
+/**
+ * 키보드 높이에 반응하는 스페이서 컴포넌트
+ * inverted FlatList에서 ListHeaderComponent는 화면 하단에 표시됨
+ * 키보드가 올라오면 스페이서 높이가 증가하여 메시지들이 위로 밀려남
+ */
+function KeyboardSpacer() {
+  const { height } = useReanimatedKeyboardAnimation();
+  const insets = useSafeAreaInsets();
+
+  const animatedStyle = useAnimatedStyle(() => {
+    // 기본: 입력창 높이 + safe area bottom (키보드 없을 때)
+    // 키보드 올라올 때: 입력창 높이 + 키보드 높이
+    const baseHeight = 0;//INPUT_MIN_HEIGHT;
+    const keyboardOffset = Math.abs(height.value) > 0 ? Math.abs(height.value) : insets.bottom;
+    return {
+      height: keyboardOffset - 44,      
+    };
+  });
+
+  return <Animated.View style={animatedStyle} />;
+}
+
+/**
+ * 채팅 상세 화면의 내부 컴포넌트
+ * KeyboardProvider 내부에서 useReanimatedKeyboardAnimation 훅 사용
+ */
+function ChatDetailContent({ chatId }: ChatDetailScreenProps) {
   const { theme } = useTheme();
   const { back } = useThrottledNavigation();
   const { refreshUnreadCount } = useChat();
   const { chatRoom, messageSections, loading, sending, sendMessage, handleAttach, refresh } = useChatDetail(chatId);
-  /**
-   * 컴포넌트 unmount 시 안 읽은 메시지 개수 갱신
-   * (채팅을 읽었으므로 탭바 배지를 업데이트)
-   */
+
   useEffect(() => {
     return () => {
       refreshUnreadCount();
@@ -38,34 +56,21 @@ export default function ChatDetailScreen({ chatId }: ChatDetailScreenProps) {
   }, [refreshUnreadCount]);
 
   const handleOptionsPress = () => {
-    // TODO: 채팅 옵션 메뉴 (신고, 차단, 나가기 등)
     Alert.alert('채팅 옵션', '추후 구현 예정입니다.');
   };
 
-  /**
-   * 거래 완료 처리
-   */
   const handleCompleteTransaction = () => {
-    // TODO: 백엔드 API 호출하여 거래 완료 처리
     Alert.alert('거래 완료', '거래가 완료되었습니다.');
   };
 
-  /**
-   * 날짜별 섹션 렌더링
-   */
-  const renderSection = ({ item, index }: { item: MessageSection; index: number }) => (
+  const renderSection = useCallback(({ item, index }: { item: MessageSection; index: number }) => (
     <View>
-      {/* 날짜 구분선 */}
       <DateSeparator date={item.date} />
-
-      {/* 메시지 그룹들 */}
       {item.groups.map((group, groupIndex) => {
-        // 시스템 메시지 그룹 체크 (그룹 내 모든 메시지가 시스템 메시지인 경우)
         const isSystemMessageGroup =
           group.sender === 'system' && group.messages.every((m) => m.message.type === 'system');
 
         if (isSystemMessageGroup) {
-          // 시스템 메시지 렌더링
           return group.messages.map(({ message }) => {
             if (message.type === 'system' && message.systemMessageType === 'transaction_complete_request') {
               return (
@@ -79,8 +84,6 @@ export default function ChatDetailScreen({ chatId }: ChatDetailScreenProps) {
           });
         }
 
-        // 일반 메시지 그룹 렌더링
-        // 상대방 메시지의 경우, 이전 그룹과 발신자가 다르면 프로필 이미지 표시
         const showProfileImage =
           group.sender === 'other' &&
           (groupIndex === 0 || item.groups[groupIndex - 1].sender !== 'other');
@@ -95,78 +98,76 @@ export default function ChatDetailScreen({ chatId }: ChatDetailScreenProps) {
         );
       })}
     </View>
-  );
+  ), [chatRoom?.participant.profileImageUri]);
+
+  // 키보드 스페이서 컴포넌트 메모이제이션
+  const renderListHeader = useCallback(() => <KeyboardSpacer />, []);
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.loadingContainer} edges={['top', 'bottom']}>
+      <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={theme.colors.surface.brand.primary} />
-      </SafeAreaView>
+      </View>
     );
   }
 
   if (!chatRoom) {
     return (
-      <SafeAreaView style={styles.errorContainer} edges={['top', 'bottom']}>
+      <View style={styles.errorContainer}>
         <GNB
-          leftSection={{
-            type: 'back',
-            onPress: back,
-          }}
-          centerSection={{
-            type: 'title',
-            text: '채팅',
-          }}
+          leftSection={{ type: 'back', onPress: back }}
+          centerSection={{ type: 'title', text: '채팅' }}
         />
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.surface.normal.bg1 }]} edges={['top']}>
-      {/* GNB */}
+    <ScreenWrapper preset="fullscreen" style={styles.container}>
       <GNB
-        leftSection={{
-          type: 'back',
-          onPress: back,
-        }}
+        leftSection={{ type: 'back', onPress: back }}
         centerSection={{
           type: 'title',
-          text: chatRoom.participant.nickname.length > 15 ? chatRoom.participant.nickname.substring(0, 15) + '...' : chatRoom.participant.nickname,
+          text: chatRoom.participant.nickname.length > 15
+            ? chatRoom.participant.nickname.substring(0, 15) + '...'
+            : chatRoom.participant.nickname,
         }}
-        rightIcons={[
-          {
-            type: 'menu',
-            onPress: handleOptionsPress,
-          },
-        ]}
+        rightIcons={[{ type: 'menu', onPress: handleOptionsPress }]}
       />
       <Divider />
 
-      {/* 키보드 처리 래퍼 */}
-      <KeyboardAvoidingView
-        style={styles.keyboardAvoidingView}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
-      >
-        {/* 메시지 리스트 (inverted) */}
+      <View style={styles.contentContainer}>
         <FlatList
-          data={messageSections.slice().reverse()} // 최신 메시지가 아래로 (inverted 모드)
+          data={messageSections.slice().reverse()}
           renderItem={renderSection}
           keyExtractor={(item) => item.date}
-          inverted // 스크롤 방향 반전 (최신 메시지가 아래)
-          contentContainerStyle={styles.messageList}
+          inverted
+          // inverted FlatList에서 ListHeaderComponent는 하단에 표시됨
+          // 키보드 높이에 반응하는 스페이서로 메시지가 가려지지 않도록 함
+          ListHeaderComponent={renderListHeader}
           onRefresh={refresh}
           refreshing={false}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
           style={styles.flatList}
+          // 인스타그램 스타일: 드래그로 키보드 내리기
+          keyboardDismissMode="interactive"
         />
 
-        {/* 입력창 */}
-        <ChatInput onSend={sendMessage} onAttach={handleAttach} disabled={sending} />
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+        {/* 키보드와 함께 움직이는 입력창 */}
+        <KeyboardStickyView offset={{ closed: 0, opened: 50 }}>
+          <ChatInput onSend={sendMessage} onAttach={handleAttach} disabled={sending} />
+        </KeyboardStickyView>
+      </View>
+    </ScreenWrapper>
+  );
+}
+
+export default function ChatDetailScreen({ chatId }: ChatDetailScreenProps) {
+  return (
+    <KeyboardProvider statusBarTranslucent>
+      <ChatDetailContent chatId={chatId} />
+    </KeyboardProvider>
   );
 }
 
@@ -182,13 +183,11 @@ const styles = StyleSheet.create({
   errorContainer: {
     flex: 1,
   },
-  keyboardAvoidingView: {
-    flex: 1,
-  },
   flatList: {
     flex: 1,
   },
-  messageList: {
-    paddingVertical: 8,
+  contentContainer: {
+    flex: 1,
+    backgroundColor: '#fff',
   },
 });

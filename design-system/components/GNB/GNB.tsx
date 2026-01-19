@@ -26,8 +26,8 @@
  * ```
  */
 
-import React from 'react';
-import { Image, Text, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useMemo } from 'react';
+import { Image, Pressable, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '../../hooks';
@@ -54,6 +54,15 @@ const ICON_TYPE_MAP = {
   settings: 'settings',
 } as const;
 
+/** 터치 영역 확대를 위한 hitSlop */
+const HIT_SLOP = { top: 8, right: 8, bottom: 8, left: 8 };
+
+/** Pressable 스타일 헬퍼: pressed 상태에서 opacity 적용 */
+const createPressedStyle = (
+  baseStyle?: StyleProp<ViewStyle>,
+  pressed?: boolean
+): StyleProp<ViewStyle> => [baseStyle, pressed && { opacity: 0.7 }];
+
 /**
  * GNB Component
  */
@@ -77,29 +86,33 @@ export const GNB: React.FC<GNBProps> = ({
       case 'logo-text':
         return (
           <View style={styles.leftSection}>
-            <TouchableOpacity
+            <Pressable
               onPress={leftSection.onPress}
               disabled={!leftSection.onPress}
-              activeOpacity={leftSection.onPress ? 0.7 : 1}
+              delayPressIn={0}
+              hitSlop={HIT_SLOP}
+              style={({ pressed }) => createPressedStyle(undefined, leftSection.onPress ? pressed : false)}
             >
               <Text style={styles.leftLogoText}>{leftSection.text}</Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         );
 
       case 'logo-image':
         return (
           <View style={styles.leftSection}>
-            <TouchableOpacity
+            <Pressable
               onPress={leftSection.onPress}
               disabled={!leftSection.onPress}
-              activeOpacity={leftSection.onPress ? 0.7 : 1}
+              delayPressIn={0}
+              hitSlop={HIT_SLOP}
+              style={({ pressed }) => createPressedStyle(undefined, leftSection.onPress ? pressed : false)}
             >
               <Image
                 source={{ uri: leftSection.uri }}
                 style={styles.leftLogoImage}
               />
-            </TouchableOpacity>
+            </Pressable>
           </View>
         );
 
@@ -108,9 +121,11 @@ export const GNB: React.FC<GNBProps> = ({
       case 'menu':
         return (
           <View style={styles.leftSection}>
-            <TouchableOpacity
+            <Pressable
               onPress={leftSection.onPress}
-              style={styles.leftButton}
+              delayPressIn={0}
+              hitSlop={HIT_SLOP}
+              style={({ pressed }) => createPressedStyle(styles.leftButton, pressed)}
               accessibilityRole="button"
               accessibilityLabel={
                 leftSection.type === 'back'
@@ -125,17 +140,18 @@ export const GNB: React.FC<GNBProps> = ({
                 size={theme.dimensions.iconSize.md}
                 color={theme.colors.surface.texticon.onnormal.icon.black}
               />
-            </TouchableOpacity>
+            </Pressable>
           </View>
         );
 
       case 'address':
         return (
           <View style={styles.leftSection}>
-            <TouchableOpacity
+            <Pressable
               onPress={leftSection.onPress}
-              style={styles.addressButton}
-              activeOpacity={0.7}
+              delayPressIn={0}
+              hitSlop={HIT_SLOP}
+              style={({ pressed }) => createPressedStyle(styles.addressButton, pressed)}
               accessibilityRole="button"
               accessibilityLabel={`현재 위치: ${leftSection.text}`}
             >
@@ -151,7 +167,7 @@ export const GNB: React.FC<GNBProps> = ({
                 size={theme.dimensions.iconSize.sm}
                 color={theme.colors.surface.texticon.onnormal.icon.black}
               />
-            </TouchableOpacity>
+            </Pressable>
           </View>
         );
 
@@ -159,9 +175,11 @@ export const GNB: React.FC<GNBProps> = ({
         return (
           <View style={styles.leftSection}>
             <View style={styles.backWithTitleContainer}>
-              <TouchableOpacity
+              <Pressable
                 onPress={leftSection.onPress}
-                style={styles.leftButton}
+                delayPressIn={0}
+                hitSlop={HIT_SLOP}
+                style={({ pressed }) => createPressedStyle(styles.leftButton, pressed)}
                 accessibilityRole="button"
                 accessibilityLabel="뒤로가기"
               >
@@ -170,7 +188,7 @@ export const GNB: React.FC<GNBProps> = ({
                   size={theme.dimensions.iconSize.md}
                   color={theme.colors.surface.texticon.onnormal.icon.black}
                 />
-              </TouchableOpacity>
+              </Pressable>
               <Text style={styles.leftSectionTitle} numberOfLines={1}>
                 {leftSection.title}
               </Text>
@@ -277,10 +295,12 @@ export const GNB: React.FC<GNBProps> = ({
       : ICON_TYPE_MAP[iconConfig.type];
 
     return (
-      <TouchableOpacity
+      <Pressable
         key={`${iconConfig.type}-${index}`}
         onPress={iconConfig.onPress}
-        style={styles.iconButton}
+        delayPressIn={0}
+        hitSlop={HIT_SLOP}
+        style={({ pressed }) => createPressedStyle(styles.iconButton, pressed)}
         accessibilityRole="button"
         accessibilityLabel={iconConfig.accessibilityLabel || iconConfig.type}
       >
@@ -290,7 +310,7 @@ export const GNB: React.FC<GNBProps> = ({
           color={theme.colors.surface.texticon.onnormal.icon.black}
         />
         {renderBadge(iconConfig.badge, iconConfig.type)}
-      </TouchableOpacity>
+      </Pressable>
     );
   };
 
@@ -308,10 +328,12 @@ export const GNB: React.FC<GNBProps> = ({
 
       return (
         <View style={styles.rightSection}>
-          <TouchableOpacity
+          <Pressable
             onPress={rightTextButton.onPress}
             disabled={rightTextButton.disabled}
-            activeOpacity={0.7}
+            delayPressIn={0}
+            hitSlop={HIT_SLOP}
+            style={({ pressed }) => createPressedStyle(undefined, pressed)}
             accessibilityRole="button"
             accessibilityLabel={rightTextButton.accessibilityLabel || rightTextButton.text}
             accessibilityState={{ disabled: rightTextButton.disabled }}
@@ -325,7 +347,7 @@ export const GNB: React.FC<GNBProps> = ({
             >
               {rightTextButton.text}
             </Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
       );
     }
@@ -347,7 +369,7 @@ export const GNB: React.FC<GNBProps> = ({
       style={[
         styles.container,
         {
-          paddingTop: insets.top + theme.spacing.md, // Safe Area + 16px
+          // paddingTop: insets.top // + theme.spacing.md, // Safe Area + 16px
         },
       ]}
       accessibilityRole="header"

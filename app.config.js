@@ -17,7 +17,7 @@ module.exports = {
       ],
       package: "com.gonggoo.neighbors",
       runtimeVersion: "1.0.0",
-      softwareKeyboardLayoutMode: "pan"
+      softwareKeyboardLayoutMode: "resize"
     },
     plugins: [
       "expo-web-browser",

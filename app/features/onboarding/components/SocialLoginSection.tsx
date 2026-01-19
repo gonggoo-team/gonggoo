@@ -14,7 +14,6 @@ export function SocialLoginSection() {
    * 카카오 로그인 핸들러
    */
   const handleKakaoLogin = () => {
-    console.log('[Social] Kakao login pressed');
     // TODO: Implement Kakao login
   };
 
@@ -22,7 +21,6 @@ export function SocialLoginSection() {
    * 네이버 로그인 핸들러
    */
   const handleNaverLogin = () => {
-    console.log('[Social] Naver login pressed');
     // TODO: Implement Naver login
   };
 
@@ -30,7 +28,6 @@ export function SocialLoginSection() {
    * 애플 로그인 핸들러
    */
   const handleAppleLogin = () => {
-    console.log('[Social] Apple login pressed');
     // TODO: Implement Apple login
   };
 

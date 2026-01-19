@@ -79,7 +79,7 @@ export function useUnifiedLocation(): UseUnifiedLocationReturn {
    * 초기 상태 로그
    */
   useEffect(() => {
-    console.log('[UnifiedLocation] Initial state:', {
+    if (__DEV__) console.log('[UnifiedLocation] Initial state:', {
       mode: state.mode,
       step: state.step,
       selectedRange: state.selectedRange,
@@ -92,7 +92,7 @@ export function useUnifiedLocation(): UseUnifiedLocationReturn {
    */
   useEffect(() => {
     if (params.mode === 'manual' && params.lat && params.lng) {
-      console.log('[UnifiedLocation] Loading location from search params:', params);
+      if (__DEV__) console.log('[UnifiedLocation] Loading location from search params:', params);
 
       const locationData: LocationData = {
         address: (params.address as string) || '',
@@ -156,7 +156,7 @@ export function useUnifiedLocation(): UseUnifiedLocationReturn {
 
     try {
       // 1단계: 권한 확인 및 요청
-      console.log('[UnifiedLocation] Checking location permission...');
+      if (__DEV__) console.log('[UnifiedLocation] Checking location permission...');
       const permissionGranted = await requestPermission();
 
       if (!permissionGranted) {
@@ -164,7 +164,7 @@ export function useUnifiedLocation(): UseUnifiedLocationReturn {
         throw new Error('PERMISSION_DENIED');
       }
 
-      console.log('[UnifiedLocation] Permission granted, getting GPS location...');
+      if (__DEV__) console.log('[UnifiedLocation] Permission granted, getting GPS location...');
 
       // 2단계: GPS 좌표 가져오기
       const coords = await getCurrentLocation();
@@ -264,7 +264,7 @@ export function useUnifiedLocation(): UseUnifiedLocationReturn {
    * 범위 선택
    */
   const selectRange = useCallback((range: 2 | 5 | 10) => {
-    console.log('[UnifiedLocation] Range selected:', range);
+    if (__DEV__) console.log('[UnifiedLocation] Range selected:', range);
     setState(prev => ({
       ...prev,
       selectedRange: range,

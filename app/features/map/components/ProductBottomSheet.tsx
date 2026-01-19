@@ -11,7 +11,7 @@
 import BottomSheet, { BottomSheetBackdrop, BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import React, { useCallback, useMemo, useRef, useState, forwardRef, useImperativeHandle } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView, useWindowDimensions } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useThrottledNavigation } from '@/app/shared/hooks/useThrottledNavigation';
 import { useTheme, ProductCardHorizontal, Icon } from '@/design-system';
 import { useAuth } from '@/app/shared/contexts';
 import type { ProductCardVerticalData } from '@/app/shared/types/product.types';
@@ -66,7 +66,7 @@ export const ProductBottomSheet = forwardRef<BottomSheet, ProductBottomSheetProp
   onCategoryChange,
 }, ref) => {
   const { theme } = useTheme();
-  const router = useRouter();
+  const { push } = useThrottledNavigation();
   const { user } = useAuth();
   const bottomSheetRef = useRef<BottomSheet>(null);
   const { height: windowHeight } = useWindowDimensions();
@@ -113,7 +113,6 @@ export const ProductBottomSheet = forwardRef<BottomSheet, ProductBottomSheetProp
    */
   const handleFilterPress = useCallback(() => {
     // TODO: 추가 필터 옵션 모달 열기 (가격 범위, 정렬 방식 등)
-    console.log('[ProductBottomSheet] 필터 버튼 클릭 - 추가 필터 기능 예정');
   }, []);
 
   /**
@@ -154,7 +153,7 @@ export const ProductBottomSheet = forwardRef<BottomSheet, ProductBottomSheetProp
               buyersCount={buyersCount}
               progress={item.progress || 0}
               badges={item.badges || []}
-              onPress={() => router.push(`/product/${item.id}`)}
+              onPress={() => push(`/product/${item.id}`)}
             />
           </View>
         );
@@ -163,7 +162,7 @@ export const ProductBottomSheet = forwardRef<BottomSheet, ProductBottomSheetProp
         return null;
       }
     },
-    [router]
+    [push]
   );
 
   /**
@@ -348,7 +347,7 @@ export const ProductBottomSheet = forwardRef<BottomSheet, ProductBottomSheetProp
                 backgroundColor: theme.colors.surface.brand.primary,
               },
             ]}
-            onPress={() => router.push('/product-registration')}
+            onPress={() => push('/product-registration')}
             activeOpacity={0.7}
           >
             <Text
@@ -392,7 +391,7 @@ export const ProductBottomSheet = forwardRef<BottomSheet, ProductBottomSheetProp
         </Text>
       </View>
     );
-  }, [theme, activeTab, router]);
+  }, [theme, activeTab, push]);
 
   return (
     <BottomSheet

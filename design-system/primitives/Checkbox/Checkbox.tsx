@@ -12,17 +12,20 @@
  * />
  */
 
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
+  Pressable,
   StyleProp,
   Text,
-  TouchableOpacity,
   View,
   ViewStyle,
 } from 'react-native';
 import { useTheme } from '../../hooks';
 import { Icon } from '../Icon';
 import { createCheckboxStyles } from './Checkbox.styles';
+
+/** 터치 영역 확대를 위한 hitSlop */
+const HIT_SLOP = { top: 4, right: 4, bottom: 4, left: 4 };
 
 /**
  * Checkbox Props
@@ -54,9 +57,9 @@ export interface CheckboxProps {
 }
 
 /**
- * Checkbox Component
+ * Checkbox Component (React.memo로 최적화)
  */
-export const Checkbox: React.FC<CheckboxProps> = ({
+export const Checkbox = React.memo<CheckboxProps>(({
   checked,
   label,
   onPress,
@@ -67,20 +70,32 @@ export const Checkbox: React.FC<CheckboxProps> = ({
   testID,
 }) => {
   const { theme } = useTheme();
-  const styles = createCheckboxStyles(theme);
+  const styles = useMemo(() => createCheckboxStyles(theme), [theme]);
 
-  // 컨테이너 스타일 구성
-  const containerStyle = [
+  // 컨테이너 스타일 구성 (메모이제이션)
+  const containerStyle = useMemo(() => [
     styles.container,
     position === 'right' && styles.containerReverse,
     disabled && styles.disabled,
     style,
-  ];
+  ], [styles, position, disabled, style]);
 
-  // 아이콘 색상
-  const iconColor = checked
-    ? theme.colors.surface.brand.primary
-    : theme.colors.border.midEmp;
+  // 아이콘 색상 (메모이제이션)
+  const iconColor = useMemo(() =>
+    checked
+      ? theme.colors.surface.brand.primary
+      : theme.colors.border.midEmp,
+    [checked, theme.colors.surface.brand.primary, theme.colors.border.midEmp]
+  );
+
+  // Pressable 스타일 헬퍼
+  const getPressedStyle = useCallback(
+    ({ pressed }: { pressed: boolean }): StyleProp<ViewStyle> => [
+      containerStyle,
+      pressed && !disabled && { opacity: 0.7 },
+    ],
+    [containerStyle, disabled]
+  );
 
   const iconElement = (
     <View style={styles.iconContainer}>
@@ -99,11 +114,12 @@ export const Checkbox: React.FC<CheckboxProps> = ({
   );
 
   return (
-    <TouchableOpacity
-      style={containerStyle}
+    <Pressable
+      style={getPressedStyle}
       onPress={onPress}
       disabled={disabled}
-      activeOpacity={0.7}
+      delayPressIn={0}
+      hitSlop={HIT_SLOP}
       accessibilityRole="checkbox"
       accessibilityLabel={accessibilityLabel || label}
       accessibilityState={{ checked, disabled }}
@@ -120,6 +136,8 @@ export const Checkbox: React.FC<CheckboxProps> = ({
           {iconElement}
         </>
       )}
-    </TouchableOpacity>
+    </Pressable>
   );
-};
+});
+
+Checkbox.displayName = 'Checkbox';

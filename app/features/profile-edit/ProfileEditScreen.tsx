@@ -14,7 +14,7 @@
 
 import React from 'react';
 import { View, ScrollView, StyleSheet, Alert } from 'react-native';
-import { useTheme, GNB } from '@/design-system';
+import { useTheme, GNB, ScreenWrapper } from '@/design-system';
 import { useThrottledNavigation, useThrottledCallback } from '@/app/shared/hooks';
 import { ProfileImageInput, NicknameInput } from './components';
 import { useProfileEdit } from './hooks';
@@ -58,7 +58,7 @@ export default function ProfileEditScreen() {
   }, 300);
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.surface.normal.bg1 }]}>
+    <ScreenWrapper style={[styles.container, { backgroundColor: theme.colors.surface.normal.bg1 }]}>
       {/* GNB */}
       <GNB
         leftSection={{
@@ -95,7 +95,7 @@ export default function ProfileEditScreen() {
           errorMessage="닉네임을 입력해주세요!"
         />
       </ScrollView>
-    </View>
+    </ScreenWrapper>
   );
 }
 

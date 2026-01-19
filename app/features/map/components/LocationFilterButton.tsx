@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useThrottledNavigation } from '@/app/shared/hooks/useThrottledNavigation';
 import { useTheme, Icon } from '@/design-system';
 
 interface LocationFilterButtonProps {
@@ -21,13 +21,13 @@ export const LocationFilterButton: React.FC<LocationFilterButtonProps> = ({
   onPress,
 }) => {
   const { theme } = useTheme();
-  const router = useRouter();
+  const { push } = useThrottledNavigation();
 
   const handlePress = () => {
     if (onPress) {
       onPress();
     } else {
-      router.push('/neighborhood-setting');
+      push('/neighborhood-setting');
     }
   };
 

@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { ThemeProvider, useTheme } from '@/design-system';
+import { ThemeProvider, useTheme, ScreenWrapper } from '@/design-system';
 
 export default function CustomerServiceScreen() {
   return (
@@ -15,10 +14,7 @@ function CustomerServiceScreenContent() {
   const { theme } = useTheme();
 
   return (
-    <SafeAreaView
-      style={[styles.container, { backgroundColor: theme.colors.surface.normal.bg1 }]}
-      edges={['top']}
-    >
+    <ScreenWrapper preset="default" style={styles.container}>
       <View style={styles.content}>
         <Text
           style={[
@@ -46,7 +42,7 @@ function CustomerServiceScreenContent() {
           Stub Screen
         </Text>
       </View>
-    </SafeAreaView>
+    </ScreenWrapper>
   );
 }
 

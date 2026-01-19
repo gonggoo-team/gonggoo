@@ -7,12 +7,12 @@
  */
 
 import React from 'react';
-import { useRouter } from 'expo-router';
+import { useThrottledNavigation } from '@/app/shared/hooks/useThrottledNavigation';
 import PhoneAuthScreen from './PhoneAuthScreen';
 import * as AuthStorage from '@/app/shared/services/storage/authStorage';
 
 export default function SignupScreen() {
-  const router = useRouter();
+  const { push } = useThrottledNavigation();
 
   /**
    * 회원가입 인증 성공 핸들러
@@ -20,7 +20,7 @@ export default function SignupScreen() {
    */
   const handleSignupSuccess = async (phone: string) => {
     await AuthStorage.setHasLaunched(true);
-    router.push({
+    push({
       pathname: '/location-setting',
       params: { phone, fromSignup: 'true' },
     });

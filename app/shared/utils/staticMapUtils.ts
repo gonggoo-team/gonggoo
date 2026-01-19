@@ -94,7 +94,7 @@ export async function generateNaverStaticMapUrl(params: StaticMapParams): Promis
       },
     });
   const data = await response.json();
-  console.log(`response: ${data}`)
+  if (__DEV__) console.log('[StaticMap] Response:', data);
   
   return '';`${baseUrl}?${center}&${level}&${size}&${markers}&X-NCP-APIGW-API-KEY-ID=${clientId}&`;
 }

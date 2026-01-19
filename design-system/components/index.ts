@@ -43,3 +43,6 @@ export * from './BottomBar';
 
 // 채팅 컴포넌트
 export * from './CountBadge';
+
+// 레이아웃 컴포넌트
+export * from './ScreenWrapper';

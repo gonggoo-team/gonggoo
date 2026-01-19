@@ -116,7 +116,6 @@ export function useChatDetail(chatId: string) {
    */
   const handleAttach = () => {
     // TODO: 이미지 첨부 기능 구현
-    console.log('Attach image');
   };
 
   return {

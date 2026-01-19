@@ -22,7 +22,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ThemeProvider, useTheme, Button, GNB, LabeledInput } from '@/design-system';
+import { ThemeProvider, useTheme, Button, GNB, LabeledInput, ScreenWrapper } from '@/design-system';
 import { TimerDisplay } from './components';
 import { usePhoneAuth } from './hooks/usePhoneAuth';
 
@@ -274,7 +274,8 @@ function PhoneAuthScreenContent({
   );
 
   return (
-    <View 
+    <ScreenWrapper 
+      preset='fullscreen'
       style={[styles.container, { backgroundColor: theme.colors.surface.normal.bg1 }]} 
       // edges={['top', 'left', 'right']} // Bottom은 키보드 처리를 위해 제외하거나 별도 처리
     >
@@ -304,10 +305,10 @@ function PhoneAuthScreenContent({
             <View 
               style={[
                 styles.buttonContainer, 
-                { 
-                  paddingBottom: Platform.OS === 'ios' ? 0 : 16, 
-                  marginBottom: Platform.OS === 'ios' ? 0 : 10 
-                }
+                // { 
+                //   paddingBottom: Platform.OS === 'ios' ? 0 : 16, 
+                //   marginBottom: Platform.OS === 'ios' ? 0 : 10 
+                // }
               ]}
             >
               <Button
@@ -328,7 +329,7 @@ function PhoneAuthScreenContent({
           </View>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>      
-    </View>
+    </ScreenWrapper>
   );
 }
 

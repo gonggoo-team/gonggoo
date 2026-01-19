@@ -90,11 +90,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
-    position: 'relative',    
+    position: 'relative',        
   },
   image: {
     width: '100%',
     height: '100%',    
+    backgroundColor: '#FFFFFF'
   },
   editIconContainer: {
     position: 'absolute',

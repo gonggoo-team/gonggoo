@@ -16,7 +16,7 @@ import {
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { GNB, Button, useTheme, Divider } from '@/design-system';
+import { GNB, Button, useTheme, Divider, ScreenWrapper } from '@/design-system';
 import {
   ImageUploadSection,
   TitleSection,
@@ -48,7 +48,6 @@ export default function ProductEditScreen() {
 
   const handleSave = () => {
     // TODO: 임시 저장 기능
-    console.log('Save draft:', formData);
   };
 
   // 로딩 상태
@@ -61,93 +60,95 @@ export default function ProductEditScreen() {
   }
 
   return (
-    <KeyboardAvoidingView
-      style={[styles.container, { backgroundColor: theme.colors.surface.normal.bg1 }]}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
-      {/* GNB */}
-      <GNB
-        leftSection={{ type: 'close', onPress: handleClose }}
-        centerSection={{ type: 'title', text: '공구글 수정하기' }}
-        rightTextButton={{
-          type: 'text-button',
-          text: '저장',
-          variant: 'primary',
-          onPress: handleSave,
-        }}
-      />
-
-      {/* Divider */}
-      <Divider color="lowEmp" />
-
-      {/* Content */}
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={[
-          styles.scrollContent,
-          { paddingBottom: insets.bottom + 109 }, // 작성완료 버튼 높이 + insets
-        ]}
-        showsVerticalScrollIndicator={false}
+    <ScreenWrapper preset='fullscreen'>
+      <KeyboardAvoidingView
+        style={[styles.container, { backgroundColor: theme.colors.surface.normal.bg1 }]}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        {/* 사진 섹션 */}
-        <ImageUploadSection
-          images={formData.images}
-          onImagesChange={(images) => updateField('images', images)}
+        {/* GNB */}
+        <GNB
+          leftSection={{ type: 'close', onPress: handleClose }}
+          centerSection={{ type: 'title', text: '공구글 수정하기' }}
+          rightTextButton={{
+            type: 'text-button',
+            text: '저장',
+            variant: 'primary',
+            onPress: handleSave,
+          }}
         />
 
-        {/* 제목 섹션 */}
-        <TitleSection
-          value={formData.title}
-          onChange={(value) => updateField('title', value)}
-        />
+        {/* Divider */}
+        <Divider color="lowEmp" />
 
-        {/* 거래방식 섹션 */}
-        <TransactionSection
-          isFree={formData.isFree}
-          price={formData.price}
-          period={formData.period}
-          slots={formData.slots}
-          onFreeChange={(value) => updateField('isFree', value)}
-          onPriceChange={(value) => updateField('price', value)}
-          onPeriodChange={(value) => updateField('period', value)}
-          onSlotsChange={(value) => updateField('slots', value)}
-        />
-
-        {/* 추가설명 섹션 */}
-        <DescriptionSection
-          value={formData.description}
-          onChange={(value) => updateField('description', value)}
-        />
-
-        {/* 거래 정보 섹션 */}
-        <LocationSection
-          location={formData.location}
-          isDeliveryAvailable={formData.isDeliveryAvailable}
-          onLocationChange={(value) => updateField('location', value)}
-          onDeliveryChange={(value) => updateField('isDeliveryAvailable', value)}
-        />
-      </ScrollView>
-
-      {/* 저장 버튼 */}
-      <View
-        style={[
-          styles.bottomButtonContainer,
-          {
-            paddingBottom: insets.bottom + theme.spacing.sm,
-            backgroundColor: theme.colors.surface.normal.bg1,
-          },
-        ]}
-      >
-        <Button
-          variant="full-primary-rounded"
-          onPress={handleSubmit}
-          loading={isSubmitting}
-          disabled={isSubmitting}
+        {/* Content */}
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={[
+            styles.scrollContent,
+            { paddingBottom: insets.bottom + 109 }, // 작성완료 버튼 높이 + insets
+          ]}
+          showsVerticalScrollIndicator={false}
         >
-          저장
-        </Button>
-      </View>
-    </KeyboardAvoidingView>
+          {/* 사진 섹션 */}
+          <ImageUploadSection
+            images={formData.images}
+            onImagesChange={(images) => updateField('images', images)}
+          />
+
+          {/* 제목 섹션 */}
+          <TitleSection
+            value={formData.title}
+            onChange={(value) => updateField('title', value)}
+          />
+
+          {/* 거래방식 섹션 */}
+          <TransactionSection
+            isFree={formData.isFree}
+            price={formData.price}
+            period={formData.period}
+            slots={formData.slots}
+            onFreeChange={(value) => updateField('isFree', value)}
+            onPriceChange={(value) => updateField('price', value)}
+            onPeriodChange={(value) => updateField('period', value)}
+            onSlotsChange={(value) => updateField('slots', value)}
+          />
+
+          {/* 추가설명 섹션 */}
+          <DescriptionSection
+            value={formData.description}
+            onChange={(value) => updateField('description', value)}
+          />
+
+          {/* 거래 정보 섹션 */}
+          <LocationSection
+            location={formData.location}
+            isDeliveryAvailable={formData.isDeliveryAvailable}
+            onLocationChange={(value) => updateField('location', value)}
+            onDeliveryChange={(value) => updateField('isDeliveryAvailable', value)}
+          />
+        </ScrollView>
+
+        {/* 저장 버튼 */}
+        <View
+          style={[
+            styles.bottomButtonContainer,
+            {
+              //paddingBottom: insets.bottom + theme.spacing.sm,
+              backgroundColor: theme.colors.surface.normal.bg1,
+            },
+          ]}
+        >
+          <Button
+            variant="full-primary-rounded"
+            onPress={handleSubmit}
+            loading={isSubmitting}
+            disabled={isSubmitting}
+          >
+            저장
+          </Button>
+        </View>
+      </KeyboardAvoidingView>
+    </ScreenWrapper>
   );
 }
 

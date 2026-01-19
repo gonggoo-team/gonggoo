@@ -57,7 +57,6 @@ export const HomeContent = React.memo<HomeContentProps>(({ onNavigateToCategory 
   }, []);
 
   const handleProductPress = useCallback((id: string) => {
-    console.log(`/product/${id}`)
     push(`/product/${id}`);
   }, [push]);
 

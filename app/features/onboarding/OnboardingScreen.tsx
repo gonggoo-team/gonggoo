@@ -17,9 +17,10 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, Dimensions, Image } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, Image } from 'react-native';
 import { useRouter } from 'expo-router';
-import { ThemeProvider } from '@/design-system';
+import { useThrottledNavigation } from '@/app/shared/hooks/useThrottledNavigation';
+import { ScreenWrapper, ThemeProvider } from '@/design-system';
 import { useAuth } from '@/app/shared/contexts';
 import * as AuthStorage from '@/app/shared/services/storage/authStorage';
 import {
@@ -39,7 +40,8 @@ export default function OnboardingScreen() {
 }
 
 function OnboardingScreenContent() {
-  const router = useRouter();
+  const { push } = useThrottledNavigation();
+  const router = require('expo-router').useRouter(); // replace를 위해 유지
   const { enableGuestMode } = useAuth();
 
   /**
@@ -49,7 +51,7 @@ function OnboardingScreenContent() {
    */
   const handleStart = async () => {
     await AuthStorage.setHasLaunched(true);
-    router.push('/signup');
+    push('/signup');
   };
 
   /**
@@ -69,11 +71,11 @@ function OnboardingScreenContent() {
    * - 로그인 화면으로 이동
    */
   const handleLogin = () => {
-    router.push('/login');
+    push('/login');
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <ScreenWrapper preset="modal" style={styles.container} backgroundColor="#FFFFFF">
       {/* Top spacer - proportional to Figma y=281.75px */}
       <View style={styles.topSpacer} />
 
@@ -109,11 +111,7 @@ function OnboardingScreenContent() {
 
       {/* Social Login Section */}
       <SocialLoginSection />
-
-
-      
-
-    </SafeAreaView>
+    </ScreenWrapper>
   );
 }
 

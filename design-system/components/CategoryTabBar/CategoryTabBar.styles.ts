@@ -13,7 +13,9 @@ export const createCategoryTabBarStyles = (theme: Theme) =>
   StyleSheet.create({
     container: {
       backgroundColor: theme.colors.surface.normal.bg1, // #FFFFFF
-      paddingHorizontal: theme.spacing.lg,
+      // paddingHorizontal: theme.spacing.lg,      // 20px
+      // paddingTop: theme.spacing.md,              // 16px (GNB와의 간격)
+      paddingBottom: theme.spacing.sm,           // 12px (콘텐츠와의 간격)
     },
     scrollView: {
       flexGrow: 0, // ScrollView가 필요한 만큼만 공간 차지

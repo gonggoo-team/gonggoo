@@ -6,8 +6,7 @@
 
 import React, { useMemo } from 'react';
 import { View, StyleSheet, ActivityIndicator } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { GNB, useTheme } from '@/design-system';
+import { GNB, useTheme, ScreenWrapper } from '@/design-system';
 import { SwipeableProductList, EmptyState } from '@/app/shared/components';
 import type { SwipeableProductSection } from '@/app/shared/components';
 import { useThrottledNavigation } from '@/app/shared/hooks';
@@ -70,10 +69,7 @@ export default function CancelHistoryScreen() {
   }, [products]);
 
   return (
-    <SafeAreaView
-      style={[styles.container, { backgroundColor: theme.colors.surface.normal.bg1 }]}
-      edges={['bottom']}
-    >
+    <ScreenWrapper preset="default" style={styles.container}>
       {/* GNB */}
       <GNB
         leftSection={{
@@ -100,7 +96,7 @@ export default function CancelHistoryScreen() {
           onRefresh={handleRefresh}
         />
       )}
-    </SafeAreaView>
+    </ScreenWrapper>
   );
 }
 

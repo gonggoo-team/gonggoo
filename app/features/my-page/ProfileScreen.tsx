@@ -3,14 +3,13 @@ import { ScrollView, View, StyleSheet } from 'react-native';
 
 import { MenuList } from '@/app/shared/components';
 
-import { useTheme, GNB } from '@/design-system';
+import { GNB, ScreenWrapper } from '@/design-system';
 
 import { ProfileInfo } from './components';
 import { GroupBuySection, ParticipationSection } from './sections';
 import { useProfileData } from './hooks';
 
 export default function ProfileScreen() {
-  const { theme } = useTheme();
   const {
     userProfile,
     groupBuyStats,
@@ -38,7 +37,7 @@ export default function ProfileScreen() {
   );
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.surface.normal.bg1 }]}>
+    <ScreenWrapper preset="default" style={styles.container}>
       {/* GNB - ScrollView 밖 (고정) */}
       <GNB
         leftSection={{ type: 'logo-text', text: '마이버스' }}
@@ -79,7 +78,7 @@ export default function ProfileScreen() {
           <MenuList items={menuItemsWithHandlers} />
         </View>
       </ScrollView>
-    </View>
+    </ScreenWrapper>
   );
 }
 

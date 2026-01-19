@@ -21,7 +21,7 @@ import { useThrottledNavigation } from '@/app/shared/hooks/useThrottledNavigatio
 import { getNicknameDisplay } from '@/app/shared/utils';
 import type { CategoryData } from '@/app/shared/types';
 
-import { GNB, useTheme } from '@/design-system';
+import { GNB, ScreenWrapper, useTheme } from '@/design-system';
 
 import { AdBannerSection } from '@/app/features/home/sections';
 import { CategoryGridSection } from './components';
@@ -45,7 +45,6 @@ export default function CategoryScreen() {
 
   // 카테고리 선택 핸들러 (useCallback으로 안정적인 참조 유지)
   const handleCategoryPress = useCallback((category: CategoryData) => {
-    console.log('Category selected:', category);
     // 카테고리 결과 화면으로 이동
     push(`/category-results?category=${category.slug}`);
   }, [push]);
@@ -57,12 +56,11 @@ export default function CategoryScreen() {
 
   // 배너 클릭 핸들러 (useCallback으로 안정적인 참조 유지)
   const handleBannerPress = useCallback((item: unknown) => {
-    console.log('Banner pressed:', item);
     // TODO: 배너 링크 처리
   }, []);
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.surface.normal.bg1 }]}>
+    <ScreenWrapper preset="default" style={styles.container}>
       {/* GNB */}
       <GNB
         leftSection={{ type: 'logo-text', text: '카테고리' }}
@@ -112,7 +110,7 @@ export default function CategoryScreen() {
         {/* 하단 여백 */}
         <View style={{ height: theme.spacing.xxl }} />
       </ScrollView>
-    </View>
+    </ScreenWrapper>
   );
 }
 

@@ -41,7 +41,7 @@ export async function sendVerificationCode(
     // Mock: 항상 성공
     await new Promise((resolve) => setTimeout(resolve, 500)); // 네트워크 딜레이 시뮬레이션
 
-    console.log(`[AuthService] Verification code sent to ${phone}: 123456`);
+    if (__DEV__) console.log(`[AuthService] Verification code sent to ${phone}: 123456`);
 
     return {
       success: true,
@@ -156,7 +156,7 @@ export async function signup(
       await AuthStorage.setUserLocation(location);
     }
 
-    console.log('[AuthService] Signup successful:', user);
+    if (__DEV__) console.log('[AuthService] Signup successful:', user);
 
     return {
       success: true,
@@ -208,7 +208,7 @@ export async function login(phone: string): Promise<PhoneAuthResult> {
       await AuthStorage.setUserLocation(user.location);
     }
 
-    console.log('[AuthService] Login successful:', user);
+    if (__DEV__) console.log('[AuthService] Login successful:', user);
 
     return {
       success: true,
@@ -235,7 +235,7 @@ export async function logout(): Promise<void> {
     // AsyncStorage 정리
     await AuthStorage.clearAuthData();
 
-    console.log('[AuthService] Logout successful');
+    if (__DEV__) console.log('[AuthService] Logout successful');
   } catch (error) {
     console.error('[AuthService] Logout failed:', error);
   }
@@ -249,7 +249,7 @@ export async function enableGuestMode(): Promise<void> {
     await AuthStorage.setIsGuest(true);
     await AuthStorage.setHasLaunched(true);
 
-    console.log('[AuthService] Guest mode enabled');
+    if (__DEV__) console.log('[AuthService] Guest mode enabled');
   } catch (error) {
     console.error('[AuthService] Failed to enable guest mode:', error);
   }
@@ -325,7 +325,7 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
     if (location) {
       const migratedLocation = migrateLocationData(location);
       if (migratedLocation && JSON.stringify(migratedLocation) !== JSON.stringify(location)) {
-        console.log('[AuthService] Migrating location data for user:', phone);
+        if (__DEV__) console.log('[AuthService] Migrating location data for user:', phone);
         await AuthStorage.setUserLocation(migratedLocation);
         location = migratedLocation;
       }
@@ -363,7 +363,7 @@ export async function updateUserLocation(
     await AuthStorage.setUserLocation(location);
     updateMockUser(phone, { location });
 
-    console.log('[AuthService] Location updated:', location);
+    if (__DEV__) console.log('[AuthService] Location updated:', location);
 
     return true;
   } catch (error) {

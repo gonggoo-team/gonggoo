@@ -56,7 +56,7 @@ export function useLocationSelection(initialLocation?: InitialLocation | null) {
       const { status } = await Location.requestForegroundPermissionsAsync();
 
       if (status !== 'granted') {
-        console.log('[useLocationSelection] Location permission denied.');
+        if (__DEV__) console.log('[useLocationSelection] Location permission denied.');
         setIsLoadingLocation(false);
         return { success: false, error: 'denied' };
       }
