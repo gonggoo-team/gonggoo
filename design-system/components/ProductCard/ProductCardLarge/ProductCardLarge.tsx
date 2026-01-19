@@ -65,6 +65,7 @@ export const ProductCardLarge: React.FC<ProductCardLargeProps> = ({
         },
       ]}
       onPress={onPress}
+      delayPressIn={0}
       delayLongPress={300}
       android_ripple={{
         color: theme.colors.surface.normal.container10,

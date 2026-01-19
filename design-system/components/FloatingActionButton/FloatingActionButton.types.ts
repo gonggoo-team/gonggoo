@@ -15,4 +15,6 @@ export interface FloatingActionButtonProps {
   icon?: IconName;
   /** 접근성 라벨 */
   accessibilityLabel?: string;
+  /** 버튼 표시 여부 (기본값: true) - 애니메이션과 함께 나타남/사라짐 */
+  visible?: boolean;
 }

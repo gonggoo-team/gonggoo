@@ -10,12 +10,12 @@ export const createGNBStyles = (theme: Theme) => {
 
   return StyleSheet.create({
     container: {
-      // minHeight 제거: 패딩으로 높이 조정
+      minHeight: minContentHeight + (theme.spacing.md * 2), // 콘텐츠 높이(32px) + 상하 패딩(32px) = 64px
       backgroundColor: theme.colors.surface.normal.bg1,
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      
+
       paddingVertical: theme.spacing.md, // 16px
       paddingHorizontal: theme.spacing.lg, // 20px
     },
@@ -107,8 +107,11 @@ export const createGNBStyles = (theme: Theme) => {
 
     // ===== 오른쪽 섹션 =====
     rightSection: {
+      minWidth: 30, // leftSection과 동일한 minWidth로 중앙 텍스트 균형 유지
+      minHeight: minContentHeight,
       flexDirection: 'row',
       alignItems: 'center',
+      justifyContent: 'flex-end',
       gap: theme.spacing.xl, // 24px
     },
     iconButton: {

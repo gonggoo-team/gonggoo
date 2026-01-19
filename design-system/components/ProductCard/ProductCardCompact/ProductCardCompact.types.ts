@@ -38,7 +38,7 @@ export interface ProductCardCompactProps {
   /**
    * 상태 배지 목록
    */
-  badges: Array<{
+  badges?: Array<{
     type: StatusBadgeType;
     label: string;
   }>;
@@ -52,7 +52,7 @@ export interface ProductCardCompactProps {
   /**
    * 카드 클릭 핸들러
    */
-  onPress: () => void;
+  onPress?: () => void;
 
   /**
    * 총 가격 표시 여부
@@ -77,4 +77,28 @@ export interface ProductCardCompactProps {
    * @default 2
    */
   titleLines?: number;
+
+  /**
+   * 이미지 크기 (정사각형)
+   * @default 106
+   */
+  imageSize?: number;
+
+  /**
+   * 콘텐츠 영역 내부 간격
+   * @default 4
+   */
+  contentGap?: number;
+
+  /**
+   * 가격 라벨 텍스트 (예: "1슬롯", "2슬롯")
+   * @default "1슬롯"
+   */
+  priceLabel?: string;
+
+  /**
+   * 카드 전체 터치 비활성화 여부 (정적 표시용)
+   * @default false
+   */
+  disablePress?: boolean;
 }

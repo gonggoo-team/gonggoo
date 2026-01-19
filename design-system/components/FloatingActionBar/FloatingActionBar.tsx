@@ -8,6 +8,7 @@ import Animated, {
   Extrapolation,
 } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '../../hooks';
 import { Icon } from '../../primitives/Icon';
@@ -26,6 +27,7 @@ export const FloatingActionBar = ({
   onQuantityChange,
 }: any) => {
   const { theme } = useTheme();
+  const insets = useSafeAreaInsets();
   const [quantity, setQuantity] = useState(initialQuantity);
   
   // ✅ [상태] 콘텐츠의 실제 높이를 저장 (기본값 130)
@@ -39,7 +41,7 @@ export const FloatingActionBar = ({
   const isExpandable = productTitle && pricePerSlot !== undefined;
 
   // 상수 정의
-  const COLLAPSED_HEIGHT = 247; // 접혔을 때 높이 (헤더 + 화살표 + 약간의 여유)
+  const COLLAPSED_HEIGHT = 255; // 접혔을 때 높이 (헤더 + 화살표 + 약간의 여유)
 
   // ✅ [핵심 개선] 스냅 포인트를 콘텐츠 높이에 맞춰 자동 조절
   const snapPoints = useMemo(() => {
@@ -51,8 +53,8 @@ export const FloatingActionBar = ({
   // ✅ [애니메이션] 높이 계산 시 contentHeight 사용
   const contentStyle = useAnimatedStyle(() => {
     return {
-      // 안드로이드 실제 기기 호환성을 위해 opacity 최소값을 0.01로 설정 (완전 투명 방지)
-      opacity: interpolate(animatedIndex.value, [0, 0.5], [0.01, 1], Extrapolation.CLAMP),
+      // 안드로이드 실제 기기 호환성을 위해 opacity 최소값을 0.1로 설정 (오래된 기기 렌더링 안정성)
+      opacity: interpolate(animatedIndex.value, [0, 0.5], [0.1, 1], Extrapolation.CLAMP),
       // zIndex를 항상 양수로 유지 (안드로이드에서 음수 zIndex는 렌더링 문제 발생 가능)
       zIndex: 15,
       transform: [
@@ -125,20 +127,23 @@ export const FloatingActionBar = ({
         handleComponent={null}
         enableContentPanningGesture={false}
         // ✅ Footer 뒤에 위치하도록 zIndex 설정
-        style={{ zIndex: 1 }}
+        style={{ zIndex: 10 }}
+        containerStyle={{ overflow: 'visible' }}
         backgroundStyle={{
           backgroundColor: theme.colors.surface.normal.bg1,
           borderTopLeftRadius: 20,
           borderTopRightRadius: 20,
+          borderTopWidth: 1.5,          
           shadowColor: '#000',
-          shadowOffset: { width: 0, height: -2 },
-          shadowOpacity: 0.1,
-          shadowRadius: 10,
-          elevation: 10,
+          shadowOffset: { width: 0, height: -4 },
+          shadowOpacity: 0.15,
+          shadowRadius: 12,
+          borderWidth: 1.5,
+          borderColor: 'rgba(0, 0, 0, 0.08)',
         }}
       >
-        <BottomSheetView style={styles.flexContainer}>
-          
+        <BottomSheetView style={[styles.flexContainer, styles.sheetContent]}>
+
           {/* 1. 상단 화살표 (고정) */}
           <View style={styles.headerArea}>
             {isExpandable && (
@@ -161,12 +166,13 @@ export const FloatingActionBar = ({
           {isExpandable && (
             <Animated.View
               style={[styles.middleContent, contentStyle]}
+              collapsable={false}
               needsOffscreenAlphaCompositing={Platform.OS === 'android'}
               renderToHardwareTextureAndroid={true}
             >
               {/* ✅ onLayout을 여기에 걸어서 내부 컨텐츠의 실제 높이를 잽니다 */}
-              <View onLayout={handleContentLayout}>
-                <View style={styles.productInfoSection}>
+              <View onLayout={handleContentLayout} collapsable={false}>
+                <View style={styles.productInfoSection} collapsable={false}>
                   <Text style={styles.titleText} numberOfLines={2}>
                     {productTitle}
                   </Text>
@@ -195,14 +201,22 @@ export const FloatingActionBar = ({
               </View>
             </Animated.View>
           )}
-          
-          {/* ✅ 하단 액션바가 가리는 만큼 여백 추가 */}
-          <View style={{ height: 80 }} /> 
+
+          {/* 여백 제거 - ScrollView paddingBottom으로 통합 관리 */}
         </BottomSheetView>
       </BottomSheet>
 
       {/* 3. 하단 액션 버튼 (Absolute로 고정) */}
-      <View style={[styles.footerArea, { backgroundColor: theme.colors.surface.normal.bg1 }]}>
+      <View style={[
+        styles.footerArea,
+        {
+          backgroundColor: theme.colors.surface.normal.bg1,          
+          paddingBottom: Math.max(insets.bottom, 20), // SafeArea 또는 최소 20px          
+          
+        },
+        !isExpandable && {elevation: 20},
+        !isExpandable && {zIndex: 20}
+      ]}>
         <View style={styles.iconButtons}>
           <TouchableOpacity onPress={onLikePress}>
             <Icon name={isLiked ? 'heart-fill' : 'heart-line'} size={24} color={theme.colors.surface.texticon.onnormal.icon.tabBar} />
@@ -232,33 +246,43 @@ const styles = StyleSheet.create({
   // ✅ [추가] 전체 화면을 덮는 컨테이너 (터치 통과)
   container: {
     ...StyleSheet.absoluteFillObject,
-    zIndex: 999, // 필요에 따라 조정
+    // zIndex: 999, // 필요에 따라 조정
   },
-  flexContainer: { 
-    flex: 1, 
-    justifyContent: 'space-between', 
+  flexContainer: {
+    flex: 1,
+    justifyContent: 'space-between',
     paddingBottom: 0, // 기존 paddingBottom 제거 (Footer가 Absolute이므로)
   },
+  // ✅ BottomSheet 내부 컨텐츠에 borderRadius와 overflow 적용
+  sheetContent: {
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,    
+  },
   headerArea: {
-    height: 36, 
+    height: 44,
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 10,
+    paddingTop: 8,
+    paddingBottom: 8,
+    // ✅ 상단 모서리에도 동일한 radius 적용
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
   },
   arrowSection: {
     width: '100%',
     height: '100%',
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'center',    
   },
   middleContent: {
     position: 'absolute',
-    top: 40,
+    top: 44,
     left: 0,
     right: 0,
     // 높이는 자동(auto)으로 설정되어 자식 View 크기에 맞춰짐
-    // 안드로이드에서 zIndex를 보완하기 위한 elevation 추가
-    elevation: 15,
+    overflow: 'visible',
+    zIndex: 15,
   },
   productInfoSection: { width: '90%', alignSelf: 'center', gap: 14 },
   titleText: { fontSize: 16, fontWeight: '600', color: '#181A1A' },
@@ -277,17 +301,13 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    flexDirection: 'row', 
-    justifyContent: 'space-between', 
-    alignItems: 'center', 
-    paddingHorizontal: 20, 
-    paddingTop: 10,
-    // iPhone Safe Area 고려
-    paddingBottom: Platform.OS === 'ios' ? 34 : 20, 
-    height: Platform.OS === 'ios' ? 84 : 84, // 64 + paddingBottom
-    zIndex: 20, // BottomSheet(z:1) 위에 오도록 설정
-    
-    
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingTop: 10,            
+    // paddingBottom은 SafeArea에 따라 동적 계산 (인라인 스타일)
+    // zIndex: 20, // BottomSheet(z:1) 위에 오도록 설정           
   },
   iconButtons: { flexDirection: 'row', gap: 20 },
   joinButton: { 

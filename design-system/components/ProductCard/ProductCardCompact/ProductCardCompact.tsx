@@ -40,37 +40,52 @@ export const ProductCardCompact = React.memo<ProductCardCompactProps>(({
   title,
   price,
   pricePerSlot,
-  badges,
+  badges = [],
   isClosed = false,
   onPress,
   showPrice = true,
   showPricePerSlot = true,
   showBadges = true,
   titleLines = 2,
+  imageSize = 106,
+  contentGap = 6,
+  priceLabel = '1슬롯',
+  disablePress = false,
 }) => {
   const { theme } = useTheme();
 
-  return (
-    <Pressable
-      style={({ pressed }) => [
-        styles.container,
-        {
-          opacity: pressed ? 0.8 : 1,
+  // 터치 가능 여부
+  const isPressable = !disablePress && !!onPress;
+
+  // 컨테이너 렌더링 (Pressable 또는 View)
+  const ContainerComponent = isPressable ? Pressable : View;
+
+  const containerProps = isPressable
+    ? {
+        style: ({ pressed }: { pressed: boolean }) => [
+          styles.container,
+          { opacity: pressed ? 0.8 : 1 },
+        ],
+        onPress,
+        delayPressIn: 0, // 즉각적 터치 피드백
+        delayLongPress: 300,
+        disabled: isClosed,
+        android_ripple: {
+          color: theme.colors.surface.normal.container10,
+          borderless: false,
         },
-      ]}
-      onPress={onPress}
-      delayLongPress={300}
-      disabled={isClosed}
-      android_ripple={{
-        color: theme.colors.surface.normal.container10,
-        borderless: false,
-      }}
-      accessibilityRole="button"
-      accessibilityLabel={`상품: ${title}`}
-      accessibilityState={{ disabled: isClosed }}
-    >
+        accessibilityRole: 'button' as const,
+        accessibilityLabel: `상품: ${title}`,
+        accessibilityState: { disabled: isClosed },
+      }
+    : {
+        style: styles.container,
+      };
+
+  return (
+    <ContainerComponent {...containerProps}>
       {/* 이미지 영역 */}
-      <View style={styles.imageContainer}>
+      <View style={[styles.imageContainer, { width: imageSize, height: imageSize }]}>
         <ProductImage uri={imageUri} aspectRatio={1} />
 
         {/* 모집 완료 오버레이 */}
@@ -104,17 +119,17 @@ export const ProductCardCompact = React.memo<ProductCardCompactProps>(({
         style={{
           flex: 1,
           justifyContent: 'space-between',
-          gap: theme.spacing.xxs, // 4px
+          gap: contentGap,
         }}
       >
         {/* 제목 */}
         <ProductInfo title={title} maxLines={titleLines} fontSize={13} />
 
         {/* 하단 정보 */}
-        <View style={{ gap: theme.spacing.xxs }}>
+        <View style={{ gap: contentGap }}>
           {/* 가격 정보 */}
           <View style={styles.priceContainer}>
-            {showPricePerSlot && <ProductPrice pricePerSlot={pricePerSlot} label="1슬롯" />}
+            {showPricePerSlot && <ProductPrice pricePerSlot={pricePerSlot} label={priceLabel} />}
             {showPrice && (
               <Text
                 style={{
@@ -131,10 +146,10 @@ export const ProductCardCompact = React.memo<ProductCardCompactProps>(({
           </View>
 
           {/* 배지 */}
-          {showBadges && <ProductBadges badges={badges} />}
+          {showBadges && badges.length > 0 && <ProductBadges badges={badges} />}
         </View>
       </View>
-    </Pressable>
+    </ContainerComponent>
   );
 });
 
@@ -145,8 +160,7 @@ const styles = StyleSheet.create({
     gap: 14, // Figma 기준 특수값 (토큰 없음)
   },
   imageContainer: {
-    width: 106,
-    height: 106,
+    // width, height는 동적으로 설정
     position: 'relative',
   },
   closedOverlay: {

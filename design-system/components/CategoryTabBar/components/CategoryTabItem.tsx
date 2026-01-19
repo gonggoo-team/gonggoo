@@ -13,70 +13,88 @@
  * <CategoryTabItem
  *   category="home"
  *   isSelected={true}
- *   onPress={() => handlePress('home')}
+ *   onPress={(category) => handlePress(category)}
  * />
  * ```
  */
 
-import React from 'react';
-import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import React, { useCallback, useMemo } from 'react';
+import { Pressable, StyleSheet, Text, type StyleProp, type ViewStyle } from 'react-native';
 import { useTheme } from '../../../hooks';
 import type { CategoryTabItemProps } from '../CategoryTabBar.types';
 import { CATEGORY_LABELS } from '../CategoryTabBar.types';
 
+/** 터치 영역 확대를 위한 hitSlop */
+const HIT_SLOP = { top: 4, right: 4, bottom: 4, left: 4 };
+
 /**
- * CategoryTabItem Component
+ * CategoryTabItem Component (React.memo로 최적화)
  */
-export const CategoryTabItem: React.FC<CategoryTabItemProps> = ({
+export const CategoryTabItem = React.memo<CategoryTabItemProps>(({
   category,
   isSelected,
   onPress,
 }) => {
   const { theme } = useTheme();
 
-  // 선택 상태에 따른 스타일
-  const textStyle = {
-    fontSize: isSelected ? theme.typography.fontSize.md : 15, // 16px : 15px
+  // 스타일 메모이제이션
+  const textStyle = useMemo(() => ({
+    fontSize: isSelected ? theme.typography.fontSize.md : 15,
     fontWeight: isSelected
-      ? theme.typography.fontWeight.semiBold // 600
-      : theme.typography.fontWeight.medium, // 500
+      ? theme.typography.fontWeight.semiBold
+      : theme.typography.fontWeight.medium,
     color: isSelected
-      ? theme.colors.surface.texticon.onnormal.text.green // #006242
-      : theme.colors.surface.texticon.onnormal.text.midEmp, // #9FA7B1
-    lineHeight: 18, // Figma 기준 (16 * 1.193359375 ≈ 19.09, 하지만 Figma에서 실제로는 18로 보임)
+      ? theme.colors.surface.texticon.onnormal.text.green
+      : theme.colors.surface.texticon.onnormal.text.midEmp,
+    lineHeight: 18,
     letterSpacing: theme.typography.getLetterSpacing(isSelected ? 16 : 15),
-  };
+  }), [isSelected, theme]);
 
-  // 하단 border 스타일
-  const borderBottomWidth = isSelected ? 2 : 0;
-  const borderBottomColor = theme.colors.border.brand.primary; // #006242
+  const containerStyle = useMemo(() => [
+    styles.container,
+    {
+      borderBottomWidth: isSelected ? 2 : 0,
+      borderBottomColor: theme.colors.border.brand.primary,
+    },
+  ], [isSelected, theme.colors.border.brand.primary]);
+
+  // Pressable 스타일 헬퍼
+  const getPressedStyle = useCallback(
+    ({ pressed }: { pressed: boolean }): StyleProp<ViewStyle> => [
+      containerStyle,
+      pressed && { opacity: 0.7 },
+    ],
+    [containerStyle]
+  );
+
+  // 핸들러 메모이제이션
+  const handlePress = useCallback(() => {
+    onPress(category);
+  }, [onPress, category]);
 
   return (
-    <TouchableOpacity
-      style={[
-        styles.container,
-        {
-          borderBottomWidth,
-          borderBottomColor,
-        },
-      ]}
-      onPress={onPress}
-      activeOpacity={0.7}
+    <Pressable
+      style={getPressedStyle}
+      onPress={handlePress}
+      delayPressIn={0}
+      hitSlop={HIT_SLOP}
       accessibilityRole="button"
       accessibilityLabel={`${CATEGORY_LABELS[category]} 카테고리`}
       accessibilityState={{ selected: isSelected }}
     >
       <Text style={textStyle}>{CATEGORY_LABELS[category]}</Text>
-    </TouchableOpacity>
+    </Pressable>
   );
-};
+});
+
+CategoryTabItem.displayName = 'CategoryTabItem';
 
 const styles = StyleSheet.create({
   container: {
-    width: 70, // Figma 기준 고정 너비
-    height: 43, // Figma 기준 고정 높이
+    width: 70,
+    height: 43,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 10, // Figma 기준
+    paddingVertical: 10,
   },
 });

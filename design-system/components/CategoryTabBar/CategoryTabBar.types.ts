@@ -66,7 +66,7 @@ export interface CategoryTabItemProps {
   isSelected: boolean;
 
   /**
-   * 클릭 시 호출되는 콜백
+   * 클릭 시 호출되는 콜백 (category를 인자로 받음)
    */
-  onPress: () => void;
+  onPress: (category: CategoryType) => void;
 }
