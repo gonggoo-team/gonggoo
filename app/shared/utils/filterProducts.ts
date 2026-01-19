@@ -315,7 +315,7 @@ export const applyNeighborhoodFilter = <T extends FilterableProduct>(
   }
 
   // 동네명 기반 필터링
-  console.log('[applyNeighborhoodFilter] Using neighborhood-based filtering:', {
+  if (__DEV__) console.log('[applyNeighborhoodFilter] Using neighborhood-based filtering:', {
     userNeighborhood: userLocation.neighborhood,
     totalProducts: products.length,
   });
@@ -323,7 +323,7 @@ export const applyNeighborhoodFilter = <T extends FilterableProduct>(
   const filtered = products.filter((product) => {
     // 상품에 주소 정보가 없으면 제외
     if (!product.address) {
-      console.log('[applyNeighborhoodFilter] Product has no address:', product.id);
+      if (__DEV__) console.log('[applyNeighborhoodFilter] Product has no address:', product.id);
       return false;
     }
 
@@ -343,7 +343,7 @@ export const applyNeighborhoodFilter = <T extends FilterableProduct>(
     return matches;
   });
 
-  console.log('[applyNeighborhoodFilter] Filtered result:', {
+  if (__DEV__) console.log('[applyNeighborhoodFilter] Filtered result:', {
     input: products.length,
     output: filtered.length,
   });

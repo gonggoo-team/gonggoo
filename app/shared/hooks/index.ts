@@ -11,6 +11,11 @@ export { useProductList } from './useProductList';
 export { useProductCardGrid } from './useProductCardGrid';
 export { useFilterNavigation } from './useFilterNavigation';
 export { useThrottledNavigation, useThrottledCallback } from './useThrottledNavigation';
+export {
+  useAfterInteractions,
+  useAfterInteractionsCallback,
+  useDeferredData,
+} from './useAfterInteractions';
 
 // UI Utility Hooks
 export { useImagePicker } from './useImagePicker';

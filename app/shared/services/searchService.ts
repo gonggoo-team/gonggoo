@@ -159,7 +159,7 @@ export class SearchService {
         JSON.stringify(limited)
       );
 
-      console.log('[SearchService] 최근 검색어 추가:', trimmed);
+      if (__DEV__) console.log('[SearchService] 최근 검색어 추가:', trimmed);
     } catch (error) {
       console.error('[SearchService] 최근 검색어 추가 실패:', error);
     }
@@ -178,7 +178,7 @@ export class SearchService {
         JSON.stringify(updated)
       );
 
-      console.log('[SearchService] 최근 검색어 삭제:', id);
+      if (__DEV__) console.log('[SearchService] 최근 검색어 삭제:', id);
     } catch (error) {
       console.error('[SearchService] 최근 검색어 삭제 실패:', error);
     }
@@ -194,7 +194,7 @@ export class SearchService {
         JSON.stringify([])
       );
 
-      console.log('[SearchService] 최근 검색어 전체 삭제');
+      if (__DEV__) console.log('[SearchService] 최근 검색어 전체 삭제');
     } catch (error) {
       console.error('[SearchService] 최근 검색어 전체 삭제 실패:', error);
     }
@@ -205,7 +205,7 @@ export class SearchService {
    * TODO: 백엔드 API 연동
    */
   static async search(query: string): Promise<void> {
-    console.log('[SearchService] 검색 실행:', query);
+    if (__DEV__) console.log('[SearchService] 검색 실행:', query);
     // TODO: 실제 검색 로직 구현 및 결과 페이지로 이동
   }
 
@@ -252,7 +252,7 @@ export class SearchService {
         targetAge: product.targetAge,
       }));
 
-    console.log(
+    if (__DEV__) console.log(
       `[SearchService] 검색 완료: "${query}" - ${results.length}개 상품 발견`
     );
 
