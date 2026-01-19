@@ -1,24 +1,12 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { ThemeProvider, useTheme } from '@/design-system';
+import { useTheme, ScreenWrapper } from '@/design-system';
 
 export default function NoticesScreen() {
-  return (
-    <ThemeProvider>
-      <NoticesScreenContent />
-    </ThemeProvider>
-  );
-}
-
-function NoticesScreenContent() {
   const { theme } = useTheme();
 
   return (
-    <SafeAreaView
-      style={[styles.container, { backgroundColor: theme.colors.surface.normal.bg1 }]}
-      edges={['top']}
-    >
+    <ScreenWrapper preset="default" style={styles.container}>
       <View style={styles.content}>
         <Text
           style={[
@@ -46,7 +34,7 @@ function NoticesScreenContent() {
           Stub Screen
         </Text>
       </View>
-    </SafeAreaView>
+    </ScreenWrapper>
   );
 }
 
