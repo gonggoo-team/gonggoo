@@ -1,6 +1,6 @@
 import { SplashScreen, Stack } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 
 import { ThemeProvider } from "@/design-system";
@@ -17,7 +17,10 @@ export default function RootLayout() {
   useEffect(() => {
     async function prepare() {
       try {
-        await new Promise(resolve => setTimeout(resolve, 2000));        
+        // 리소스 로딩 (폰트, 이미지 등)이 필요한 경우 여기서 처리
+        // 기존 2초 고정 대기를 제거하여 앱 시작 속도 개선
+        // 최소 스플래시 표시를 위해 300ms만 대기 (선택적)
+        await new Promise(resolve => setTimeout(resolve, 300));
       } catch (e) {
         console.warn(e);
       } finally {
@@ -45,12 +48,17 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }} onLayout={onLayoutRootView}>
       <SafeAreaProvider>
-        <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }} edges={['bottom', 'left', 'right']}>
-          <ThemeProvider>
-            <AuthProvider>
-              <ChatProvider>
-                <BottomSheetModalProvider>
-                <Stack>
+        <ThemeProvider>
+          <AuthProvider>
+            <ChatProvider>
+              <BottomSheetModalProvider>
+                <Stack
+                screenOptions={{
+                  headerShown: false,
+                  animation: 'slide_from_right', // iOS/Android 표준 슬라이드 애니메이션
+                  animationDuration: 250, // 부드러운 전환을 위한 적절한 시간
+                }}
+              >
                 <Stack.Screen name="index" options={{ headerShown: false }} />
                 <Stack.Screen name="(tabs)" options={{ headerShown: false, gestureEnabled: false }} />
 
@@ -151,6 +159,21 @@ export default function RootLayout() {
                 options={{
                   headerShown: false,
                   presentation: 'card',
+                  animation: 'slide_from_right',
+                }}
+              />
+
+              <Stack.Screen
+                name="payment/[id]"
+                options={{
+                  headerShown: false,                  
+                }}
+              />
+
+              <Stack.Screen
+                name="payment/complete"
+                options={{
+                  headerShown: false,                  
                 }}
               />
 
@@ -273,11 +296,10 @@ export default function RootLayout() {
                   />
                 )}
               </Stack>
-                </BottomSheetModalProvider>
-              </ChatProvider>
-            </AuthProvider>
-          </ThemeProvider>
-        </SafeAreaView>
+              </BottomSheetModalProvider>
+            </ChatProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

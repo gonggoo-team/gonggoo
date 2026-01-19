@@ -12,9 +12,12 @@
 
 import React from 'react';
 import { Alert } from 'react-native';
-import { Tabs, useRouter } from 'expo-router';
+import { Tabs } from 'expo-router';
+import { useThrottledNavigation } from '@/app/shared/hooks/useThrottledNavigation';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAuth, useChat } from '@/app/shared/contexts';
+import { TAB_BAR } from '@/app/shared/constants/layout';
 import { TabBarIcon, useTheme } from '@/design-system';
 
 /**
@@ -24,7 +27,13 @@ export default function TabsLayout() {
   const { theme } = useTheme();
   const { isAuthenticated } = useAuth();
   const { totalUnreadCount } = useChat();
-  const router = useRouter();
+  const { push } = useThrottledNavigation();
+  const insets = useSafeAreaInsets();
+
+  // 탭바 높이: 컨텐츠(60px) + SafeArea bottom
+  // Galaxy S8: 60 + 0 = 60px
+  // iPhone: 60 + 34 = 94px
+  const tabBarHeight = TAB_BAR.getTotalHeight(insets.bottom);
 
   // 인증이 필요한 탭 클릭 핸들러
   const handleProtectedTabPress = (e: any) => {
@@ -40,11 +49,11 @@ export default function TabsLayout() {
           },
           {
             text: '회원가입',
-            onPress: () => router.push('/signup'),
+            onPress: () => push('/signup'),
           },
           {
             text: '로그인',
-            onPress: () => router.push('/login'),
+            onPress: () => push('/login'),
           },
         ],
         { cancelable: true }
@@ -60,8 +69,8 @@ export default function TabsLayout() {
           backgroundColor: theme.colors.surface.normal.bg1,
           borderTopWidth: 1,
           borderTopColor: theme.colors.border.lowEmp,
-          height: 84,
-          paddingBottom: 24,
+          height: tabBarHeight, // 동적 계산: Galaxy S8=60px, iPhone=94px
+          paddingBottom: insets.bottom, // 동적 계산: Galaxy S8=0px, iPhone=34px
         },
         tabBarActiveTintColor: theme.colors.surface.texticon.onnormal.text.green,
         tabBarInactiveTintColor: theme.colors.surface.texticon.onnormal.icon.tabBar,
