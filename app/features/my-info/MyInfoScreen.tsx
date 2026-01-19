@@ -24,7 +24,7 @@ import { useAuth } from '@/app/shared/contexts';
 import type { ProfileMenuItem } from '@/app/shared/types';
 
 import { useTheme } from '@/design-system';
-import { GNB } from '@/design-system/components';
+import { GNB, ScreenWrapper } from '@/design-system/components';
 
 import { ProfileImageSection } from './components/ProfileImageSection';
 
@@ -124,7 +124,7 @@ export default function MyInfoScreen() {
   ];
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.surface.normal.bg2 }]}>
+    <ScreenWrapper preset="fullscreen" style={styles.container}>
       {/* GNB */}
       <GNB
         leftSection={{
@@ -209,7 +209,7 @@ export default function MyInfoScreen() {
           </Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </ScreenWrapper>
   );
 }
 
