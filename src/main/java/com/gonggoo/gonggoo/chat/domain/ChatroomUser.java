@@ -45,4 +45,9 @@ public class ChatroomUser {
         this.memberId = memberId;
         this.joinedAt = LocalDateTime.now();
     }
+
+    public void rejoinNow() {
+        this.leftAt = null;
+        this.joinedAt = LocalDateTime.now();
+    }
 }

@@ -29,6 +29,11 @@ public class MessageController {
         messagingTemplate.convertAndSend("/sub/chat/" + chatroomId, savedMessage);
     }
 
+    @MessageMapping("/send")
+    public void sendMessageResolveRoom(MessageRequest message) {
+        MessageResponse savedMessage = chatService.saveMessage(message.toMessageSendingDto(0L));
+    }
+
     @MessageMapping("/{chatroomId}/log")
     public void sendChatLog(@DestinationVariable Long chatroomId,
                                              @Header(name = "cursor", required = false) Long cursor,

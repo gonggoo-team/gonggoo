@@ -19,7 +19,7 @@ public interface ChatroomRepository extends JpaRepository<Chatroom, Long> {
             and c.roomRef = : roomRef
             and deletedAt is null
             """)
-    Optional<Chatroom> lockActiveBySemantic(@Param("coopostId") UUID coopostId,
+    Optional<Chatroom> findActiveBySemanticKey(@Param("coopostId") UUID coopostId,
                                             @Param("roomCategory") String roomCategory,
                                             @Param("roomRef") String roomRef);
 }
