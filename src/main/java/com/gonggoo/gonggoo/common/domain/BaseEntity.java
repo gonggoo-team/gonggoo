@@ -25,4 +25,12 @@ public class BaseEntity {
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
+
+    public boolean isDeleted() {
+        return deletedAt != null;
+    }
+
+    public void softDeleteNow() {
+        this.deletedAt = LocalDateTime.now();
+    }
 }

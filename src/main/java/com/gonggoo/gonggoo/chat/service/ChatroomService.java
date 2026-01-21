@@ -73,4 +73,23 @@ public class ChatroomService {
                     );
         }
     }
+
+    @Transactional
+    public void leave(Long chatroomId, int memberId) {
+        Chatroom room = chatroomRepository.findByIdForUpdate(chatroomId)
+                .orElseThrow(() -> new NeighborsException(CHATROOM_NOT_FOUND));
+
+        if (room.isDeleted()) return;
+
+        ChatroomUser user = chatroomUserRepository.findByChatroomIdAndMemberId(chatroomId, memberId)
+                .orElseThrow(() -> new NeighborsException(CHATROOM_USER_NOT_FOUND));
+
+        if (user.isActive()) return;
+        user.markLeftNow();
+
+        long count = chatroomUserRepository.countActiveByChatroomId(chatroomId);
+        if (count == 0) {
+            room.softDeleteNow();
+        }
+    }
 }

@@ -22,4 +22,8 @@ public interface ChatroomRepository extends JpaRepository<Chatroom, Long> {
     Optional<Chatroom> findActiveBySemanticKey(@Param("coopostId") UUID coopostId,
                                             @Param("roomCategory") String roomCategory,
                                             @Param("roomRef") String roomRef);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select c from chatroom c where c.id = :id")
+    Optional<Chatroom> findByIdForUpdate(@Param("id") Long chatroomId);
 }

@@ -50,4 +50,12 @@ public class ChatroomUser {
         this.leftAt = null;
         this.joinedAt = LocalDateTime.now();
     }
+
+    public boolean isActive() {
+        return leftAt == null;
+    }
+
+    public void markLeftNow() {
+        this.leftAt = LocalDateTime.now();
+    }
 }
