@@ -25,7 +25,8 @@ public enum ErrorCode {
     SENDER_ID_NOT_FOUND(HttpStatus.NO_CONTENT, "보내는 사람의 아이디가 존재하지 않습니다.", "senderId를 찾을 수 없습니다."),
     ROOM_CATEGORY_NOT_FOUND(HttpStatus.NO_CONTENT, "채팅방을 찾을 수 없습니다.", "roomCategory를 찾을 수 없습니다."),
     CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "채팅방을 찾을 수 없습니다", ""),
-    CHATROOM_USER_NOT_FOUND(HttpStatus.NOT_FOUND, "채팅방에 유저가 없습니다.", "");
+    CHATROOM_USER_NOT_FOUND(HttpStatus.NOT_FOUND, "채팅방에 유저가 없습니다.", ""),
+    INVALID_CURSOR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다.", "Cursor가 유효하지 않습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;
