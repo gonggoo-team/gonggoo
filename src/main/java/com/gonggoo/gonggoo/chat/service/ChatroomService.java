@@ -81,7 +81,7 @@ public class ChatroomService {
 
         if (room.isDeleted()) return;
 
-        ChatroomUser user = chatroomUserRepository.findByChatroomIdAndMemberId(chatroomId, memberId)
+        ChatroomUser user = chatroomUserRepository.findByChatroom_IdAndMemberId(chatroomId, memberId)
                 .orElseThrow(() -> new NeighborsException(CHATROOM_USER_NOT_FOUND));
 
         if (user.isActive()) return;
