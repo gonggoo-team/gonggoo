@@ -1,4 +1,4 @@
-package com.gonggoo.gonggoo.common.domain;
+package com.gonggoo.gonggoo.global.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
@@ -11,19 +11,18 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
-@Getter
+@Getter @Setter
 @EntityListeners(AuditingEntityListener.class)
 @MappedSuperclass
 public class BaseEntity {
 
     @CreatedDate
-    @Column(name = "created_at", updatable = false, nullable = false)
+    @Column(updatable = false, nullable = false)
     private LocalDateTime createdAt;
 
     @LastModifiedDate
-    @Column(name = "modified_at",nullable = false)
+    @Column(nullable = false)
     private LocalDateTime modifiedAt;
 
-    @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 }
