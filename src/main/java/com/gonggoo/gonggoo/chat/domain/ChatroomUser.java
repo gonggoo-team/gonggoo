@@ -9,7 +9,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -30,4 +32,30 @@ public class ChatroomUser {
 
     @Column(name = "member_id", nullable = false)
     private int memberId;
+
+    @Column(name = "joined_at", nullable = false)
+    private LocalDateTime joinedAt;
+
+    @Column(name = "left_at")
+    private LocalDateTime leftAt;
+
+    @Builder
+    private ChatroomUser (Chatroom chatroom, int memberId) {
+        this.chatroom = chatroom;
+        this.memberId = memberId;
+        this.joinedAt = LocalDateTime.now();
+    }
+
+    public void rejoinNow() {
+        this.leftAt = null;
+        this.joinedAt = LocalDateTime.now();
+    }
+
+    public boolean isActive() {
+        return leftAt == null;
+    }
+
+    public void markLeftNow() {
+        this.leftAt = LocalDateTime.now();
+    }
 }

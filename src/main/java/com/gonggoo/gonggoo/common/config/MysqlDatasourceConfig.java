@@ -13,7 +13,10 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
 @EnableJpaRepositories(
-        basePackages = "com.gonggoo.gonggoo.member",
+        basePackages = {
+                "com.gonggoo.gonggoo.member",
+                "com.gonggoo.gonggoo.coopost"
+        },
         entityManagerFactoryRef = "mysqlDatabaseEntityFactory",
         transactionManagerRef = "mysqlDatabaseTransactionManager"
 )
@@ -25,7 +28,10 @@ public class MysqlDatasourceConfig {
     public LocalContainerEntityManagerFactoryBean mysqlDatabaseEntityFactory() {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(mysqlDatabaseDataSource());
-        em.setPackagesToScan("com.gonggoo.gonggoo.member.domain");
+        em.setPackagesToScan(
+                "com.gonggoo.gonggoo.member.domain",
+                "com.gonggoo.gonggoo.coopost.domain"
+        );
         em.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
         return em;
     }
