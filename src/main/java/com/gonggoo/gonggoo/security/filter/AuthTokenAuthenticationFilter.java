@@ -34,11 +34,16 @@ public class AuthTokenAuthenticationFilter extends OncePerRequestFilter {
         try {
             String accessToken = jwtTokenProvider.resolveToken(req);
 
+            if (accessToken == null) {
+                filterChain.doFilter(req, res);
+                return;
+            }
+
             if (redisTokenBlackListService.isContainToken(accessToken)) {
                 throw new NeighborsException(BLACKLISTED_TOKEN);
             }
             log.debug("AccessToken : " + accessToken);
-            if (accessToken != null && jwtTokenProvider.validateToken(accessToken)) {
+            if (accessToken != null && jwtTokenProvider.verifyToken(accessToken)) {
                 Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }

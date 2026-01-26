@@ -74,7 +74,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public boolean validateToken(String token) {
+    public boolean verifyToken(String token) {
         try {
             Jwts.parser()
                     .verifyWith(key)
@@ -83,6 +83,12 @@ public class JwtTokenProvider {
             return true;
         } catch (JwtException e) {
             throw new JwtException(e.getMessage());
+        }
+    }
+
+    public void validateToken(String token) {
+        if (!token.split(" ")[0].equals("Bearer")) {
+            throw new NeighborsException(ErrorCode.INVALID_AUTH_HEADER);
         }
     }
 
@@ -101,12 +107,12 @@ public class JwtTokenProvider {
 
     public String resolveToken(HttpServletRequest req) {
         String bearerToken = req.getHeader("Authorization");
+        if (bearerToken == null || bearerToken.isBlank()) return null;
 
-        if (bearerToken != null && bearerToken.startsWith(BEARER_TYPE)) {
-            return bearerToken.split(" ")[1];
+        if (bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7).trim();
         }
-
-        return null;
+        return bearerToken.trim();
     }
 
     public Claims parseClaims(String accessToken) {

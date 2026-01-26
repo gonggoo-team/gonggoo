@@ -25,7 +25,7 @@ public class AuthController {
 
     @GetMapping("/reissue")
     public ApiResponse<JwtTokenDto> reissueToken(@RequestHeader("RefreshToken") String refreshToken) {
-        jwtTokenProvider.validateToken(refreshToken);
+        jwtTokenProvider.verifyToken(refreshToken);
         JwtTokenDto newToken = authService.reissueToken(refreshToken);
         return ApiResponse.success("TOKEN_REISSUED", newToken);
 

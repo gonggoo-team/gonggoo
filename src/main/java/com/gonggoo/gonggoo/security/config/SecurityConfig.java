@@ -42,6 +42,7 @@ public class SecurityConfig {
 //                .logout(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/ws/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/member/v1/signup").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/v1/login").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
