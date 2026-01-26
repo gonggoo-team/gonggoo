@@ -18,7 +18,13 @@ public enum ErrorCode {
     NO_AUTHORITY(HttpStatus.FORBIDDEN, "권한 정보가 없는 토큰입니다.", "권한 정보가 없는 토큰입니다."),
     INVALID_AUTH_HEADER(HttpStatus.BAD_REQUEST, "Authorization 헤더가 유효하지 않습니다.", "Authorization 헤더가 유효하지 않습니다."),
     BLACKLISTED_TOKEN(HttpStatus.UNAUTHORIZED, "BLACKLISTED_TOKEN", "블랙리스트에 포함된 토큰입니다."),
-    COOPOST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 공구글이 존재하지 않습니다.", "Coopost 엔티티가 db 안에 존재하지 않습니다");
+    COOPOST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 공구글이 존재하지 않습니다.", "Coopost 엔티티가 db 안에 존재하지 않습니다"),
+    ALREADY_APPLIED(HttpStatus.CONFLICT, "이미 신청한 공구입니다.", "중복 신청 불가"),
+    COOPOST_FULL(HttpStatus.CONFLICT, "모집 정원이 초과되었습니다.", "Max participants reached"),
+    CANNOT_APPLY_OWN_POST(HttpStatus.BAD_REQUEST, "본인이 작성한 공구에는 신청할 수 없습니다.", "작성자 신청 불가"),
+    APPLICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "신청 내역을 찾을 수 없습니다.", "CoopostMember 엔티티 없음"),
+    COOPOST_CLOSED(HttpStatus.BAD_REQUEST, "이미 마감되거나 종료된 공구입니다.", "Status is not OPEN"),
+    ALREADY_CANCELED(HttpStatus.CONFLICT,  "이미 취소한 공구글입니다. " , "already cancelled");
     private final HttpStatus httpStatus;
     private final String message;
     private final String reason;

@@ -1,6 +1,6 @@
 package com.gonggoo.gonggoo.coopost.domain;
 
-import com.gonggoo.gonggoo.global.entity.BaseEntity;
+import com.gonggoo.gonggoo.common.domain.BaseEntity;
 import com.gonggoo.gonggoo.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.*;
@@ -29,7 +29,8 @@ public class Coopost extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "coopost_id", columnDefinition = "VARCHAR(36)")
+//    @Column(name = "coopost_id", columnDefinition = "VARCHAR(36)")
+    @Column(name = "coopost_id")
     @JdbcTypeCode(SqlTypes.VARCHAR)
     private UUID coopostId;
 
@@ -40,6 +41,7 @@ public class Coopost extends BaseEntity {
     @Column(nullable = false, length = 120)
     private String title;
 
+    @Setter
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private CoopostStatus status;
@@ -79,6 +81,11 @@ public class Coopost extends BaseEntity {
     // 인기/조회수 지표
     @Column(nullable = false)
     private long viewCount;
+
+
+    public void setDeletedAt(LocalDateTime now) {
+        this.deletedAt = now;
+    }
 
 }
 
