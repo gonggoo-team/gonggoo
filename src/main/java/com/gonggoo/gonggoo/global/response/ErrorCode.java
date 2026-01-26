@@ -24,7 +24,8 @@ public enum ErrorCode {
     CANNOT_APPLY_OWN_POST(HttpStatus.BAD_REQUEST, "본인이 작성한 공구에는 신청할 수 없습니다.", "작성자 신청 불가"),
     APPLICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "신청 내역을 찾을 수 없습니다.", "CoopostMember 엔티티 없음"),
     COOPOST_CLOSED(HttpStatus.BAD_REQUEST, "이미 마감되거나 종료된 공구입니다.", "Status is not OPEN"),
-    ALREADY_CANCELED(HttpStatus.CONFLICT,  "이미 취소한 공구글입니다. " , "already cancelled");
+    ALREADY_CANCELED(HttpStatus.CONFLICT,  "이미 취소한 공구글입니다. " , "이미 취소된 공구글에 대한 취소 요청입니다. "),
+    ALREADY_SCRAPPED(HttpStatus.CONFLICT, "이미 스크랩된 공구글입니다. " ,"이미 스크랩된 글에 대한" );
     private final HttpStatus httpStatus;
     private final String message;
     private final String reason;

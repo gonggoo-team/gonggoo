@@ -39,8 +39,7 @@ public class ApplyServiceImpl {
         validatePostCondition(coopost, memberId);
 
         CoopostMember apply = handleApplyOrCreate(coopost, member);
-        increaseParticipants(coopost);
-
+        coopost.addParticipant();
         return ApplyResponse.builder()
                 .applyId(apply.getId())
                 .coopostId(coopost.getCoopostId())
@@ -64,7 +63,7 @@ public class ApplyServiceImpl {
 
         // 인원 감소 및 공구글 상태(OPEN/CLOSED) 동기화
         Coopost coopost = findCoopostWithLock(apply.getCoopost().getCoopostId());
-        decreaseParticipants(coopost);
+        coopost.removeParticipant();
 
         return ApplyResponse.builder()
                 .applyId(applyId)
@@ -105,10 +104,11 @@ public class ApplyServiceImpl {
         return SliceResponse.of(slice, MyApplyResponse::from);
     }
 
-    // ==== helper methods ==
-    // private
 
-    // 1. 조회 관련 helper methods
+
+    // ==== helper methods ==
+
+    // 조회 관련 helper methods
 
     // ID로 멤버 찾기
     private Member findMemberById(int memberId) {
@@ -131,28 +131,10 @@ public class ApplyServiceImpl {
                 .orElseThrow(() -> new NeighborsException(ErrorCode.APPLICATION_NOT_FOUND));
     }
 
-
     // 검증 Helper
     private void validatePostCondition(Coopost coopost, int memberId) {
         if (coopost.getMember().getId() == memberId) throw new NeighborsException(ErrorCode.CANNOT_APPLY_OWN_POST);
         if (coopost.getStatus() != CoopostStatus.OPEN) throw new NeighborsException(ErrorCode.COOPOST_CLOSED);
         if (coopost.getCurrentParticipants() >= coopost.getMaxParticipants()) throw new NeighborsException(ErrorCode.COOPOST_FULL);
-    }
-
-    private void increaseParticipants(Coopost coopost) {
-        coopost.setCurrentParticipants(coopost.getCurrentParticipants() + 1);
-        if (coopost.getCurrentParticipants().equals(coopost.getMaxParticipants())) {
-            coopost.setStatus(CoopostStatus.CLOSED);
-        }
-    }
-
-    private void decreaseParticipants(Coopost coopost) {
-        if (coopost.getCurrentParticipants() > 0) {
-            coopost.setCurrentParticipants(coopost.getCurrentParticipants() - 1);
-        }
-        if (coopost.getStatus() == CoopostStatus.CLOSED
-                && coopost.getCurrentParticipants() < coopost.getMaxParticipants()) {
-            coopost.setStatus(CoopostStatus.OPEN);
-        }
     }
 }
