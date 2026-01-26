@@ -258,6 +258,13 @@ public class CoopostRepositoryImpl implements CoopostRepositoryCustom {
         if ("POPULAR".equalsIgnoreCase(sortBy)) return new OrderSpecifier<>(Order.DESC, coopost.viewCount);
         if ("DEADLINE".equalsIgnoreCase(sortBy)) return new OrderSpecifier<>(Order.ASC, coopost.deadlineAt); // 마감 임박순
         if ("OLDEST".equalsIgnoreCase(sortBy)) return new OrderSpecifier<>(Order.ASC, coopost.createdAt);
+        if ("DISCOUNT".equalsIgnoreCase(sortBy)) {
+            // (정가 - 할인가) / 정가 -> 내림차순 정렬
+            // 주의: 나눗셈 시 분모가 0이면 DB 에러가 날 수 있으나, 비즈니스 로직상 0이 아니라고 가정
+            return coopost.originalPrice.subtract(coopost.pricePerUnit)
+                    .divide(coopost.originalPrice)
+                    .desc();
+        }
         // 기본은 최신순
         return new OrderSpecifier<>(Order.DESC, coopost.createdAt);
     }
@@ -283,6 +290,7 @@ public class CoopostRepositoryImpl implements CoopostRepositoryCustom {
             LocalDateTime dateVal = (LocalDateTime) cursorValue;
             return coopost.createdAt.gt(dateVal).or(coopost.createdAt.eq(dateVal).and(coopost.coopostId.lt(cursorId)));
         }
+
         else {
             // LATEST (기본): createdAt < cursor
             LocalDateTime dateVal = (LocalDateTime) cursorValue;

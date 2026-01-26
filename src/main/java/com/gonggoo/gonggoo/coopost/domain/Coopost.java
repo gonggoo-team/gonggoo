@@ -52,6 +52,10 @@ public class Coopost extends BaseEntity {
     @Column(name = "price_per_unit", precision = 15, scale = 2)
     private BigDecimal pricePerUnit;
 
+    //할인율 계산을 위한 정가 추가
+    @Column(name="original_price", precision = 15, scale = 2)
+    private BigDecimal originalPrice;
+
     @Column(name = "min_participants")
     private Integer minParticipants;
 
