@@ -20,7 +20,7 @@ public interface CoopostService {
 
 
     CoopostResponse getById(UUID coopostId, boolean increaseView);
-
+    CoopostResponse getDetailById(UUID coopostId, Integer memberId);
     CoopostResponse update(UUID coopostId, CoopostUpdateRequest req);
 
     void delete(UUID coopostId);
