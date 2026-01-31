@@ -30,4 +30,10 @@ public class AuthController {
         return ApiResponse.success("TOKEN_REISSUED", newToken);
 
     }
+
+    @GetMapping("/login/kakao")
+    public ApiResponse<JwtTokenDto> kakaoLogin(@RequestParam("code") String code) {
+        JwtTokenDto kakaoToken = authService.kakaoLogin(code);
+        return ApiResponse.success("LOGIN_SUCCESS", kakaoToken);
+    }
 }

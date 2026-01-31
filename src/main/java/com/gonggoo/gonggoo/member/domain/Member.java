@@ -1,5 +1,6 @@
 package com.gonggoo.gonggoo.member.domain;
 
+import com.gonggoo.gonggoo.auth.domain.RegistrationProvider;
 import com.gonggoo.gonggoo.common.domain.BaseEntity;
 import com.gonggoo.gonggoo.common.domain.GeoLocation;
 import com.gonggoo.gonggoo.common.domain.Role;
@@ -23,14 +24,21 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private String nickname;
 
-    @Column(name = "phone_number", nullable = false, unique = true)
+    @Column(name = "phone_number", unique = true)
     private String phoneNumber;
 
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
+    @Column
     private String password;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private RegistrationProvider provider = RegistrationProvider.LOCAL;
+
+    @Column(name = "provider_id", nullable = false)
+    private String providerId;
 
     @Column(name = "profile_image")
     private String profileImage;
@@ -47,13 +55,24 @@ public class Member extends BaseEntity {
     private MemberStatus status;
 
     @Builder
-    public Member(String nickname, String phoneNumber, String email, String password, String profileImage, Role role, GeoLocation location, MemberStatus status) {
+    public Member(String nickname,
+                  String phoneNumber,
+                  String email,
+                  String password,
+                  RegistrationProvider provider,
+                  String providerId,
+                  String profileImage,
+                  Role role,
+                  GeoLocation location,
+                  MemberStatus status) {
         this.nickname = nickname;
         this.phoneNumber = phoneNumber;
         this.email = email;
         this.password = password;
-        this.profileImage = "/images/default.png";
-        this.role = Role.USER;
+        this.provider = provider;
+        this.providerId = providerId;
+        this.profileImage = (profileImage != null) ? profileImage : "/images/default.png" ;
+        this.role = (role != null) ? role : Role.USER;
         this.location = location;
         this.status = MemberStatus.ACTIVE;
     }
@@ -75,6 +94,13 @@ public class Member extends BaseEntity {
     }
 
     public void changeLocation(GeoLocation location) {
-        this.location = location;
+        this    .location = location;
+    }
+
+    public Member update(String nickname, String profileImage, String email) {
+        this.nickname = nickname;
+        this.profileImage = profileImage;
+        this.email = email;
+        return this;
     }
 }

@@ -26,7 +26,8 @@ public enum ErrorCode {
     ROOM_CATEGORY_NOT_FOUND(HttpStatus.NO_CONTENT, "채팅방을 찾을 수 없습니다.", "roomCategory를 찾을 수 없습니다."),
     CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "채팅방을 찾을 수 없습니다", ""),
     CHATROOM_USER_NOT_FOUND(HttpStatus.NOT_FOUND, "채팅방에 유저가 없습니다.", ""),
-    INVALID_CURSOR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다.", "Cursor가 유효하지 않습니다.");
+    INVALID_CURSOR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다.", "Cursor가 유효하지 않습니다."),
+    KAKAO_USER_INFO_NOT_FOUND(HttpStatus.NOT_FOUND, "카카오 유저 정보를 찾을 수 없습니다.", "카카오 API 오류");
 
     private final HttpStatus httpStatus;
     private final String message;
