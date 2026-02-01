@@ -24,7 +24,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleException(Exception e) {
         NeighborsException neighborsException =
                 new NeighborsException(SERVER_ERROR);
-        log.debug(e.getMessage());
         ErrorCode errorCode = neighborsException.getErrorCode();
         return ResponseEntity.status(errorCode.getHttpStatus())
                 .body(ApiResponse.error(errorCode));

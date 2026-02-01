@@ -36,4 +36,11 @@ public class AuthController {
         JwtTokenDto kakaoToken = authService.kakaoLogin(code);
         return ApiResponse.success("LOGIN_SUCCESS", kakaoToken);
     }
+
+    @GetMapping("/login/naver")
+    public ApiResponse<JwtTokenDto> naverLogin(@RequestParam("code") String code,
+                                               @RequestParam("state") String state) {
+        JwtTokenDto naverToken = authService.naverLogin(code, state);
+        return ApiResponse.success("LOGIN_SUCCESS", naverToken);
+    }
 }

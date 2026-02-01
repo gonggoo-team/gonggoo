@@ -1,6 +1,7 @@
 package com.gonggoo.gonggoo.auth.service;
 
 import static com.gonggoo.gonggoo.global.response.ErrorCode.KAKAO_USER_INFO_NOT_FOUND;
+import static com.gonggoo.gonggoo.global.response.ErrorCode.NAVER_USER_INFO_NOT_FOUND;
 
 import com.gonggoo.gonggoo.auth.domain.RegistrationProvider;
 import com.gonggoo.gonggoo.auth.dto.LoginRequest;
@@ -9,6 +10,9 @@ import com.gonggoo.gonggoo.auth.jwt.JwtTokenProvider;
 import com.gonggoo.gonggoo.auth.kakao.KakaoProps;
 import com.gonggoo.gonggoo.auth.kakao.KakaoTokenResponse;
 import com.gonggoo.gonggoo.auth.kakao.KakaoUserInfoResponse;
+import com.gonggoo.gonggoo.auth.naver.NaverProps;
+import com.gonggoo.gonggoo.auth.naver.NaverTokenResponse;
+import com.gonggoo.gonggoo.auth.naver.NaverUserInfoResponse;
 import com.gonggoo.gonggoo.common.domain.Role;
 import com.gonggoo.gonggoo.global.exception.NeighborsException;
 import com.gonggoo.gonggoo.member.domain.Member;
@@ -38,6 +42,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final KakaoProps kakaoProps;
+    private final NaverProps naverProps;
     private final RestTemplate restTemplate;
 
     public JwtTokenDto login(LoginRequest loginRequest) {
@@ -132,13 +137,76 @@ public class AuthService {
             );
 
             if(!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
-                log.debug("response에서 에러 발생" + response);
                 throw new NeighborsException(KAKAO_USER_INFO_NOT_FOUND);
             }
             return response.getBody();
         } catch (RestClientException e) {
-            log.debug("에러 발생: " + e.getMessage());
             throw new NeighborsException(KAKAO_USER_INFO_NOT_FOUND);
+        }
+    }
+
+    public JwtTokenDto naverLogin(String code, String state) {
+        String naverToken = getNaverAccessToken(code);
+        NaverUserInfoResponse userInfo = getNaverUserInfo(naverToken);
+
+        Member member = memberRepository.findByEmail(userInfo.email())
+                .orElseGet(() -> {
+                    return memberRepository.save(Member.builder()
+                            .email(userInfo.email())
+                            .nickname(userInfo.nickname())
+                            .profileImage(userInfo.profile_image())
+                            .provider(RegistrationProvider.NAVER)
+                            .providerId(userInfo.id())
+                            .phoneNumber(userInfo.mobile())
+                            .password(null)
+                            .role(Role.USER)
+                            .status(MemberStatus.ACTIVE)
+                            .build());
+                });
+        JwtTokenDto jwtTokenDto = jwtTokenProvider.generateToken(String.valueOf(member.getId()), member.getRole());
+        return jwtTokenDto;
+    }
+
+    private String getNaverAccessToken(String code) {
+        HttpHeaders headers = new HttpHeaders();
+
+        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+        body.add("grant_type", "authorization_code");
+        body.add("client_id", naverProps.client_id());
+        body.add("client_secret", naverProps.client_secret());
+        body.add("code", code);
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(body, headers);
+        ResponseEntity<NaverTokenResponse> response = restTemplate.postForEntity(
+                naverProps.post_uri(),
+                request,
+                NaverTokenResponse.class
+        );
+
+        return response.getBody().access_token();
+    }
+
+    private NaverUserInfoResponse getNaverUserInfo(String naverAccessToken) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + naverAccessToken);
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(headers);
+
+        try {
+            ResponseEntity<NaverUserInfoResponse> response = restTemplate.exchange(
+                    naverProps.user_info_url(),
+                    HttpMethod.GET,
+                    request,
+                    NaverUserInfoResponse.class
+            );
+
+            if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
+                throw new NeighborsException(NAVER_USER_INFO_NOT_FOUND);
+            }
+
+            return response.getBody();
+        } catch (RestClientException e) {
+            throw new NeighborsException(NAVER_USER_INFO_NOT_FOUND);
         }
     }
 }
