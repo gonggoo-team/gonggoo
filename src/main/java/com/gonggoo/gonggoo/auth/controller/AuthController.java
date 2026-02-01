@@ -43,4 +43,10 @@ public class AuthController {
         JwtTokenDto naverToken = authService.naverLogin(code, state);
         return ApiResponse.success("LOGIN_SUCCESS", naverToken);
     }
+
+    @GetMapping("/login/google")
+    public ApiResponse<JwtTokenDto> googleLogin(@RequestParam("code") String code){
+        JwtTokenDto googleToken = authService.googleLogin(code);
+        return ApiResponse.success("LOGIN_SUCCESS", googleToken);
+    }
 }

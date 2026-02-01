@@ -1,10 +1,14 @@
 package com.gonggoo.gonggoo.auth.service;
 
+import static com.gonggoo.gonggoo.global.response.ErrorCode.GOOGLE_USER_INFO_NOT_FOUND;
 import static com.gonggoo.gonggoo.global.response.ErrorCode.KAKAO_USER_INFO_NOT_FOUND;
 import static com.gonggoo.gonggoo.global.response.ErrorCode.NAVER_USER_INFO_NOT_FOUND;
 
 import com.gonggoo.gonggoo.auth.domain.RegistrationProvider;
 import com.gonggoo.gonggoo.auth.dto.LoginRequest;
+import com.gonggoo.gonggoo.auth.google.GoogleProps;
+import com.gonggoo.gonggoo.auth.google.GoogleTokenResponse;
+import com.gonggoo.gonggoo.auth.google.GoogleUserInfoResponse;
 import com.gonggoo.gonggoo.auth.jwt.JwtTokenDto;
 import com.gonggoo.gonggoo.auth.jwt.JwtTokenProvider;
 import com.gonggoo.gonggoo.auth.kakao.KakaoProps;
@@ -43,6 +47,7 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final KakaoProps kakaoProps;
     private final NaverProps naverProps;
+    private final GoogleProps googleProps;
     private final RestTemplate restTemplate;
 
     public JwtTokenDto login(LoginRequest loginRequest) {
@@ -207,6 +212,75 @@ public class AuthService {
             return response.getBody();
         } catch (RestClientException e) {
             throw new NeighborsException(NAVER_USER_INFO_NOT_FOUND);
+        }
+    }
+
+    public JwtTokenDto googleLogin(String code) {
+        String googleToken = getGoogleAccessToken(code);
+        GoogleUserInfoResponse userInfo = getGoogleUserInfo(googleToken);
+
+        Member member = memberRepository.findByEmail(userInfo.email())
+                .orElseGet(() -> {
+                    return memberRepository.save(Member.builder()
+                            .email(userInfo.email())
+                            .nickname(userInfo.name())
+                            .provider(RegistrationProvider.GOOGLE)
+                            .providerId(userInfo.sub())
+                            .profileImage(userInfo.picture())
+                            .phoneNumber(null)
+                            .role(Role.USER)
+                            .status(MemberStatus.ACTIVE)
+                            .build());
+                });
+
+        JwtTokenDto jwtTokenDto = jwtTokenProvider.generateToken(String.valueOf(member.getId()), member.getRole());
+        return jwtTokenDto;
+    }
+
+    private String getGoogleAccessToken(String code) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/x-www-form-urlencoded");
+
+        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+        body.add("client_id", googleProps.client_id());
+        body.add("client_secret", googleProps.client_secret());
+        body.add("code", code);
+        body.add("grant_type", "authorization_code");
+        body.add("redirect_uri", googleProps.redirect_uri());
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(body, headers);
+        ResponseEntity<GoogleTokenResponse> response = restTemplate.postForEntity(
+                googleProps.post_uri(),
+                request,
+                GoogleTokenResponse.class
+        );
+
+        return response.getBody().access_token();
+    }
+
+    private GoogleUserInfoResponse getGoogleUserInfo(String googleAccessToken) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + googleAccessToken);
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(headers);
+
+        try {
+            ResponseEntity<GoogleUserInfoResponse> response = restTemplate.exchange(
+                    googleProps.user_info_url(),
+                    HttpMethod.GET,
+                    request,
+                    GoogleUserInfoResponse.class
+            );
+
+            if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
+                log.debug("GoogleUserResponse 에러", response.getBody());
+                throw new NeighborsException(GOOGLE_USER_INFO_NOT_FOUND);
+            }
+
+            return response.getBody();
+        } catch (RestClientException e) {
+            log.debug("유저 정보 조회 중 에러", e.getMessage());
+            throw new NeighborsException(GOOGLE_USER_INFO_NOT_FOUND);
         }
     }
 }
