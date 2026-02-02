@@ -10,11 +10,11 @@ import lombok.Getter;
 @AllArgsConstructor
 public class GeoLocation {
 
-    @Column(nullable = false)
-    private double latitude;
+    @Column
+    private Double latitude;
 
-    @Column(nullable = false)
-    private double longitude;
+    @Column
+    private Double longitude;
 
     protected GeoLocation() {}
 }
