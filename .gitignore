@@ -1,0 +1,32 @@
+node_modules
+
+# Environment variables
+.env
+.env.local
+.env.production
+.env.*.local
+
+# Claude Code settings (personal)
+.claude/
+
+# Expo
+.expo/
+!.expo/settings.json
+
+# Storybook auto-generated
+.rnstorybook/storybook.requires.ts
+
+# IDE
+.vscode/
+.idea/
+
+# Temporary files
+.temp/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+/android
+/ios

@@ -1,0 +1,1 @@
+export { ProfileImageSection } from './ProfileImageSection';

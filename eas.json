@@ -1,0 +1,36 @@
+{
+  "cli": {
+    "version": ">= 16.28.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_NAVER_MAP_CLIENT_ID": "2881xk2opv",
+        "EXPO_PUBLIC_NAVER_MAP_CLIENT_SECRET": "d4PAaTe2BRjcLHVefYi1vusL7GdKQ9uXOXnUESGy"        
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_NAVER_MAP_CLIENT_ID": "2881xk2opv",
+        "EXPO_PUBLIC_NAVER_MAP_CLIENT_SECRET": "d4PAaTe2BRjcLHVefYi1vusL7GdKQ9uXOXnUESGy"        
+      }
+    },
+    "production": {
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_NAVER_MAP_CLIENT_ID": "2881xk2opv",
+        "EXPO_PUBLIC_NAVER_MAP_CLIENT_SECRET": "d4PAaTe2BRjcLHVefYi1vusL7GdKQ9uXOXnUESGy"        
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

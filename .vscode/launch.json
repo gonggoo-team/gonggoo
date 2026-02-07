@@ -1,0 +1,12 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug in Exponent",
+      "request": "launch",
+      "type": "reactnativedirect",
+      "projectRoot": "${workspaceFolder}",
+      "platform": "any"
+    }
+  ]
+}
