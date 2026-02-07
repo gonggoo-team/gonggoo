@@ -1,11 +1,11 @@
 package com.gonggoo.gonggoo.fcm.service;
 
-import static com.gonggoo.gonggoo.global.response.ErrorCode.*;
+import static com.gonggoo.gonggoo.global.response.ErrorCode.FCM_SERVICE_UNAVAILABLE;
 
+import com.gonggoo.gonggoo.fcm.dto.request.NotificationMulticastRequest;
 import com.gonggoo.gonggoo.fcm.dto.request.NotificationRequest;
 import com.gonggoo.gonggoo.fcm.dto.request.NotificationSingleRequest;
 import com.gonggoo.gonggoo.global.exception.NeighborsException;
-import com.gonggoo.gonggoo.global.response.ErrorCode;
 import com.google.firebase.messaging.AndroidConfig;
 import com.google.firebase.messaging.AndroidConfig.Priority;
 import com.google.firebase.messaging.AndroidNotification;
@@ -14,8 +14,8 @@ import com.google.firebase.messaging.Aps;
 import com.google.firebase.messaging.ApsAlert;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Message;
+import com.google.firebase.messaging.MulticastMessage;
 import lombok.RequiredArgsConstructor;
-import lombok.val;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -31,6 +31,18 @@ public class FcmService {
                     .setApnsConfig(getApnsConfig(singleRequest))
                     .build();
             firebaseMessaging.sendAsync(message);
+        } catch (RuntimeException e) {
+            throw new NeighborsException(FCM_SERVICE_UNAVAILABLE);
+        }
+    }
+
+    public void sendMultiMessage(NotificationMulticastRequest multicastRequest) {
+        try {
+            MulticastMessage messages = multicastRequest.buildSendMessage()
+                    .setAndroidConfig(getAndroidConfig())
+                    .setApnsConfig(getApnsConfig(multicastRequest))
+                    .build();
+            firebaseMessaging.sendEachForMulticastAsync(messages);
         } catch (RuntimeException e) {
             throw new NeighborsException(FCM_SERVICE_UNAVAILABLE);
         }
