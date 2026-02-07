@@ -18,4 +18,5 @@ public interface MemberDeviceTokenRepository extends JpaRepository<UserDevice, L
             where ud.member.id in :memberIds
             """)
     List<String> findAllTokensByMemberIds(@Param("memberIds") List<Integer> memberIds);
+    void deleteByFcmToken(String fcmToken);
 }

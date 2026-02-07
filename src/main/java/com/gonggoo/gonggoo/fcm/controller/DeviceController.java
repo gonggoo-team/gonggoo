@@ -9,6 +9,7 @@ import com.gonggoo.gonggoo.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,5 +27,11 @@ public class DeviceController {
                                             @RequestBody DeviceRegistrationRequest request) {
         deviceService.registerDevice(customPrincipal.memberId(), request);
         return ApiResponse.success(HttpStatus.OK, "DEVICE_REGISTER_SUCCESS", null);
+    }
+
+    @DeleteMapping
+    public ApiResponse<Void> unregisterDevice(@RequestBody String fcmToken) {
+        deviceService.removeInvalidToken(fcmToken);
+        return ApiResponse.success(HttpStatus.NO_CONTENT, "DEVICE_UNREGISTER", null);
     }
 }

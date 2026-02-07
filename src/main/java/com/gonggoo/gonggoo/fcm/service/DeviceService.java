@@ -34,4 +34,8 @@ public class DeviceService {
                         }
                 );
     }
+
+    public void removeInvalidToken(String token) {
+        memberDeviceTokenRepository.deleteByFcmToken(token);
+    }
 }
