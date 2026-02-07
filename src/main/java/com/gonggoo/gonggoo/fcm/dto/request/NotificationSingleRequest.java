@@ -8,13 +8,13 @@ import lombok.NonNull;
 
 @Builder(access = AccessLevel.PRIVATE)
 public record NotificationSingleRequest(
-    @NonNull String tartgetToken,
+    @NonNull String targetToken,
     String title,
     String body
 ) implements NotificationRequest{
     public static NotificationSingleRequest of(String targetToken, String title, String body) {
         return NotificationSingleRequest.builder()
-                .tartgetToken(targetToken)
+                .targetToken(targetToken)
                 .title(title)
                 .body(body)
                 .build();
@@ -22,7 +22,7 @@ public record NotificationSingleRequest(
 
     public Message.Builder buildMessage() {
         return Message.builder()
-                .setToken(tartgetToken)
+                .setToken(targetToken)
                 .setNotification(toNotification());
     }
 
