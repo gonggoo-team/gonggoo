@@ -23,7 +23,7 @@ public record NotificationMulticastRequest(
                 .build();
     }
 
-    public MulticastMessage.Builder buildSendMessage(Map<String, String> data) {
+    public MulticastMessage.Builder buildSendMessage() {
         return MulticastMessage.builder()
                 .setNotification(toNotification())
                 .putAllData(data)
