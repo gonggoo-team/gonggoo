@@ -3,6 +3,7 @@ package com.gonggoo.gonggoo.fcm.dto.request;
 import com.google.firebase.messaging.MulticastMessage;
 import com.google.firebase.messaging.Notification;
 import java.util.List;
+import java.util.Map;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NonNull;
@@ -11,7 +12,8 @@ import lombok.NonNull;
 public record NotificationMulticastRequest(
         @NonNull List<String> targetTokens,
         String title,
-        String body
+        String body,
+        Map<String, String> data
 ) implements NotificationRequest{
     public static NotificationMulticastRequest of(List<String> targetTokens, String title, String body) {
         return NotificationMulticastRequest.builder()
@@ -21,9 +23,10 @@ public record NotificationMulticastRequest(
                 .build();
     }
 
-    public MulticastMessage.Builder buildSendMessage() {
+    public MulticastMessage.Builder buildSendMessage(Map<String, String> data) {
         return MulticastMessage.builder()
                 .setNotification(toNotification())
+                .putAllData(data)
                 .addAllTokens(targetTokens);
     }
 
