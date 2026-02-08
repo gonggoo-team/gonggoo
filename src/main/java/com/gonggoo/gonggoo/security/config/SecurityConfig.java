@@ -45,6 +45,8 @@ public class SecurityConfig {
                         .requestMatchers("/ws/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/member/v1/signup").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/v1/login").permitAll()
+                        .requestMatchers("/api/v1/notification/**").permitAll()
+                        .requestMatchers("/api/device/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/coopost/v1").permitAll()
                         .requestMatchers("/api/coopost/v1/**").permitAll()
