@@ -10,6 +10,8 @@ import com.gonggoo.gonggoo.member.dto.response.LocationResponse;
 import com.gonggoo.gonggoo.member.dto.response.MemberResponse;
 import com.gonggoo.gonggoo.member.dto.response.NicknameCheckResponse;
 import com.gonggoo.gonggoo.member.service.MemberService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "회원 (Member)", description = "회원 관리 API 명세")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/member/v1")
@@ -31,24 +34,28 @@ public class MemberController {
     private final MemberService memberService;
     private final JwtTokenProvider jwtTokenProvider;
 
+    @Operation(summary = "회원가입")
     @PostMapping("/signup")
     public ApiResponse<MemberResponse> saveMember(@RequestBody MemberSignupRequest request) {
         MemberResponse memberResponse = memberService.save(request);
         return ApiResponse.success(HttpStatus.CREATED, "SIGNUP_SUCCESS", memberResponse);
     }
 
+    @Operation(summary = "중복 이메일 체크")
     @GetMapping("/check-email/{email}")
     public ApiResponse<EmailCheckResponse> checkEmail(@PathVariable String email) {
         EmailCheckResponse emailCheckResponse = memberService.validateDuplicateEmail(email);
         return ApiResponse.success("EMAIL_CHECK_OK", emailCheckResponse);
     }
 
+    @Operation(summary = "중복 닉네임 체크")
     @GetMapping("/check-nickname/{nickname}")
     public ApiResponse<NicknameCheckResponse> checkNickname(@PathVariable String nickname) {
         NicknameCheckResponse nicknameCheckResponse = memberService.validateDuplicateNickname(nickname);
         return ApiResponse.success("NICKNAME_CHECK_OK",nicknameCheckResponse);
     }
 
+    @Operation(summary = "정보 수정")
     @PatchMapping("/me")
     public ApiResponse<MemberResponse> updateMember(@RequestBody MemberUpdateRequest memberUpdateRequest,
                                                        @RequestHeader("Authorization") String authorizationHeader) {
@@ -59,6 +66,7 @@ public class MemberController {
         return ApiResponse.success("MEMBER_UPDATED", memberResponse);
     }
 
+    @Operation(summary = "회원 탈퇴")
     @DeleteMapping("/me")
     public ApiResponse<Void> deleteMember(@RequestHeader("Authorization") String authorizationHeader) {
         String accessToken = authorizationHeader.split(" ")[1];
@@ -68,6 +76,7 @@ public class MemberController {
         return ApiResponse.success(HttpStatus.NO_CONTENT, "MEMBER_DELETED", null);
     }
 
+    @Operation(summary = "위치 정보 받기", description = "사용자의 현재 위치 정보를 서버에 저장합니다.")
     @GetMapping("/location")
     public ApiResponse<LocationResponse> getLocation(@RequestHeader("Authorization") String authorizationHeader) {
         String accessToken = authorizationHeader.split(" ")[1];
@@ -77,6 +86,7 @@ public class MemberController {
         return ApiResponse.success("LOCATION_READ_OK", locationResponse);
     }
 
+    @Operation(summary = "위치 정보 업데이트", description = "위치가 바뀐 사용자의 위치 정보를 업데이트하여 서버에 저장합니다.")
     @PatchMapping("/location")
     public ApiResponse<MemberResponse> updateLocation(@RequestHeader("Authorization") String authorizationHeader,
                                                          @RequestBody LocationUpdateRequest locationUpdateRequest) {
