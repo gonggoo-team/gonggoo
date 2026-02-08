@@ -29,7 +29,8 @@ public enum ErrorCode {
     INVALID_CURSOR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다.", "Cursor가 유효하지 않습니다."),
     KAKAO_USER_INFO_NOT_FOUND(HttpStatus.NOT_FOUND, "카카오 유저 정보를 찾을 수 없습니다.", "카카오 API 오류"),
     NAVER_USER_INFO_NOT_FOUND(HttpStatus.NOT_FOUND, "네이버 유저 정보를 찾을 수 없습니다.", "네이버 API 오류"),
-    GOOGLE_USER_INFO_NOT_FOUND(HttpStatus.NOT_FOUND, "구글 유저 정보를 찾을 수 없습니다.", "구글 API 오류");
+    GOOGLE_USER_INFO_NOT_FOUND(HttpStatus.NOT_FOUND, "구글 유저 정보를 찾을 수 없습니다.", "구글 API 오류"),
+    FCM_SERVICE_UNAVAILABLE(HttpStatus.SERVICE_UNAVAILABLE, "알림 전송을 실패했습니다.", "Fcm Service 에러");
 
     private final HttpStatus httpStatus;
     private final String message;
