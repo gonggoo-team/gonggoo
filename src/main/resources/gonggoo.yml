@@ -10,5 +10,30 @@ spring:
         use_sql_comments: true
         format_sql: true
 
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs  # API 문서의 엔드포인트 변경 (기본값: /v3/api-docs)
+    groups.enabled: true
+
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    operationsSorter: method
+    tagsSorter: alpha
+    display-request-duration: true  # 요청 실행 시간 표시 여부
+    doc-expansion: none
+    persistAuthorization: true
+    defaultModelsExpandDepth: -1
+
+  paths-to-match:  # OpenAPI 문서에서 포함할 엔드포인트 패턴
+    - /api/**  # /api로 시작하는 모든 경로 포함
+  cache:
+    disabled: true
+  show-actuator: false
+  servers:
+    - url: http://localhost:8080  # 기본 서버 URL 설정
+      description:
+
 logging.level:
   org.hibernate.SQL: debug
