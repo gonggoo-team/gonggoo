@@ -10,6 +10,8 @@ import com.gonggoo.gonggoo.coopost.dto.response.PageResponse;
 import com.gonggoo.gonggoo.coopost.dto.response.SliceResponse;
 import com.gonggoo.gonggoo.global.response.ApiResponse;
 import com.gonggoo.gonggoo.coopost.service.CoopostService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -22,6 +24,7 @@ import com.gonggoo.gonggoo.auth.jwt.JwtTokenProvider;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Tag(name = "공구글 (Coopost)", description = "공구글 API 명세")
 @RestController
 @RequestMapping("/api/coopost/v1")
 @RequiredArgsConstructor
@@ -32,6 +35,7 @@ public class CoopostController {
     /**
      * 공구글 생성 (201 Created)
      */
+    @Operation(summary = "공구글 생성")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<CoopostResponse> create(
@@ -52,6 +56,7 @@ public class CoopostController {
      * 로그인한 유저라면 isApplied=true, myApplyId=... 반환
      * 비로그인 유저라면 isApplied=false, myApplyId=null 반환
      */
+    @Operation(summary = "공구글 상세 조회")
     @GetMapping("/{coopostId}")
     public ApiResponse<CoopostResponse> getById(
             @PathVariable UUID coopostId,
@@ -76,6 +81,7 @@ public class CoopostController {
     /**
      * 공구글 수정 (200 OK)
      */
+    @Operation(summary = "공구글 수정")
     @PatchMapping("/{coopostId}")
     public ApiResponse<CoopostResponse> update(@PathVariable UUID coopostId,
                                                @Valid @RequestBody CoopostUpdateRequest req) {
@@ -86,6 +92,7 @@ public class CoopostController {
      * 공구글 삭제 (204 No Content)
      * 204 응답은 본문(body)이 없으므로 ApiResponse를 사용하지 않는 것이 표준적입니다.
      */
+    @Operation(summary = "공구글 삭제")
     @DeleteMapping("/{coopostId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable UUID coopostId) {
@@ -95,6 +102,7 @@ public class CoopostController {
     /**
      * 공구글 상태 변경 (200 OK)
      */
+    @Operation(summary = "공구글 상태 변경")
     @PatchMapping("/{coopostId}/status")
     public ApiResponse<CoopostResponse> changeStatus(@PathVariable UUID coopostId,
                                                      @RequestBody CoopostStatusUpdateRequest req) {
@@ -105,6 +113,7 @@ public class CoopostController {
     /**
      * 공구글 전체 조회 (200 OK)
      */
+    @Operation(summary = "공구글 전체 조회")
     @GetMapping("/all")
     public ApiResponse<SliceResponse<CoopostResponse>> getAll(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime createdAtCursor,
@@ -121,6 +130,7 @@ public class CoopostController {
     /**
      * 내가 쓴 공구글 조회 (200 OK)
      */
+    @Operation(summary = "내가 쓴 공구글 조회")
     @GetMapping("/myposts")
     public ApiResponse<SliceResponse<CoopostResponse>> myPosts(
             @RequestHeader("Authorization") String authorizationHeader,
@@ -143,6 +153,7 @@ public class CoopostController {
     /**
      * 인기 공구글 조회 (200 OK)
      */
+    @Operation(summary = "인기 공구글 조회")
     @GetMapping("/popular")
     public ApiResponse<SliceResponse<CoopostResponse>> popular(
             @RequestParam(required = false) Long viewCountCursor,
@@ -159,6 +170,7 @@ public class CoopostController {
     /**
      * 공구글 검색 (200 OK)
      */
+    @Operation(summary = "공구글 검색")
     @GetMapping("/search")
     public ApiResponse<SliceResponse<CoopostResponse>> search(
             @RequestParam(required = false) String keyword,
@@ -201,7 +213,7 @@ public class CoopostController {
      * - sortBy=POPULAR 인 경우: ?cursor=150 (마지막 글의 viewCount) & idCursor=UUID
      * - 그 외 경우: ?cursor=2024-11-22T10:00:00 (마지막 글의 날짜) & idCursor=UUID
      */
-
+    @Operation(summary = "통합 검색")
     @GetMapping("/search/filter")
     public ApiResponse<SliceResponse<CoopostResponse>> searchByCondition(
             @ModelAttribute CoopostSearchCondition condition,
