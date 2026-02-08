@@ -1,6 +1,7 @@
 package com.gonggoo.gonggoo.coopost.service;
 
 import com.gonggoo.gonggoo.coopost.domain.CoopostCategory;
+import com.gonggoo.gonggoo.coopost.domain.CoopostMember;
 import com.gonggoo.gonggoo.coopost.domain.CoopostStatus;
 import com.gonggoo.gonggoo.coopost.domain.Coopost;
 import com.gonggoo.gonggoo.coopost.dto.request.CoopostCreateRequest;
@@ -9,6 +10,7 @@ import com.gonggoo.gonggoo.coopost.dto.request.CoopostUpdateRequest;
 import com.gonggoo.gonggoo.coopost.dto.response.CoopostResponse;
 import com.gonggoo.gonggoo.coopost.dto.response.PageResponse;
 import com.gonggoo.gonggoo.coopost.dto.response.SliceResponse;
+import com.gonggoo.gonggoo.coopost.repository.CoopostMemberRepository;
 import com.gonggoo.gonggoo.coopost.repository.CoopostRepository;
 import com.gonggoo.gonggoo.global.exception.NeighborsException;
 import com.gonggoo.gonggoo.global.response.ErrorCode;
@@ -34,6 +36,7 @@ public class CoopostServiceImpl implements CoopostService {
 
     private final CoopostRepository repo;
     private final MemberRepository memberRepository;
+    private final CoopostMemberRepository applyRepository;
     // 공구글 생성
     @Override
     public CoopostResponse create(CoopostCreateRequest req, int memberId) {
@@ -56,31 +59,50 @@ public class CoopostServiceImpl implements CoopostService {
         return CoopostResponse.from(repo.save(entity));
     }
 
-    // 공구글 상세 조회 (조회수 +1) ID는 CoopostID를 말함
+    // 공구글 상세 조회
     @Override
-    @Transactional(readOnly = true)
+    @Transactional // 더티 체킹을 위해 readOnly 제거 혹은 별도 메서드 분리
     public CoopostResponse getById(UUID coopostId, boolean increaseView) {
         Coopost e = repo.findById(coopostId)
                 .orElseThrow(() -> new NeighborsException(ErrorCode.COOPOST_NOT_FOUND));
         if (increaseView) {
-            e.setViewCount(e.getViewCount() + 1);
+            e.increaseViewCount();
         }
         return CoopostResponse.from(e);
     }
+    @Override
+    @Transactional // 조회수 증가(Update) 때문에 readonly 아님
+    public CoopostResponse getDetailById(UUID coopostId, Integer memberId) {
+        Coopost e = repo.findById(coopostId)
+                .orElseThrow(() -> new NeighborsException(ErrorCode.COOPOST_NOT_FOUND));
 
-    //공구글 업데이트
+        // 1. 조회수 증가
+        e.increaseViewCount();
+
+        // 2. 로그인 유저라면 신청 상태 확인
+        boolean isApplied = false;
+        UUID myApplyId = null;
+
+        if (memberId != null && memberId != 0) {
+            Optional<CoopostMember> apply = applyRepository.findByCoopostCoopostIdAndMemberId(coopostId, memberId);
+            if (apply.isPresent()) {
+                isApplied = true;
+                myApplyId = apply.get().getId();
+            }
+        }
+
+        // 3. 응답 반환
+        return CoopostResponse.from(e, isApplied, myApplyId);
+    }
+
+    // 공구글 업데이트
     @Override
     public CoopostResponse update(UUID coopostId, CoopostUpdateRequest req) {
         Coopost e = repo.findById(coopostId)
                 .orElseThrow(() -> new NeighborsException(ErrorCode.COOPOST_NOT_FOUND));
-        if (req.getTitle() != null) e.setTitle(req.getTitle());
-        if (req.getContent() != null) e.setContent(req.getContent());
-        if (req.getPricePerUnit() != null) e.setPricePerUnit(req.getPricePerUnit());
-        if (req.getMinParticipants() != null) e.setMinParticipants(req.getMinParticipants());
-        if (req.getMaxParticipants() != null) e.setMaxParticipants(req.getMaxParticipants());
-        if (req.getCategory() != null) e.setCategory(req.getCategory());
-        if (req.getLocation() != null) e.setLocation(req.getLocation());
-        if (req.getDeadlineAt() != null) e.setDeadlineAt(req.getDeadlineAt());
+
+        // [변경] 일일이 null 체크하던 로직을 Entity 내부 메서드로 위임
+        e.updateInfo(req);
 
         return CoopostResponse.from(e);
     }
@@ -90,7 +112,9 @@ public class CoopostServiceImpl implements CoopostService {
     public void delete(UUID coopostId) {
         Coopost coopost = repo.findById(coopostId)
                 .orElseThrow(() -> new NeighborsException(ErrorCode.COOPOST_NOT_FOUND));
-        coopost.setDeletedAt(LocalDateTime.now());
+
+        coopost.softDelete();
+
     }
 
     //공구글 상태 변경
@@ -98,9 +122,11 @@ public class CoopostServiceImpl implements CoopostService {
     public CoopostResponse changeStatus(UUID coopostId, CoopostStatus status) {
         Coopost e = repo.findById(coopostId)
                 .orElseThrow(() -> new NeighborsException(ErrorCode.COOPOST_NOT_FOUND));
-        e.setStatus(status);
+        e.changeStatus(status);
         return CoopostResponse.from(e);
     }
+
+
 
     // --- Slice 기반 커서 페이지네이션 API ---
 
