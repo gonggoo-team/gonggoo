@@ -30,7 +30,13 @@ public enum ErrorCode {
     KAKAO_USER_INFO_NOT_FOUND(HttpStatus.NOT_FOUND, "카카오 유저 정보를 찾을 수 없습니다.", "카카오 API 오류"),
     NAVER_USER_INFO_NOT_FOUND(HttpStatus.NOT_FOUND, "네이버 유저 정보를 찾을 수 없습니다.", "네이버 API 오류"),
     GOOGLE_USER_INFO_NOT_FOUND(HttpStatus.NOT_FOUND, "구글 유저 정보를 찾을 수 없습니다.", "구글 API 오류"),
-    FCM_SERVICE_UNAVAILABLE(HttpStatus.SERVICE_UNAVAILABLE, "알림 전송을 실패했습니다.", "Fcm Service 에러");
+    FCM_SERVICE_UNAVAILABLE(HttpStatus.SERVICE_UNAVAILABLE, "알림 전송을 실패했습니다.", "Fcm Service 에러"),
+    ALREADY_CANCELED(HttpStatus.NOT_FOUND, "이미 참여가 취소된 공구글입니다", "ApplyStatus.CANCEL된 공구글"),
+    ALREADY_APPLIED(HttpStatus.BAD_REQUEST, "이미 신청된 공구글입니다", "이미 APPLY된 공구글"),
+    APPLICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "찾을 수 없는 공구글입니다", "공구글을 찾을 수 없습니다"),
+    CANNOT_APPLY_OWN_POST(HttpStatus.BAD_REQUEST, "내 공구글에는 참여 신청을 할 수 없습니다.", "공구글 게시자가 참여자로 참여할 수 없습니다."),
+    COOPOST_CLOSED(HttpStatus.NOT_FOUND, "끝난 공구글입니다.", "공구글 상태가 CLOSED된 공구글입니다."),
+    COOPOST_FULL(HttpStatus.NO_CONTENT, "공구글 정원을 초과했습니다.", "maxParticipants를 초과했습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;

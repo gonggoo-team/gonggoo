@@ -17,7 +17,8 @@ import org.springframework.transaction.PlatformTransactionManager;
         basePackages = {
                 "com.gonggoo.gonggoo.member",
                 "com.gonggoo.gonggoo.coopost",
-                "com.gonggoo.gonggoo.fcm"
+                "com.gonggoo.gonggoo.fcm",
+                "com.gonggoo.gonggoo.scrap"
         },
         entityManagerFactoryRef = "mysqlDatabaseEntityFactory",
         transactionManagerRef = "mysqlDatabaseTransactionManager"
@@ -33,7 +34,8 @@ public class MysqlDatasourceConfig {
         em.setPackagesToScan(
                 "com.gonggoo.gonggoo.member.domain",
                 "com.gonggoo.gonggoo.coopost.domain",
-                "com.gonggoo.gonggoo.fcm.domain"
+                "com.gonggoo.gonggoo.fcm.domain",
+                "com.gonggoo.gonggoo.scrap.domain"
         );
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);

@@ -9,7 +9,9 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface ScrapRepository extends JpaRepository<Scrap, UUID> {
 
     Optional<Scrap> findByMemberIdAndCoopostCoopostId(int memberId, UUID coopostId);
