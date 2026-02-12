@@ -23,7 +23,7 @@ public interface ChatroomQueryRepository extends JpaRepository<Chatroom, Long> {
             on c.chatroomId = cu.chatroomId
             and c.deletedAt is null
             left join lateral (
-                select cl2.chatroomId, cl2.createdAt
+                select cl2.content, cl2.createdAt
                 from ChatLog cl2
                 where cl2.chatroomId = c.chatroomId
                 order by cl2.createdAt desc, cl2.chatLogId desc
@@ -61,7 +61,7 @@ public interface ChatroomQueryRepository extends JpaRepository<Chatroom, Long> {
             and cu.leftAt is null
             and (
                 (cl.createdAt < :cursorTime)
-                or (cl.createdAt = :cursorTime and c.chatroomId < :cursorRoomId
+                or (cl.createdAt = :cursorTime and c.chatroomId < :cursorRoomId)
             )
             order by cl.createdAt desc nulls last, c.chatroomId desc
             limit :size
