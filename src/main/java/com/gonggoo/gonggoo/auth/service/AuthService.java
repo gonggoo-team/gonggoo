@@ -2,10 +2,14 @@ package com.gonggoo.gonggoo.auth.service;
 
 import static com.gonggoo.gonggoo.global.response.ErrorCode.GOOGLE_USER_INFO_NOT_FOUND;
 import static com.gonggoo.gonggoo.global.response.ErrorCode.KAKAO_USER_INFO_NOT_FOUND;
+import static com.gonggoo.gonggoo.global.response.ErrorCode.MEMBER_LOGIN_FAILED;
+import static com.gonggoo.gonggoo.global.response.ErrorCode.MEMBER_NOT_FOUND;
 import static com.gonggoo.gonggoo.global.response.ErrorCode.NAVER_USER_INFO_NOT_FOUND;
+import static com.gonggoo.gonggoo.global.response.ErrorCode.PASSWORD_FAILED;
 
 import com.gonggoo.gonggoo.auth.domain.RegistrationProvider;
 import com.gonggoo.gonggoo.auth.dto.LoginRequest;
+import com.gonggoo.gonggoo.auth.dto.LoginResponse;
 import com.gonggoo.gonggoo.auth.google.GoogleProps;
 import com.gonggoo.gonggoo.auth.google.GoogleTokenResponse;
 import com.gonggoo.gonggoo.auth.google.GoogleUserInfoResponse;
@@ -50,11 +54,21 @@ public class AuthService {
     private final GoogleProps googleProps;
     private final RestTemplate restTemplate;
 
-    public JwtTokenDto login(LoginRequest loginRequest) {
+    public LoginResponse login(LoginRequest loginRequest) {
         Member member = memberRepository.findByEmail(loginRequest.email())
-                .orElseThrow(() -> new IllegalStateException("요청한 이메일에 해당하는 회원이 없습니다."));
+                .orElseThrow(() -> new NeighborsException(MEMBER_LOGIN_FAILED));
+        if (!passwordEncoder.matches(loginRequest.password(), member.getPassword())) {
+            throw new NeighborsException(PASSWORD_FAILED);
+        }
+
+        return LoginResponse.from(member);
+    }
+
+    public JwtTokenDto loginForDev(LoginRequest loginRequest) {
+        Member member = memberRepository.findByEmail(loginRequest.email())
+                .orElseThrow(() -> new NeighborsException(MEMBER_NOT_FOUND));
         if(!passwordEncoder.matches(loginRequest.password(), member.getPassword())) {
-            throw new IllegalStateException("비밀번호가 틀렸습니다.");
+            throw new NeighborsException(PASSWORD_FAILED);
         }
 
         var accessToken = jwtTokenProvider.generateToken(String.valueOf(member.getId()), member.getRole());

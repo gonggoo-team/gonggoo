@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
 
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 사용자가 존재하지 않습니다.", "Member 엔티티가 db 안에 존재하지 않습니다"),
+    MEMBER_LOGIN_FAILED(HttpStatus.NOT_FOUND, "회원가입이 되어있지 않은 이메일입니다.", "이메일이 db안에 존재하지 않습니다"),
+    PASSWORD_FAILED(HttpStatus.NOT_FOUND, "비밀번호가 틀렸습니다.", "비밀번호가 일치하지 않습니다."),
     INVALID_JWT(HttpStatus.BAD_REQUEST, "토큰이 유효하지 않습니다", "토큰의 Claim이 일치하지 않습니다"),
     DUPLICATE_MEMBER_EMAIL(HttpStatus.BAD_REQUEST, "이미 등록된 이메일입니다", "같은 이메일이 존재합니다"),
     DUPLICATE_MEMBER_PHONE_NUMBER(HttpStatus.BAD_REQUEST, "이미 등록된 전화번호입니다", "같은 전화번호가 존재합니다"),
