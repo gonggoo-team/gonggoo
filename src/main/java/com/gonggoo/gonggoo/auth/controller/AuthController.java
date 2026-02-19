@@ -1,6 +1,7 @@
 package com.gonggoo.gonggoo.auth.controller;
 
 import com.gonggoo.gonggoo.auth.dto.LoginRequest;
+import com.gonggoo.gonggoo.auth.dto.LoginResponse;
 import com.gonggoo.gonggoo.auth.jwt.JwtTokenDto;
 import com.gonggoo.gonggoo.auth.jwt.JwtTokenProvider;
 import com.gonggoo.gonggoo.auth.service.AuthService;
@@ -20,11 +21,18 @@ public class AuthController {
     private final AuthService authService;
     private final JwtTokenProvider jwtTokenProvider;
 
+    @Operation(summary = "개발자용 로그인", description = "accessToken과 refreshToken 확인용입니다.")
+    @PostMapping("/login-dev")
+    public ApiResponse<JwtTokenDto> loginForDev(@RequestBody LoginRequest loginRequest) {
+        JwtTokenDto token = authService.loginForDev(loginRequest);
+        return ApiResponse.success("LOGIN_SUCCESS", token);
+    }
+
     @Operation(summary = "로그인", description = "이메일과 비밀번호를 입력하면 로그인됩니다.")
     @PostMapping("/login")
-    public ApiResponse<JwtTokenDto> login(@RequestBody LoginRequest loginRequest) {
-        JwtTokenDto token = authService.login(loginRequest);
-        return ApiResponse.success("LOGIN_SUCCESS", token);
+    public ApiResponse<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
+        LoginResponse loginResponse = authService.login(loginRequest);
+        return ApiResponse.success("LOGIN_SUCCESS", loginResponse);
     }
 
     @Operation(summary = "토큰 재발행", description = "refreshToken을 통해 토큰을 재발행합니다.")

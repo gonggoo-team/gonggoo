@@ -50,7 +50,7 @@ public class CoopostServiceImpl implements CoopostService {
             .pricePerUnit(req.getPricePerUnit())
             .minParticipants(req.getMinParticipants())
             .maxParticipants(req.getMaxParticipants())
-            .currentParticipants(0)
+            .currentParticipants(1)
             .category(Optional.ofNullable(req.getCategory()).orElse(CoopostCategory.ELSE))
             .location(req.getLocation())
             .deadlineAt(req.getDeadlineAt())
