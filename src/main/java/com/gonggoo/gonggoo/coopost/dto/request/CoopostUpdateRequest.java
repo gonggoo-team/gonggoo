@@ -12,6 +12,7 @@ public class CoopostUpdateRequest {
     private String title;
     private String content;
     private BigDecimal pricePerUnit;
+    private BigDecimal originalPrice;
     private Integer minParticipants;
     private Integer maxParticipants;
     private CoopostCategory category;

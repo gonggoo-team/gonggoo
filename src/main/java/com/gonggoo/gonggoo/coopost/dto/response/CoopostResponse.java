@@ -19,6 +19,7 @@ public class CoopostResponse {
     CoopostStatus status;
 
     BigDecimal pricePerUnit;
+    BigDecimal originalPrice;
     Integer minParticipants;
     Integer maxParticipants;
     Integer currentParticipants;
@@ -47,6 +48,7 @@ public class CoopostResponse {
                 .title(e.getTitle())
                 .content(e.getContent())
                 .status(e.getStatus())
+                .originalPrice(e.getOriginalPrice())
                 .pricePerUnit(e.getPricePerUnit())
                 .minParticipants(e.getMinParticipants())
                 .maxParticipants(e.getMaxParticipants())

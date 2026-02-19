@@ -106,6 +106,7 @@ public class Coopost extends BaseEntity {
         if (req.getTitle() != null) this.title = req.getTitle();
         if (req.getContent() != null) this.content = req.getContent();
         if (req.getPricePerUnit() != null) this.pricePerUnit = req.getPricePerUnit();
+        if (req.getOriginalPrice() != null) this.originalPrice = req.getOriginalPrice();
         if (req.getMinParticipants() != null) this.minParticipants = req.getMinParticipants();
         if (req.getMaxParticipants() != null) this.maxParticipants = req.getMaxParticipants();
         if (req.getCategory() != null) this.category = req.getCategory();
