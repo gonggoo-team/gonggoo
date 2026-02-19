@@ -1,6 +1,7 @@
 package com.gonggoo.gonggoo.member.dto.response;
 
 
+import com.gonggoo.gonggoo.auth.domain.RegistrationProvider;
 import com.gonggoo.gonggoo.common.domain.GeoLocation;
 import com.gonggoo.gonggoo.common.domain.Role;
 import com.gonggoo.gonggoo.member.domain.Member;
@@ -13,6 +14,8 @@ public record MemberResponse (
         String email,
         String profileImage,
         Role role,
+        RegistrationProvider provider,
+        String providerId,
         GeoLocation location,
         LocalDateTime createdAt,
         LocalDateTime modifiedAt,
@@ -26,6 +29,8 @@ public record MemberResponse (
                 member.getEmail(),
                 member.getProfileImage(),
                 member.getRole(),
+                member.getProvider(),
+                member.getProviderId(),
                 member.getLocation(),
                 member.getCreatedAt(),
                 member.getModifiedAt(),

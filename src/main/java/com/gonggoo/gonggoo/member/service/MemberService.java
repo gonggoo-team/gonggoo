@@ -1,9 +1,11 @@
 package com.gonggoo.gonggoo.member.service;
 
+import static com.gonggoo.gonggoo.auth.domain.RegistrationProvider.*;
 import static com.gonggoo.gonggoo.global.response.ErrorCode.DUPLICATE_MEMBER_EMAIL;
 import static com.gonggoo.gonggoo.global.response.ErrorCode.DUPLICATE_MEMBER_PHONE_NUMBER;
 import static com.gonggoo.gonggoo.global.response.ErrorCode.MEMBER_NOT_FOUND;
 
+import com.gonggoo.gonggoo.auth.domain.RegistrationProvider;
 import com.gonggoo.gonggoo.common.domain.GeoLocation;
 import com.gonggoo.gonggoo.global.exception.NeighborsException;
 import com.gonggoo.gonggoo.member.domain.Member;
@@ -18,6 +20,7 @@ import com.gonggoo.gonggoo.member.dto.response.PhoneNumberCheckResponse;
 import com.gonggoo.gonggoo.member.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +46,8 @@ public class MemberService {
                 .phoneNumber(request.phoneNumber())
                 .email(request.email())
                 .password(hashedPassword)
+                .provider(LOCAL)
+                .providerId(String.valueOf(UUID.randomUUID()))
                 .location(geolocation)
                 .build();
 
