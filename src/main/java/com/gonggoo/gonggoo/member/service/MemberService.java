@@ -59,10 +59,6 @@ public class MemberService {
         if (validateDuplicateEmail(memberSignupRequest.email()).exists()) {
             throw new NeighborsException(DUPLICATE_MEMBER_EMAIL);
         }
-
-        if (validateDuplicatePhoneNumber(memberSignupRequest.phoneNumber()).exists()) {
-            throw new NeighborsException(DUPLICATE_MEMBER_PHONE_NUMBER);
-        }
     }
 
     public EmailCheckResponse validateDuplicateEmail(String email) {
