@@ -15,7 +15,9 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
     boolean existsByEmail(String email);
     boolean existsByPhoneNumber(String phoneNumber);
     boolean existsByNickname(String nickname);
-    Role findRoleById(int id);
+
+    @Query("Select m.role from Member m where m.id = :id")
+    Role findRoleById(@Param("id") int id);
     Optional<Member> findByEmail(String email);
 
     @Modifying
