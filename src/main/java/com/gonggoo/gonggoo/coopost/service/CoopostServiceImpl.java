@@ -48,6 +48,7 @@ public class CoopostServiceImpl implements CoopostService {
             .content(req.getContent())
             .status(CoopostStatus.OPEN)
             .pricePerUnit(req.getPricePerUnit())
+            .originalPrice(req.getOriginalPrice())
             .minParticipants(req.getMinParticipants())
             .maxParticipants(req.getMaxParticipants())
             .currentParticipants(1)
