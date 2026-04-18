@@ -1,7 +1,7 @@
-package com.gonggoo.gonggoo.chat.respository.query;
+package com.gonggoo.gonggoo.chat.repository.query;
 
 import com.gonggoo.gonggoo.chat.domain.Chatroom;
-import com.gonggoo.gonggoo.chat.respository.query.projection.MyActiveRoomRow;
+import com.gonggoo.gonggoo.chat.repository.query.projection.MyActiveRoomRow;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;

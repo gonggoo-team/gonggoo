@@ -1,4 +1,4 @@
-package com.gonggoo.gonggoo.chat.respository;
+package com.gonggoo.gonggoo.chat.repository;
 
 import com.gonggoo.gonggoo.chat.domain.Chatroom;
 import jakarta.persistence.LockModeType;

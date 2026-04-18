@@ -1,4 +1,4 @@
-package com.gonggoo.gonggoo.chat.respository.query.projection;
+package com.gonggoo.gonggoo.chat.repository.query.projection;
 
 import com.gonggoo.gonggoo.global.exception.NeighborsException;
 import com.gonggoo.gonggoo.global.response.ErrorCode;

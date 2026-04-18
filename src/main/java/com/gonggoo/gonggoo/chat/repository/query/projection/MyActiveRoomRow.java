@@ -1,4 +1,4 @@
-package com.gonggoo.gonggoo.chat.respository.query.projection;
+package com.gonggoo.gonggoo.chat.repository.query.projection;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
