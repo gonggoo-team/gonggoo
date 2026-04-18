@@ -1,4 +1,4 @@
-package com.gonggoo.gonggoo.common.util;
+package com.gonggoo.gonggoo.global.util;
 
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;

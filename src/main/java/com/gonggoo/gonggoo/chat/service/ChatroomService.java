@@ -14,7 +14,7 @@ import com.gonggoo.gonggoo.chat.repository.ChatroomUserRepository;
 import com.gonggoo.gonggoo.chat.repository.query.ChatroomQueryRepository;
 import com.gonggoo.gonggoo.chat.repository.query.projection.Cursor;
 import com.gonggoo.gonggoo.chat.repository.query.projection.MyActiveRoomRow;
-import com.gonggoo.gonggoo.common.util.RoomRefHasher;
+import com.gonggoo.gonggoo.global.util.RoomRefHasher;
 import com.gonggoo.gonggoo.global.exception.NeighborsException;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;

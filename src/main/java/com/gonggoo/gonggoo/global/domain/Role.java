@@ -1,4 +1,4 @@
-package com.gonggoo.gonggoo.common.domain;
+package com.gonggoo.gonggoo.global.domain;
 
 public enum Role {
     USER, ADMIN;

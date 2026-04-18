@@ -1,6 +1,6 @@
 package com.gonggoo.gonggoo.member.dto.response;
 
-import com.gonggoo.gonggoo.common.domain.GeoLocation;
+import com.gonggoo.gonggoo.global.domain.GeoLocation;
 import java.time.LocalDateTime;
 
 public record LocationResponse(

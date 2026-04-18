@@ -1,4 +1,4 @@
-package com.gonggoo.gonggoo.common.config;
+package com.gonggoo.gonggoo.global.config;
 
 import javax.sql.DataSource;
 import org.springframework.boot.context.properties.ConfigurationProperties;

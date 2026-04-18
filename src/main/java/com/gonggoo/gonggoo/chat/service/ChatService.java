@@ -11,7 +11,7 @@ import com.gonggoo.gonggoo.chat.dto.response.MessageResponse;
 import com.gonggoo.gonggoo.chat.repository.ChatLogRepository;
 import com.gonggoo.gonggoo.chat.repository.ChatroomRepository;
 import com.gonggoo.gonggoo.chat.repository.ChatroomUserRepository;
-import com.gonggoo.gonggoo.common.util.RoomRefHasher;
+import com.gonggoo.gonggoo.global.util.RoomRefHasher;
 import com.gonggoo.gonggoo.global.exception.NeighborsException;
 import java.util.HashSet;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.gonggoo.gonggoo.common.config;
+package com.gonggoo.gonggoo.global.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;

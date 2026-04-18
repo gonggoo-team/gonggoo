@@ -1,7 +1,7 @@
 package com.gonggoo.gonggoo.auth.dto.response;
 
-import com.gonggoo.gonggoo.common.domain.GeoLocation;
-import com.gonggoo.gonggoo.common.domain.Role;
+import com.gonggoo.gonggoo.global.domain.GeoLocation;
+import com.gonggoo.gonggoo.global.domain.Role;
 import com.gonggoo.gonggoo.member.domain.Member;
 
 public record LoginResponse(

@@ -1,4 +1,4 @@
-package com.gonggoo.gonggoo.common.config;
+package com.gonggoo.gonggoo.global.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

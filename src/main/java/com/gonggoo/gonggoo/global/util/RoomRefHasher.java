@@ -1,4 +1,4 @@
-package com.gonggoo.gonggoo.common.util;
+package com.gonggoo.gonggoo.global.util;
 
 import static com.gonggoo.gonggoo.global.response.ErrorCode.COOPOST_ID_NOT_FOUND;
 import static com.gonggoo.gonggoo.global.response.ErrorCode.FAILED_TO_HASH;

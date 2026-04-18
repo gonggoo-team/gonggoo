@@ -1,4 +1,4 @@
-package com.gonggoo.gonggoo.common.config;
+package com.gonggoo.gonggoo.global.config;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;

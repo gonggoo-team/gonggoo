@@ -1,6 +1,6 @@
 package com.gonggoo.gonggoo.coopost.domain;
 
-import com.gonggoo.gonggoo.common.domain.BaseEntity;import com.gonggoo.gonggoo.member.domain.Member;
+import com.gonggoo.gonggoo.global.domain.BaseEntity;import com.gonggoo.gonggoo.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;

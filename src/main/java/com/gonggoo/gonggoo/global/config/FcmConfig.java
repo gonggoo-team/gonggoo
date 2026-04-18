@@ -1,4 +1,4 @@
-package com.gonggoo.gonggoo.common.config;
+package com.gonggoo.gonggoo.global.config;
 
 import com.gonggoo.gonggoo.fcm.FcmProps;
 import com.google.auth.oauth2.GoogleCredentials;

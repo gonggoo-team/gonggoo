@@ -21,7 +21,7 @@ import com.gonggoo.gonggoo.auth.kakao.KakaoUserInfoResponse;
 import com.gonggoo.gonggoo.auth.naver.NaverProps;
 import com.gonggoo.gonggoo.auth.naver.NaverTokenResponse;
 import com.gonggoo.gonggoo.auth.naver.NaverUserInfoResponse;
-import com.gonggoo.gonggoo.common.domain.Role;
+import com.gonggoo.gonggoo.global.domain.Role;
 import com.gonggoo.gonggoo.global.exception.NeighborsException;
 import com.gonggoo.gonggoo.member.domain.Member;
 import com.gonggoo.gonggoo.member.domain.MemberStatus;

@@ -1,4 +1,4 @@
-package com.gonggoo.gonggoo.common.domain;
+package com.gonggoo.gonggoo.global.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

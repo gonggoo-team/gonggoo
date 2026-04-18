@@ -5,7 +5,7 @@ import static com.gonggoo.gonggoo.global.response.ErrorCode.TOKEN_EXPIRED;
 import static com.gonggoo.gonggoo.global.response.ErrorCode.UNAUTHORIZED_TOKEN;
 
 import com.gonggoo.gonggoo.auth.dto.CustomPrincipal;
-import com.gonggoo.gonggoo.common.domain.Role;
+import com.gonggoo.gonggoo.global.domain.Role;
 import com.gonggoo.gonggoo.global.exception.NeighborsException;
 import com.gonggoo.gonggoo.global.response.ErrorCode;
 import io.jsonwebtoken.Claims;
