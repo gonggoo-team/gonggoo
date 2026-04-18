@@ -1,7 +1,6 @@
 package com.gonggoo.gonggoo.coopost.repository;
 
 import com.gonggoo.gonggoo.coopost.domain.Coopost;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;

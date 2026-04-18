@@ -1,6 +1,6 @@
 package com.gonggoo.gonggoo.chat.domain;
 
-import com.gonggoo.gonggoo.common.domain.BaseEntity;
+import com.gonggoo.gonggoo.global.domain.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

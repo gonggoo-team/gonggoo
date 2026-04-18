@@ -6,7 +6,6 @@ import com.gonggoo.gonggoo.coopost.dto.request.CoopostSearchCondition;
 import com.gonggoo.gonggoo.coopost.dto.request.CoopostStatusUpdateRequest;
 import com.gonggoo.gonggoo.coopost.dto.request.CoopostUpdateRequest;
 import com.gonggoo.gonggoo.coopost.dto.response.CoopostResponse;
-import com.gonggoo.gonggoo.coopost.dto.response.PageResponse;
 import com.gonggoo.gonggoo.coopost.dto.response.SliceResponse;
 import com.gonggoo.gonggoo.global.response.ApiResponse;
 import com.gonggoo.gonggoo.coopost.service.CoopostService;

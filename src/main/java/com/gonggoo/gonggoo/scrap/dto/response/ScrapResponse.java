@@ -3,8 +3,6 @@ package com.gonggoo.gonggoo.scrap.dto.response;
 import com.gonggoo.gonggoo.coopost.domain.Coopost;
 import com.gonggoo.gonggoo.coopost.domain.CoopostStatus;
 import com.gonggoo.gonggoo.scrap.domain.Scrap;
-import lombok.Builder;
-import lombok.Value;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

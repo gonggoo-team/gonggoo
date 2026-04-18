@@ -1,6 +1,6 @@
 package com.gonggoo.gonggoo.member.repository;
 
-import com.gonggoo.gonggoo.common.domain.Role;
+import com.gonggoo.gonggoo.global.domain.Role;
 import com.gonggoo.gonggoo.member.domain.Member;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,7 +1,7 @@
 package com.gonggoo.gonggoo.member.dto.request;
 
 import com.gonggoo.gonggoo.auth.domain.RegistrationProvider;
-import com.gonggoo.gonggoo.common.domain.GeoLocation;
+import com.gonggoo.gonggoo.global.domain.GeoLocation;
 
 public record MemberSignupRequest(
         String nickname,

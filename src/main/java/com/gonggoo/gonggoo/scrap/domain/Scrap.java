@@ -1,6 +1,6 @@
 package com.gonggoo.gonggoo.scrap.domain;
 
-import com.gonggoo.gonggoo.common.domain.BaseEntity;
+import com.gonggoo.gonggoo.global.domain.BaseEntity;
 import com.gonggoo.gonggoo.coopost.domain.Coopost;
 import com.gonggoo.gonggoo.member.domain.Member;
 import jakarta.persistence.*;

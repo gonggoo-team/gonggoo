@@ -1,15 +1,13 @@
 package com.gonggoo.gonggoo.coopost.domain;
 
-import com.gonggoo.gonggoo.common.domain.BaseEntity;
+import com.gonggoo.gonggoo.global.domain.BaseEntity;
 import com.gonggoo.gonggoo.coopost.dto.request.CoopostUpdateRequest;
 import com.gonggoo.gonggoo.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
