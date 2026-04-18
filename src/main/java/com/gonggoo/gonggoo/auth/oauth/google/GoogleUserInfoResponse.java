@@ -1,4 +1,4 @@
-package com.gonggoo.gonggoo.auth.google;
+package com.gonggoo.gonggoo.auth.oauth.google;
 
 public record GoogleUserInfoResponse(
         String sub,

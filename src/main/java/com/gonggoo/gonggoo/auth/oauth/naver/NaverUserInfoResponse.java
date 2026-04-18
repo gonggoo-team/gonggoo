@@ -1,4 +1,4 @@
-package com.gonggoo.gonggoo.auth.naver;
+package com.gonggoo.gonggoo.auth.oauth.naver;
 
 public record NaverUserInfoResponse(
         String resultcode,

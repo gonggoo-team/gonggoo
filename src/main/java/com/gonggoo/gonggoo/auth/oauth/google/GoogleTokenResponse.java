@@ -1,4 +1,4 @@
-package com.gonggoo.gonggoo.auth.google;
+package com.gonggoo.gonggoo.auth.oauth.google;
 
 public record GoogleTokenResponse(
         String access_token,

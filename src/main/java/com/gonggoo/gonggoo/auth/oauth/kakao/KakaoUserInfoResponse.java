@@ -1,4 +1,4 @@
-package com.gonggoo.gonggoo.auth.kakao;
+package com.gonggoo.gonggoo.auth.oauth.kakao;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

@@ -1,4 +1,4 @@
-package com.gonggoo.gonggoo.auth.naver;
+package com.gonggoo.gonggoo.auth.oauth.naver;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;

@@ -1,9 +1,9 @@
-package com.gonggoo.gonggoo.auth.naver;
+package com.gonggoo.gonggoo.auth.oauth.kakao;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "oauth.naver")
-public record NaverProps(
+@ConfigurationProperties(prefix = "oauth.kakao")
+public record KakaoProps(
         String client_id,
         String redirect_uri,
         String client_secret,

@@ -1,4 +1,4 @@
-package com.gonggoo.gonggoo.auth.kakao;
+package com.gonggoo.gonggoo.auth.oauth.kakao;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
