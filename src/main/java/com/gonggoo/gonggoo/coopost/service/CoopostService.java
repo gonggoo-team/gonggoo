@@ -7,7 +7,6 @@ import com.gonggoo.gonggoo.coopost.dto.request.CoopostCreateRequest;
 import com.gonggoo.gonggoo.coopost.dto.request.CoopostSearchCondition;
 import com.gonggoo.gonggoo.coopost.dto.request.CoopostUpdateRequest;
 import com.gonggoo.gonggoo.coopost.dto.response.CoopostResponse;
-import com.gonggoo.gonggoo.coopost.dto.response.PageResponse;
 import com.gonggoo.gonggoo.coopost.dto.response.SliceResponse;
 import org.springframework.data.domain.Pageable;
 

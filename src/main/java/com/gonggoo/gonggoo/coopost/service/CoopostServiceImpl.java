@@ -8,7 +8,6 @@ import com.gonggoo.gonggoo.coopost.dto.request.CoopostCreateRequest;
 import com.gonggoo.gonggoo.coopost.dto.request.CoopostSearchCondition;
 import com.gonggoo.gonggoo.coopost.dto.request.CoopostUpdateRequest;
 import com.gonggoo.gonggoo.coopost.dto.response.CoopostResponse;
-import com.gonggoo.gonggoo.coopost.dto.response.PageResponse;
 import com.gonggoo.gonggoo.coopost.dto.response.SliceResponse;
 import com.gonggoo.gonggoo.coopost.repository.CoopostMemberRepository;
 import com.gonggoo.gonggoo.coopost.repository.CoopostRepository;
@@ -16,16 +15,13 @@ import com.gonggoo.gonggoo.global.exception.NeighborsException;
 import com.gonggoo.gonggoo.global.response.ErrorCode;
 import com.gonggoo.gonggoo.member.domain.Member;
 import com.gonggoo.gonggoo.member.repository.MemberRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 

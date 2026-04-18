@@ -3,7 +3,6 @@ package com.gonggoo.gonggoo.coopost.repository;
 import com.gonggoo.gonggoo.coopost.domain.Coopost;
 import com.gonggoo.gonggoo.coopost.domain.CoopostCategory;
 import com.gonggoo.gonggoo.coopost.dto.request.CoopostSearchCondition;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
