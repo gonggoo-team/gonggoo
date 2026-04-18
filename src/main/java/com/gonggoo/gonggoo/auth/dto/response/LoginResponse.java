@@ -1,4 +1,4 @@
-package com.gonggoo.gonggoo.auth.dto;
+package com.gonggoo.gonggoo.auth.dto.response;
 
 import com.gonggoo.gonggoo.common.domain.GeoLocation;
 import com.gonggoo.gonggoo.common.domain.Role;

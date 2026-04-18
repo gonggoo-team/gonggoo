@@ -1,4 +1,4 @@
-package com.gonggoo.gonggoo.auth.dto;
+package com.gonggoo.gonggoo.auth.dto.request;
 
 public record LoginRequest(
         String email,

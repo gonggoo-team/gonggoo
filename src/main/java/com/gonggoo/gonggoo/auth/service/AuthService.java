@@ -8,8 +8,8 @@ import static com.gonggoo.gonggoo.global.response.ErrorCode.NAVER_USER_INFO_NOT_
 import static com.gonggoo.gonggoo.global.response.ErrorCode.PASSWORD_FAILED;
 
 import com.gonggoo.gonggoo.auth.domain.RegistrationProvider;
-import com.gonggoo.gonggoo.auth.dto.LoginRequest;
-import com.gonggoo.gonggoo.auth.dto.LoginResponse;
+import com.gonggoo.gonggoo.auth.dto.request.LoginRequest;
+import com.gonggoo.gonggoo.auth.dto.response.LoginResponse;
 import com.gonggoo.gonggoo.auth.google.GoogleProps;
 import com.gonggoo.gonggoo.auth.google.GoogleTokenResponse;
 import com.gonggoo.gonggoo.auth.google.GoogleUserInfoResponse;

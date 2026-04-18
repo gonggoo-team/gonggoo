@@ -1,12 +1,11 @@
 package com.gonggoo.gonggoo.auth.controller;
 
-import com.gonggoo.gonggoo.auth.dto.LoginRequest;
-import com.gonggoo.gonggoo.auth.dto.LoginResponse;
+import com.gonggoo.gonggoo.auth.dto.request.LoginRequest;
+import com.gonggoo.gonggoo.auth.dto.response.LoginResponse;
 import com.gonggoo.gonggoo.auth.jwt.JwtTokenDto;
 import com.gonggoo.gonggoo.auth.jwt.JwtTokenProvider;
 import com.gonggoo.gonggoo.auth.service.AuthService;
 import com.gonggoo.gonggoo.global.response.ApiResponse;
-import io.jsonwebtoken.JwtException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
