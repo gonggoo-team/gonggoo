@@ -1,5 +1,6 @@
 package com.gonggoo.gonggoo.auth.controller;
 
+import com.gonggoo.gonggoo.auth.domain.RegistrationProvider;
 import com.gonggoo.gonggoo.auth.dto.request.LoginRequest;
 import com.gonggoo.gonggoo.auth.dto.response.LoginResponse;
 import com.gonggoo.gonggoo.auth.jwt.JwtTokenDto;
@@ -46,22 +47,22 @@ public class AuthController {
     @Operation(summary = "카카오 로그인", description = "프론트에서 code를 넘기면 해당 코드를 통해 토큰 발행")
     @GetMapping("/login/kakao")
     public ApiResponse<JwtTokenDto> kakaoLogin(@RequestParam("code") String code) {
-        JwtTokenDto kakaoToken = authService.kakaoLogin(code);
-        return ApiResponse.success("LOGIN_SUCCESS", kakaoToken);
+        JwtTokenDto token = authService.oauthLogin(RegistrationProvider.KAKAO, code);
+        return ApiResponse.success("LOGIN_SUCCESS", token);
     }
 
     @Operation(summary = "네이버 로그인", description = "프론트에서 code를 넘기면 해당 코드를 통해 토큰 발행")
     @GetMapping("/login/naver")
     public ApiResponse<JwtTokenDto> naverLogin(@RequestParam("code") String code,
                                                @RequestParam("state") String state) {
-        JwtTokenDto naverToken = authService.naverLogin(code, state);
-        return ApiResponse.success("LOGIN_SUCCESS", naverToken);
+        JwtTokenDto token = authService.oauthLogin(RegistrationProvider.NAVER, code);
+        return ApiResponse.success("LOGIN_SUCCESS", token);
     }
 
     @Operation(summary = "구글 로그인", description = "프론트에서 code를 넘기면 해당 코드를 통해 토큰 발행")
     @GetMapping("/login/google")
-    public ApiResponse<JwtTokenDto> googleLogin(@RequestParam("code") String code){
-        JwtTokenDto googleToken = authService.googleLogin(code);
-        return ApiResponse.success("LOGIN_SUCCESS", googleToken);
+    public ApiResponse<JwtTokenDto> googleLogin(@RequestParam("code") String code) {
+        JwtTokenDto token = authService.oauthLogin(RegistrationProvider.GOOGLE, code);
+        return ApiResponse.success("LOGIN_SUCCESS", token);
     }
 }
