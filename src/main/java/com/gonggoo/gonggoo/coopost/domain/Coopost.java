@@ -41,7 +41,6 @@ public class Coopost extends BaseEntity {
     @Column(nullable = false, length = 120)
     private String title;
 
-    @Setter
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private CoopostStatus status;
