@@ -1,7 +1,6 @@
 package com.gonggoo.gonggoo.chat.controller;
 
 import com.gonggoo.gonggoo.auth.dto.CustomPrincipal;
-import com.gonggoo.gonggoo.chat.domain.Chatroom;
 import com.gonggoo.gonggoo.chat.dto.response.MyRoomsResponse;
 import com.gonggoo.gonggoo.chat.service.ChatroomService;
 import com.gonggoo.gonggoo.global.response.ApiResponse;

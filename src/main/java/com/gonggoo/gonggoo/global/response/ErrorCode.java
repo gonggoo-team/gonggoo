@@ -32,6 +32,7 @@ public enum ErrorCode {
     KAKAO_USER_INFO_NOT_FOUND(HttpStatus.NOT_FOUND, "카카오 유저 정보를 찾을 수 없습니다.", "카카오 API 오류"),
     NAVER_USER_INFO_NOT_FOUND(HttpStatus.NOT_FOUND, "네이버 유저 정보를 찾을 수 없습니다.", "네이버 API 오류"),
     GOOGLE_USER_INFO_NOT_FOUND(HttpStatus.NOT_FOUND, "구글 유저 정보를 찾을 수 없습니다.", "구글 API 오류"),
+    UNSUPPORTED_OAUTH_PROVIDER(HttpStatus.BAD_REQUEST, "지원하지 않는 소셜 로그인 제공자입니다.", "등록되지 않은 OAuthClient 입니다."),
     FCM_SERVICE_UNAVAILABLE(HttpStatus.SERVICE_UNAVAILABLE, "알림 전송을 실패했습니다.", "Fcm Service 에러"),
     ALREADY_CANCELED(HttpStatus.CONFLICT, "이미 참여가 취소된 공구글입니다", "ApplyStatus.CANCEL된 공구글"),
     ALREADY_APPLIED(HttpStatus.BAD_REQUEST, "이미 신청된 공구글입니다", "이미 APPLY된 공구글"),
