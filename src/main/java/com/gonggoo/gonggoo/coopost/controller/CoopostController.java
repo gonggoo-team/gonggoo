@@ -1,5 +1,6 @@
 package com.gonggoo.gonggoo.coopost.controller;
 
+import com.gonggoo.gonggoo.auth.dto.CustomPrincipal;
 import com.gonggoo.gonggoo.coopost.domain.CoopostCategory;
 import com.gonggoo.gonggoo.coopost.dto.request.CoopostCreateRequest;
 import com.gonggoo.gonggoo.coopost.dto.request.CoopostSearchCondition;
@@ -18,8 +19,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import com.gonggoo.gonggoo.auth.jwt.JwtTokenProvider;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -30,7 +31,7 @@ import java.util.UUID;
 public class CoopostController {
 
     private final CoopostService service;
-    private final JwtTokenProvider jwtTokenProvider;
+
     /**
      * 공구글 생성 (201 Created)
      */
@@ -39,15 +40,11 @@ public class CoopostController {
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<CoopostResponse> create(
             @Valid @RequestBody CoopostCreateRequest req,
-            @RequestHeader("Authorization") String authorizationHeader) {
-
-        String accessToken = authorizationHeader.split(" ")[1];
-        int memberId = Integer.parseInt(jwtTokenProvider.parseSubject(accessToken));
-
+            @AuthenticationPrincipal CustomPrincipal principal) {
 
         return ApiResponse.success(HttpStatus.CREATED,
                 "공구글이 성공적으로 생성되었습니다.",
-                service.create(req, memberId));
+                service.create(req, principal.memberId()));
     }
 
     /**
@@ -59,21 +56,9 @@ public class CoopostController {
     @GetMapping("/{coopostId}")
     public ApiResponse<CoopostResponse> getById(
             @PathVariable UUID coopostId,
-            @RequestHeader(value = "Authorization", required = false) String authorizationHeader
+            @AuthenticationPrincipal CustomPrincipal principal
     ) {
-        Integer memberId = null;
-
-        // 토큰이 있는 경우만 memberId 추출
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            String accessToken = authorizationHeader.split(" ")[1];
-            try {
-                memberId = Integer.parseInt(jwtTokenProvider.parseSubject(accessToken));
-            } catch (Exception e) {
-                // 토큰 파싱 실패 시 비로그인으로 처리 (혹은 에러 던지기 선택)
-                memberId = null;
-            }
-        }
-
+        Integer memberId = principal != null ? principal.memberId() : null;
         return ApiResponse.success(service.getDetailById(coopostId, memberId));
     }
 
@@ -132,21 +117,16 @@ public class CoopostController {
     @Operation(summary = "내가 쓴 공구글 조회")
     @GetMapping("/myposts")
     public ApiResponse<SliceResponse<CoopostResponse>> myPosts(
-            @RequestHeader("Authorization") String authorizationHeader,
+            @AuthenticationPrincipal CustomPrincipal principal,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime createdAtCursor,
             @RequestParam(required = false) UUID idCursor,
             @RequestParam(defaultValue = "20") int size
     ) {
-
-        String accessToken = authorizationHeader.split(" ")[1];
-        int memberId = Integer.parseInt(jwtTokenProvider.parseSubject(accessToken));
-
-
         Pageable pageable = PageRequest.of(0, size, Sort.by(
                 Sort.Order.desc("createdAt"),
                 Sort.Order.desc("coopostId")
         ));
-        return ApiResponse.success(service.getMyPosts(memberId, createdAtCursor, idCursor, pageable));
+        return ApiResponse.success(service.getMyPosts(principal.memberId(), createdAtCursor, idCursor, pageable));
     }
 
     /**
